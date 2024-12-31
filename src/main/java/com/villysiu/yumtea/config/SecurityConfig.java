@@ -26,9 +26,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/categories").permitAll()
-                    .requestMatchers("categories/**").hasRole("ADMIN").anyRequest().authenticated()
-                        .requestMatchers("/privateUserPage").hasRole("USER").anyRequest().authenticated()
+                    .requestMatchers(HttpMethod.GET,"/categories", "/milks", "/menuitems").permitAll()
+                    .requestMatchers("categories/**", "milk/**", "menuitem/**").hasRole("ADMIN").anyRequest().authenticated()
+
 //                        auth.anyRequest().authenticated();
 //                        auth.requestMatchers("/user").hasRole("USER");
 //                        auth.requestMatchers("/admin").hasRole("Admin");

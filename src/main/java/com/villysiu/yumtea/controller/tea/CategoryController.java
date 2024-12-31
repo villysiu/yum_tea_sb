@@ -19,7 +19,7 @@ public class CategoryController {
     public List<Category> getCategories() {
         return categoryRepo.findAll();
     }
-    
+
     @PostMapping(value="/categories/new")
     public String addCategory(@RequestBody Category category) {
         categoryRepo.save(category);
