@@ -1,0 +1,20 @@
+
+location package com.villysiu.yumtea.service.impl.UserServiceImpl.java;
+
+When working with Optional values, orElseThrow is a concise way to handle the case where the Optional is empty. It allows you to throw a specific exception if the value is not present, effectively making the absence of a value an exceptional condition
+
+Optional<User> user = userService.findById(userId);
+User foundUser = user.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+Try-Catch:
+Use Case:
+Use try-catch when you need to handle potential exceptions in a more general way, potentially with different handling logic depending on the type of exception thrown.
+
+.
+try {
+    User user = userService.findById(userId);
+    // Do something with the user
+} catch (UserNotFoundException e) {
+    // Handle the case where the user is not found
+} catch (Exception e) {
+    // Handle other potential exceptions
+}

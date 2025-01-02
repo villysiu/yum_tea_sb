@@ -1,0 +1,2 @@
+@RequiredArgsConstructor is a Lombok annotation that generates constructors for all final and non-null fields.
+used in com.villysiu.yumtea.service.impl.UserServiceImpl.java

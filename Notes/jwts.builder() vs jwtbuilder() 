@@ -1,0 +1,60 @@
+In Java, when working with JSON Web Tokens (JWTs), you'll likely encounter these two methods:
+1. Jwts.builder():
+This method comes from the JJWT library (Java JWT), which is a popular choice for working with JWTs in Java.
+It's a static method that returns a JwtBuilder instance, which you can use to construct a JWT by setting claims, headers, and signing the token.
+2. JwtBuilder():
+This is an interface from the Spring Security library.
+It provides a way to build JWTs within the Spring Security framework.
+Key Differences:
+Library:
+Jwts.builder() is from the JJWT library, while JwtBuilder() is from Spring Security.
+Usage:
+If you're using Spring Security, you'll likely use JwtBuilder(). If you're not using Spring Security, you'll likely use Jwts.builder().
+Functionality:
+Both offer similar functionality for building JWTs, but the specific methods and options might differ slightly.
+Example (JJWT):
+Java
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+import java.security.Key;
+
+public class Example {
+
+    public static void main(String[] args) {
+        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+        String jws = Jwts.builder()
+                .setSubject("John Doe")
+                .signWith(key)
+                .compact();
+
+        System.out.println(jws);
+    }
+}
+Example (Spring Security):
+Java
+
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+
+public class Example {
+
+    private final JwtEncoder jwtEncoder;
+
+    public Example(JwtEncoder jwtEncoder) {
+        this.jwtEncoder = jwtEncoder;
+    }
+
+    public String generateToken() {
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject("John Doe")
+                .build();
+
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+}
