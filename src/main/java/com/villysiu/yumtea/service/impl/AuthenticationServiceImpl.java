@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 //import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,10 +41,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public JwtAuthenticationResponse signup(SignupRequest request) throws EmailExistsException {
 
-        if(userRepo.findByEmail(request.getEmail()).isPresent()){
+        if(userRepo.findByEmail(request.getEmail()) != null) {
             throw new EmailExistsException("Email already existed");
         }
-        System.out.println("I am AuthenticationServiceImpl");
+
 
         User user = new User();
         user.setUsername(request.getUserName());
@@ -50,6 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setEmail(request.getEmail());
         user.setRole(Role.USER);
         userRepo.save(user);
+
 
         String jwt = jwtService.generateToken(user);
         return JwtAuthenticationResponse.builder().token(jwt).build();
@@ -61,20 +64,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signin(SigninRequest request) {
         System.out.println("in JwtAuthenticationResponse signin");
         System.out.println(request.toString());
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        }
+        catch (AuthenticationException e){
+            System.out.println("failed?");
+            throw new IllegalArgumentException("Invalid Email ot Password");
+        }
         System.out.println("authenticated?");
 
 
-        Optional<User> user = userRepo.findByEmail(request.getEmail());
-        if(user.isPresent()){
-            System.out.println("user is here");
-            String jwt = jwtService.generateToken(user.get());
+        User user = userRepo.findByEmail(request.getEmail());
 
-            return JwtAuthenticationResponse.builder().token(jwt).build();
-        }
-        else {
-            throw new IllegalArgumentException("Invalid Email ot Password");
-        }
+        String jwt = jwtService.generateToken(user);
+
+        return JwtAuthenticationResponse.builder().token(jwt).build();
 
     }
 

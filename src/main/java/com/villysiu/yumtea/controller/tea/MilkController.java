@@ -3,6 +3,7 @@ package com.villysiu.yumtea.controller.tea;
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +18,10 @@ public class MilkController {
         return milkRepo.findAll();
     }
 
+//    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value="/milk")
     public String addMilk(@RequestBody Milk milk) {
+        System.out.println("milk: " + milk);
         milkRepo.save(milk);
         return milk.getTitle() + " added";
     }

@@ -3,11 +3,10 @@ package com.villysiu.yumtea.controller.tea;
 import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -22,13 +21,14 @@ public class CategoryController {
         return categoryRepo.findAll();
     }
 
-    @PostMapping(value="/categories/new")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value="/category")
     public String addCategory(@RequestBody Category category) {
         categoryRepo.save(category);
         return category.getTitle() + " added";
     }
 
-    @PutMapping("/categories/update/{id}")
+    @PutMapping("/category/{id}")
     public String editCategory(@PathVariable Long id, @RequestBody Category category) {
         Category updateCategory = categoryRepo.findById(id).get();
         updateCategory.setTitle(category.getTitle());
@@ -38,7 +38,7 @@ public class CategoryController {
         return updateCategory.getTitle() + " updated";
     }
 
-    @DeleteMapping("/categories/delete/{id}")
+    @DeleteMapping("/category/{id}")
     public String deleteCategory(@PathVariable Long id) {
         Category deleteCategory = categoryRepo.findById(id).get();
         categoryRepo.delete(deleteCategory);

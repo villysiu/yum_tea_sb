@@ -1,5 +1,7 @@
 package com.villysiu.yumtea.config;
 
+import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.JwtService;
 import com.villysiu.yumtea.service.UserService;
 import jakarta.servlet.FilterChain;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,14 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
 
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull  HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
 
-        System.out.println("In JwtAuthenticationFilter?????");
-        System.out.println(request);
         System.out.println(authHeader);
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("No authheader!");
@@ -43,9 +45,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
 
+
+
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
 
+            System.out.println((User) userDetails);
             if(jwtService.isTokenValid(jwt, userDetails)){
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
