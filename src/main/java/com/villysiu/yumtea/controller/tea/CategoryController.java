@@ -2,6 +2,7 @@ package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class CategoryController {
 
-    @Autowired
-    private CategoryRepo categoryRepo;
+//    @Autowired
+    private final CategoryRepo categoryRepo;
 
     @GetMapping("/categories")
     public List<Category> getCategories() {

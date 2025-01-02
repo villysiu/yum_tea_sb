@@ -2,10 +2,6 @@ package com.villysiu.yumtea.models.tea;
 
 import jakarta.persistence.*;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 @Entity
 public class Menuitem {
     @Id
@@ -98,8 +94,5 @@ public class Menuitem {
     public void setMilk(Milk milk) {
         this.milk = milk;
     }
-}
-enum Temperature {
-    NotAvailable, Hot, Cold
 }
 
