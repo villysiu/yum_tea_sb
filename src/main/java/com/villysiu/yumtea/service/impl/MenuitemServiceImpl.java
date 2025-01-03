@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -30,9 +31,9 @@ public class MenuitemServiceImpl implements MenuitemService {
         System.out.println(menuitemDto.toString());
 
         Category category = categoryRepo.findById(menuitemDto.getCategoryId())
-                .orElseThrow(()->new RuntimeException("Category not found."));
+                .orElseThrow(() -> new RuntimeException("Category not found."));
         Milk milk = milkRepo.findById(menuitemDto.getMilkId())
-                .orElseThrow(()->new RuntimeException("Milk not found."));
+                .orElseThrow(() -> new RuntimeException("Milk not found."));
 
         Menuitem menuitem = new Menuitem();
 
@@ -54,14 +55,14 @@ public class MenuitemServiceImpl implements MenuitemService {
     public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws RuntimeException {
 
         Menuitem menuitem = menuitemRepo.findById(id)
-                .orElseThrow(()->new RuntimeException("Menuitem not found."));
+                .orElseThrow(() -> new RuntimeException("Menuitem not found."));
 
         for (Map.Entry<String, Object> entry : menuitemDto.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             System.out.println(key + " = " + value);
-            switch(key){
+            switch (key) {
                 case "title":
                     menuitem.setTitle((String) value);
                     break;
@@ -77,13 +78,13 @@ public class MenuitemServiceImpl implements MenuitemService {
                 case "categoryId":
                     Long longValue = Long.parseLong(String.valueOf(value));
                     Category category = categoryRepo.findById(longValue)
-                        .orElseThrow(()->new RuntimeException("Category not found."));
+                            .orElseThrow(() -> new RuntimeException("Category not found."));
                     menuitem.setCategory(category);
                     break;
                 case "milkId":
                     Long longmValue = Long.parseLong(String.valueOf(value));
                     Milk milk = milkRepo.findById(longmValue)
-                        .orElseThrow(()->new RuntimeException("Milk not found."));
+                            .orElseThrow(() -> new RuntimeException("Milk not found."));
                     menuitem.setMilk(milk);
                     break;
                 case "temperature":
@@ -92,7 +93,8 @@ public class MenuitemServiceImpl implements MenuitemService {
                 case "sugar":
                     menuitem.setSugar((Sugar) value);
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
         menuitemRepo.save(menuitem);
@@ -101,3 +103,4 @@ public class MenuitemServiceImpl implements MenuitemService {
 
 
 }
+

@@ -4,16 +4,15 @@ import jakarta.persistence.*;
 
 @Entity
 public class Milk {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="milk_id")
     private Long id;
 
-    @Column(name="milk_name", nullable = false)
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
-//    @ColumnDefault("0.00")
     private double price;
 
 

@@ -26,9 +26,9 @@ public class Category {
     @Column
     private String imageUrl;
 
-    @OneToMany(mappedBy = "category")
-    @JsonManagedReference
-    private List<Menuitem> menuitems = new ArrayList<>();
+//    @OneToMany(mappedBy = "category")
+//    @JsonManagedReference
+//    private List<Menuitem> menuitems = new ArrayList<>();
 
 
 }

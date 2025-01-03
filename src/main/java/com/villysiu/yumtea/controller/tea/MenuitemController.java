@@ -23,6 +23,10 @@ public class MenuitemController {
     public List<Menuitem> getMenuitems() {
         return menuitemRepo.findAll();
     }
+    @GetMapping("/category/{id}/menuitems")
+    public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
+        return menuitemRepo.findByCategoryId(id);
+    }
 
     @PostMapping("/menuitem")
     public ResponseEntity<Menuitem> createMenuitem(@RequestBody MenuitemDto menuitemDto) {
@@ -46,4 +50,5 @@ public class MenuitemController {
 
 
     }
+
 }

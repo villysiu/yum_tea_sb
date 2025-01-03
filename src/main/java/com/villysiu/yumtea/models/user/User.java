@@ -1,11 +1,15 @@
 package com.villysiu.yumtea.models.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.villysiu.yumtea.models.CartLineitem;
+import com.villysiu.yumtea.models.tea.Menuitem;
 import jakarta.persistence.*;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,6 +33,10 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<CartLineitem> cartLineitems = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

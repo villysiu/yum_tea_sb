@@ -6,11 +6,8 @@ import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,12 +26,6 @@ public class CategoryController {
         return categoryRepo.findAll();
     }
 
-    @GetMapping("/category/{id}/menuitems")
-    public List<Menuitem> getCategoryMenuItems(@PathVariable Long id) {
-        Category category = categoryRepo.findById(id)
-                .orElseThrow(()-> new RuntimeException("Category not found"));
-        return category.getMenuitems();
-    }
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value="/category")

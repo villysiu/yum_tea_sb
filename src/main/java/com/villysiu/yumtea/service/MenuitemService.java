@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface MenuitemService {
     Menuitem createMenuitem(MenuitemDto menuitemDto) throws RuntimeException;
-    Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDtoo) throws RuntimeException;
+    Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws RuntimeException;
 }
