@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.models.tea;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,12 +29,14 @@ public class Menuitem {
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
     private double price;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    // belong to a category, if category deleted, this becomes null
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "category_id", columnDefinition = "null")
+    @JsonBackReference
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name="milk_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name="milk_id", columnDefinition = "null")
     private Milk milk;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +44,6 @@ public class Menuitem {
 
     @Enumerated(EnumType.STRING)
     private Sugar sugar;
-    
+
 }
 

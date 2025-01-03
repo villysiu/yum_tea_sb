@@ -1,12 +1,15 @@
 package com.villysiu.yumtea.models.tea;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -22,6 +25,10 @@ public class Category {
 
     @Column
     private String image_path;
+
+    @OneToMany(mappedBy = "category")
+    @JsonManagedReference
+    private List<Menuitem> menuitems = new ArrayList<>();
 
 
 }

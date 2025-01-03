@@ -19,6 +19,7 @@ public class MenuitemController {
 
     @Autowired
     private MenuitemService menuitemService;
+
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
         return menuitemRepo.findAll();

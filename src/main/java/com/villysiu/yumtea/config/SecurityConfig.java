@@ -36,7 +36,7 @@ public class SecurityConfig {
 //            .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
 //
-                .requestMatchers("/api/v1/auth/**", "/categories", "/milks", "/menuitems").permitAll()
+                .requestMatchers("/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
                 .requestMatchers("/category/**", "milk/**", "menuitem/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
 

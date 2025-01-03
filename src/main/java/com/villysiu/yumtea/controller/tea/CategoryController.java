@@ -1,24 +1,32 @@
 package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.models.tea.Category;
+import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 public class CategoryController {
 
-//    @Autowired
-    private final CategoryRepo categoryRepo;
+    @Autowired
+    private  CategoryRepo categoryRepo;
 
     @GetMapping("/categories")
     public List<Category> getCategories() {
         return categoryRepo.findAll();
+    }
+    @GetMapping("/category/{id}/menuitems")
+    public List<Menuitem> getCategoryMenuItems(@PathVariable Long id) {
+        Category category = categoryRepo.findById(id)
+                .orElseThrow(()-> new RuntimeException("Category not found"));
+        return category.getMenuitems();
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
