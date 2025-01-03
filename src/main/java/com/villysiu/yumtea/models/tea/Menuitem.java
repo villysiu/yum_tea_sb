@@ -25,8 +25,6 @@ public class Menuitem {
     @Column
     private String imageUrl;
 
-
-
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
     private double price;
 
@@ -41,11 +39,8 @@ public class Menuitem {
     @Enumerated(EnumType.STRING)
     private Temperature temperature;
 
-
-//    @Enumerated(EnumType.STRING)
-//    private Sweetness sweetness;
-
-
-
+    @Enumerated(EnumType.STRING)
+    private Sugar sugar;
+    
 }
 

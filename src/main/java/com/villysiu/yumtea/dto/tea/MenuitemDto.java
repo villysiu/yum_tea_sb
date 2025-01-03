@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.dto.tea;
 
+import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
 import lombok.*;
 
@@ -17,5 +18,6 @@ public class MenuitemDto
     private Long milkId;
     private Double price;
     private Temperature temperature;
+    private Sugar sugar;
 
 }

@@ -1,10 +1,7 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.tea.MenuitemDto;
-import com.villysiu.yumtea.models.tea.Category;
-import com.villysiu.yumtea.models.tea.Menuitem;
-import com.villysiu.yumtea.models.tea.Milk;
-import com.villysiu.yumtea.models.tea.Temperature;
+import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
@@ -47,7 +44,7 @@ public class MenuitemServiceImpl implements MenuitemService {
         menuitem.setCategory(category);
         menuitem.setMilk(milk);
         menuitem.setTemperature(menuitemDto.getTemperature());
-
+        menuitem.setSugar(menuitemDto.getSugar());
         menuitemRepo.save(menuitem);
 
         return menuitem;
@@ -90,6 +87,9 @@ public class MenuitemServiceImpl implements MenuitemService {
                     break;
                 case "temperature":
                     menuitem.setTemperature((Temperature) value);
+                    break;
+                case "sugar":
+                    menuitem.setSugar((Sugar) value);
                     break;
                 default:break;
             }
