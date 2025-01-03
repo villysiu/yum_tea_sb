@@ -6,6 +6,7 @@ import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.service.MenuitemService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,15 @@ import java.util.Map;
 
 
 @Service
+@RequiredArgsConstructor
 public class MenuitemServiceImpl implements MenuitemService {
 
-    @Autowired
-    private MenuitemRepo menuitemRepo;
-    @Autowired
-    private CategoryRepo categoryRepo;
-    @Autowired
-    private MilkRepo milkRepo;
+
+    private final MenuitemRepo menuitemRepo;
+
+    private final CategoryRepo categoryRepo;
+
+    private final MilkRepo milkRepo;
 
 
     @Override

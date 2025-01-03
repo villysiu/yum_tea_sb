@@ -24,7 +24,7 @@ public class Category {
     private String description;
 
     @Column
-    private String image_path;
+    private String imageUrl;
 
     @OneToMany(mappedBy = "category")
     @JsonManagedReference

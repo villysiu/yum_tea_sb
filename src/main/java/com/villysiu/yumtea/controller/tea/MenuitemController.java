@@ -4,7 +4,7 @@ import com.villysiu.yumtea.dto.tea.MenuitemDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.service.MenuitemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class MenuitemController {
-    @Autowired
-    private MenuitemRepo menuitemRepo;
 
-    @Autowired
-    private MenuitemService menuitemService;
+    private final MenuitemRepo menuitemRepo;
+    private final MenuitemService menuitemService;
 
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
