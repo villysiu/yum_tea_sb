@@ -2,16 +2,21 @@ package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.villysiu.yumtea.service.MilkService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
 public class MilkController {
-    @Autowired
-    private MilkRepo milkRepo;
+
+    private final MilkRepo milkRepo;
+    private final MilkService milkService;
 
     @GetMapping("/milks")
     public List<Milk> getMilks() {
@@ -20,25 +25,21 @@ public class MilkController {
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value="/milk")
-    public String addMilk(@RequestBody Milk milk) {
-        System.out.println("milk: " + milk);
+    public ResponseEntity<Milk> createMilk(@RequestBody Milk milk) {
         milkRepo.save(milk);
-        return milk.getTitle() + " added";
+        return new ResponseEntity<>(milk, HttpStatus.CREATED);
     }
 
-    @PutMapping("/milk/{id}")
-    public String editMilk(@PathVariable Long id, @RequestBody Milk milk) {
-        Milk updateMilk = milkRepo.findById(id).get();
-        updateMilk.setTitle(milk.getTitle());
-        updateMilk.setPrice(milk.getPrice());
-        milkRepo.save(updateMilk);
-        return updateMilk.getTitle() + " updated";
+    @PatchMapping("/milk/{id}")
+    public ResponseEntity<Milk> updateMilk(@PathVariable Long id, @RequestBody Map<String, Object> milkDto) {
+        Milk milk = milkService.updateMilk(id, milkDto);
+        return ResponseEntity.ok(milk);
     }
 
     @DeleteMapping("/milk/{id}")
-    public String deleteMilk(@PathVariable Long id) {
-        Milk deleteMilk = milkRepo.findById(id).get();
-        milkRepo.delete(deleteMilk);
-        return "Milk deleted";
+    public ResponseEntity<String> deleteMilk(@PathVariable Long id) {
+        Milk milk = milkRepo.findById(id).orElseThrow(()-> new RuntimeException("milk not found"));
+        milkRepo.delete(milk);
+        return ResponseEntity.ok("milk deleted.");
     }
 }

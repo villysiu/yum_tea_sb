@@ -17,18 +17,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @RestController
 public class CategoryController {
 
-    @Autowired
-    private  CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
+    private final CategoryService categoryService;
 
-    @Autowired
-    private CategoryService categoryService;
     @GetMapping("/categories")
     public List<Category> getCategories() {
         return categoryRepo.findAll();
     }
+
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getCategoryMenuItems(@PathVariable Long id) {
         Category category = categoryRepo.findById(id)
@@ -43,7 +43,7 @@ public class CategoryController {
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
 
-    @PutMapping("/category/{id}")
+    @PatchMapping("/category/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody Map<String, Object> categoryDto) {
         Category category = categoryService.updateCategory(id, categoryDto);
         return ResponseEntity.ok(category);
