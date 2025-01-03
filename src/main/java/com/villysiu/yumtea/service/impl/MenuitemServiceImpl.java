@@ -7,8 +7,6 @@ import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.service.MenuitemService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -84,6 +82,7 @@ public class MenuitemServiceImpl implements MenuitemService {
                     Long longmValue = Long.parseLong(String.valueOf(value));
                     Milk milk = milkRepo.findById(longmValue)
                         .orElseThrow(()->new RuntimeException("Milk not found."));
+                    menuitem.setMilk(milk);
                     break;
                 case "temperature":
                     menuitem.setTemperature((Temperature) value);
