@@ -1,6 +1,5 @@
 package com.villysiu.yumtea.models.tea;
 
-import com.villysiu.yumtea.models.user.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +31,7 @@ public class Menuitem {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "category_id", referencedColumnName="id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne

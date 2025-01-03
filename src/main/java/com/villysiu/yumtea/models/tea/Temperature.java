@@ -1,6 +1,6 @@
 package com.villysiu.yumtea.models.tea;
 
-enum Temperature {
+public enum Temperature {
 
     NA,
     HOT,

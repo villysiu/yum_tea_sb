@@ -35,12 +35,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 //            .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-//                .requestMatchers(HttpMethod.GET,"/categories", "/milks", "/menuitems").permitAll()
-//                .requestMatchers("categories/**", "milk/**", "menuitem/**").hasRole("ADMIN")
+//
                 .requestMatchers("/api/v1/auth/**", "/categories", "/milks", "/menuitems").permitAll()
-//                            .requestMatchers(HttpMethod.POST, "/category/new").hasRole("ADMIN")
-                            .requestMatchers("/category/**", "milk/**", "menuitem/**").hasAuthority("ADMIN")
-                            .anyRequest().authenticated()
+                .requestMatchers("/category/**", "milk/**", "menuitem/**").hasAuthority("ADMIN")
+                .anyRequest().authenticated()
+
             )
             .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authenticationProvider())
