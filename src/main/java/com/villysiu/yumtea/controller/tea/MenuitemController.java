@@ -30,28 +30,20 @@ public class MenuitemController {
         return new ResponseEntity<>(menuitem, HttpStatus.CREATED);
     }
 
-    @PutMapping("/menuitem/{id}")
-    public String updateMenuitem(@PathVariable Long id, @RequestBody Menuitem menuitem) {
-        Menuitem updateMenuitem = menuitemRepo.findById(id).get();
-        updateMenuitem.setTitle(menuitem.getTitle() );
-        updateMenuitem.setDescription(menuitem.getDescription());
-        updateMenuitem.setImageUrl(menuitem.getImageUrl());
-        updateMenuitem.setPrice(menuitem.getPrice());
-        updateMenuitem.setMilk(menuitem.getMilk());
-        updateMenuitem.setCategory(menuitem.getCategory());
-        menuitemRepo.save(updateMenuitem);
-        return updateMenuitem.getTitle() + " updated";
-    }
     @PatchMapping("/menuitem/{id}")
     public ResponseEntity<Menuitem> updateMenuitem(@PathVariable Long id, @RequestBody Map<String, Object> menuitemDto) {
         Menuitem menuitem = menuitemService.updateMenuitem(id, menuitemDto);
         return new ResponseEntity<>(menuitem, HttpStatus.CREATED);
     }
+
     @DeleteMapping("/menuitem/{id}")
-    public String deleteMenuitem(@PathVariable Long id) {
-        Menuitem deleteMenuitem = menuitemRepo.findById(id).get();
-        menuitemRepo.delete(deleteMenuitem);
-        return "Menuitem deleted";
+    public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
+        Menuitem menuitem = menuitemRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Menuitem not found."));
+        menuitemRepo.delete(menuitem);
+        return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
+
+
 
     }
 }
