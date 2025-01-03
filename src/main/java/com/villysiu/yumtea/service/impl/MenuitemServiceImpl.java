@@ -4,15 +4,18 @@ import com.villysiu.yumtea.dto.tea.MenuitemDto;
 import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.models.tea.Milk;
+import com.villysiu.yumtea.models.tea.Temperature;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.service.MenuitemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.sound.midi.Soundbank;
-import java.util.Optional;
+import java.util.Map;
+
 
 @Service
 public class MenuitemServiceImpl implements MenuitemService {
@@ -49,4 +52,51 @@ public class MenuitemServiceImpl implements MenuitemService {
 
         return menuitem;
     }
+
+    @Override
+    public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws RuntimeException {
+
+        Menuitem menuitem = menuitemRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Menuitem not found."));
+
+        for (Map.Entry<String, Object> entry : menuitemDto.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            System.out.println(key + " = " + value);
+            switch(key){
+                case "title":
+                    menuitem.setTitle((String) value);
+                    break;
+                case "description":
+                    menuitem.setDescription((String) value);
+                    break;
+                case "imageUrl":
+                    menuitem.setImageUrl((String) value);
+                    break;
+                case "price":
+                    menuitem.setPrice((Double) value);
+                    break;
+                case "categoryId":
+                    Long longValue = Long.parseLong(String.valueOf(value));
+                    Category category = categoryRepo.findById(longValue)
+                        .orElseThrow(()->new RuntimeException("Category not found."));
+                    menuitem.setCategory(category);
+                    break;
+                case "milkId":
+                    Long longmValue = Long.parseLong(String.valueOf(value));
+                    Milk milk = milkRepo.findById(longmValue)
+                        .orElseThrow(()->new RuntimeException("Milk not found."));
+                    break;
+                case "temperature":
+                    menuitem.setTemperature((Temperature) value);
+                    break;
+                default:break;
+            }
+        }
+        menuitemRepo.save(menuitem);
+        return menuitem;
+    }
+
+
 }
