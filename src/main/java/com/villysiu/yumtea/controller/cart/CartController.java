@@ -55,10 +55,11 @@ public class CartController {
         Cart cart = cartRepo.findById(id).orElseThrow(()-> new RuntimeException("Cart not found."));
         System.out.println(currentUser.getRole());
 
-        if(!currentUser.getRole().name().equals("ADMIN"))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        if()
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-        if(!cart.getUser().equals(userService.getCurrentUser()))
+        if(!cart.getUser().equals(userService.getCurrentUser())
+            && !currentUser.getRole().name().equals("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
 
