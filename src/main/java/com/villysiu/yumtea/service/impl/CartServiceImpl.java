@@ -79,18 +79,32 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartOutputDto updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException {
+        User user = userService.getCurrentUser();
         Cart cart = cartRepo.findById(id).orElseThrow(()->new RuntimeException("Cart not found."));
 
-        User user = userService.getCurrentUser();
+        Cart duplicatedCart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+                user.getId(),
+                cartInputDto.getMenuitemId(),
+                cartInputDto.getMilkId(),
+                cartInputDto.getSizeId(),
+                cartInputDto.getSugar(),
+                cartInputDto.getTemperature()
+        );
+        if(duplicatedCart != null){
+            duplicatedCart.setQuantity(cartInputDto.getQuantity() + duplicatedCart.getQuantity());
+            cartRepo.save(duplicatedCart);
+            cartRepo.delete(cart);
+            return helper(duplicatedCart);
+
+        }
 
         Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
-        Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
-        Size size = sizeService.getSizeById(cartInputDto.getSizeId());
-
-        cart.setUser(user);
         cart.setMenuitem(menuitem);
 
+        Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
         cart.setMilk(milk);
+
+        Size size = sizeService.getSizeById(cartInputDto.getSizeId());
         cart.setSize(size);
 
         cart.setPrice(cartInputDto.getPrice());
