@@ -38,5 +38,8 @@ public class MilkServiceImpl implements MilkService {
         return milk;
     }
 
-
+    public Milk getMilkById(Long id) throws RuntimeException {
+        return milkRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Milk not found."));
+    }
 }

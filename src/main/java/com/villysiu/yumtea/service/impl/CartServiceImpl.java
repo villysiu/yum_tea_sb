@@ -8,49 +8,71 @@ import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.models.tea.Size;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.cart.CartRepo;
-import com.villysiu.yumtea.repo.tea.MenuitemRepo;
-import com.villysiu.yumtea.repo.tea.MilkRepo;
-import com.villysiu.yumtea.repo.tea.SizeRepo;
 
-import com.villysiu.yumtea.service.CartService;
-import com.villysiu.yumtea.service.UserService;
+
+import com.villysiu.yumtea.service.*;
+import com.villysiu.yumtea.validation.EmailExistsException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.boot.beanvalidation.IntegrationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepo cartRepo;
-    private final MenuitemRepo menuitemRepo;
-    private final MilkRepo milkRepo;
-    private final SizeRepo sizeRepo;
-//    private final UserRepo userRepo;
+    private final MenuitemService menuitemService;
+    private final MilkService milkService;
+
+    private final SizeService sizeService;
     private final UserService userService;
 
     @Override
-    public CartOutputDto createCart(CartInputDto cartInoutDto) throws RuntimeException {
-        Cart cart = new Cart();
+    public CartOutputDto createCart(CartInputDto cartInputDto) throws RuntimeException {
+
         User user = userService.getCurrentUser();
 
-        Menuitem menuitem = menuitemRepo.findById(cartInoutDto.getMenuitemId())
-                .orElseThrow(()-> new RuntimeException("Menuitem not found."));
-        Milk milk = milkRepo.findById(cartInoutDto.getMilkId())
-                .orElseThrow(()->new RuntimeException("Milk not found."));
-        Size size = sizeRepo.findById(cartInoutDto.getSizeId())
-                .orElseThrow(()->new RuntimeException("Size not found."));
+        Cart cart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+                user.getId(),
+                cartInputDto.getMenuitemId(),
+                cartInputDto.getMilkId(),
+                cartInputDto.getSizeId(),
+                cartInputDto.getSugar(),
+                cartInputDto.getTemperature()
+        );
+        //cart already existed, update quantity
+        if(cart != null){
+            cart.setQuantity(cart.getQuantity() + cartInputDto.getQuantity());
+        }
+        else{
+            cart = new Cart();
+            cart.setUser(user);
+            Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
+            cart.setMenuitem(menuitem);
 
-        cart.setUser(user);
-        cart.setMenuitem(menuitem);
+            Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
+            cart.setMilk(milk);
 
-        cart.setMilk(milk);
-        cart.setSize(size);
+            Size size = sizeService.getSizeById(cartInputDto.getSizeId());
+            cart.setSize(size);
 
-        cart.setPrice(cartInoutDto.getPrice());
-        cart.setQuantity(cartInoutDto.getQuantity());
-        cart.setTemperature(cartInoutDto.getTemperature());
-        cart.setSugar(cartInoutDto.getSugar());
-        System.out.println(cart);
-        cartRepo.save(cart);
+            cart.setPrice(cartInputDto.getPrice());
+            cart.setQuantity(cartInputDto.getQuantity());
+            cart.setTemperature(cartInputDto.getTemperature());
+            cart.setSugar(cartInputDto.getSugar());
+            System.out.println(cart);
+
+        }
+        // still need to catch??
+        //java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '2-6-3-1-HOT-FIFTY' for key 'cart.UniqueCartAndUser'
+
+//        try{
+            cartRepo.save(cart);
+//        } catch(DataIntegrityViolationException e){
+//            throw new RuntimeException("Data integrity violation occurred", e);
+//        }
 
         return helper(cart);
     }
@@ -61,14 +83,9 @@ public class CartServiceImpl implements CartService {
 
         User user = userService.getCurrentUser();
 
-        System.out.println(user);
-
-        Menuitem menuitem = menuitemRepo.findById(cartInputDto.getMenuitemId())
-                .orElseThrow(()-> new RuntimeException("Menuitem not found."));
-        Milk milk = milkRepo.findById(cartInputDto.getMilkId())
-                .orElseThrow(()->new RuntimeException("Milk not found."));
-        Size size = sizeRepo.findById(cartInputDto.getSizeId())
-                .orElseThrow(()->new RuntimeException("Size not found."));
+        Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
+        Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
+        Size size = sizeService.getSizeById(cartInputDto.getSizeId());
 
         cart.setUser(user);
         cart.setMenuitem(menuitem);
