@@ -53,7 +53,12 @@ public class CartController {
     public ResponseEntity<CartOutputDto> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto) {
         User currentUser = userService.getCurrentUser();
         Cart cart = cartRepo.findById(id).orElseThrow(()-> new RuntimeException("Cart not found."));
-        if(cart.getUser().equals(userService.getCurrentUser()))
+        System.out.println(currentUser.getRole());
+
+        if(!currentUser.getRole().name().equals("ADMIN"))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        if(!cart.getUser().equals(userService.getCurrentUser()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
 
