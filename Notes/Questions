@@ -2,3 +2,9 @@
 look up config.jtAuthenticationFilter
 private final JwtService jwtService;
     private  UserService userService;
+
+
+
+
+    If the method is not being called in the context of an HTTP request, you will likely need to handle the AccessDeniedException yourself
+    @PreAuthorize("hasAuthority('permission:read') || hasRole('ADMIN')")
