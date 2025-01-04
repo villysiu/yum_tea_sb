@@ -1,6 +1,6 @@
 package com.villysiu.yumtea.controller.tea;
 
-import com.villysiu.yumtea.dto.tea.MenuitemDto;
+import com.villysiu.yumtea.dto.input.MenuitemDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.service.MenuitemService;

@@ -18,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
+
 //https://www.geeksforgeeks.org/spring-security-role-based-authentication/
 //https://stackoverflow.com/questions/76723051/how-to-formlogin-since-websecurityconfigureradapter-is-deprecated
 @Configuration
@@ -45,8 +47,7 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-//            .exceptionHandling()
-//                .accessDeniedHandler(accessDeniedHandler()); // Optional custom handler
+
 
         return http.build();
     }
@@ -72,6 +73,8 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
+
+
 }
 
 // in case needed

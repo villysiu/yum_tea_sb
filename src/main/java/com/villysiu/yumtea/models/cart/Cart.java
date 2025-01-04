@@ -1,6 +1,5 @@
-package com.villysiu.yumtea.models;
+package com.villysiu.yumtea.models.cart;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.User;
 import jakarta.persistence.*;
@@ -8,7 +7,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class CartLineitem {
+public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

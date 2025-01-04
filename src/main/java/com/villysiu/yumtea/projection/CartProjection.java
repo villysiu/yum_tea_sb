@@ -1,7 +1,11 @@
 package com.villysiu.yumtea.projection;
 
+import lombok.Data;
+
+
 public interface CartProjection {
 
+    Long getId();
     Long getMenuitemId();
     String getMenuitemTitle();
 
@@ -12,7 +16,7 @@ public interface CartProjection {
     String getMilkTitle();
 
     String getTemperature();
-//
+
     String getSugar();
 
     Double getPrice();

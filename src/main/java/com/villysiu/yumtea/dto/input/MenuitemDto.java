@@ -1,20 +1,23 @@
-package com.villysiu.yumtea.dto.tea;
+package com.villysiu.yumtea.dto.input;
 
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
 import lombok.*;
 
-@Data
+
+@Data //includes getter setter tostring etc
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartLineitemDto {
-    private Long userID;
-    private Long menuitemId;
+
+public class MenuitemDto
+{
+    private String title;
+    private String imageUrl;
+    private String description;
+    private Long categoryId;
     private Long milkId;
     private Double price;
     private Temperature temperature;
     private Sugar sugar;
-    private Long sizeId;
-    private Integer quantity;
 
 }
