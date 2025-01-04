@@ -1,7 +1,6 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.models.tea.Category;
-import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.service.CategoryService;
 import lombok.RequiredArgsConstructor;

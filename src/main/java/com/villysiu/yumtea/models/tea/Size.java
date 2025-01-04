@@ -12,7 +12,7 @@ public class Size {
     private long id;
 
     @Column(unique = true, nullable = false)
-    String ounce;
+    String title;
 
     @Column(columnDefinition = "Double default 0.0")
     Double price;
