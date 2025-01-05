@@ -30,7 +30,7 @@ public class CartServiceImpl implements CartService {
     private final UserService userService;
 
     @Override
-    public CartOutputDto createCart(CartInputDto cartInputDto) throws RuntimeException {
+    public Long createCart(CartInputDto cartInputDto) throws RuntimeException {
 
         User user = userService.getCurrentUser();
 
@@ -73,12 +73,12 @@ public class CartServiceImpl implements CartService {
 //        } catch(DataIntegrityViolationException e){
 //            throw new RuntimeException("Data integrity violation occurred", e);
 //        }
-
-        return helper(cart);
+        return cart.getId();
+//        return helper(cart);
     }
 
     @Override
-    public CartOutputDto updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException {
+    public Long updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException {
         User user = userService.getCurrentUser();
         Cart cart = cartRepo.findById(id).orElseThrow(()->new RuntimeException("Cart not found."));
 
@@ -94,7 +94,7 @@ public class CartServiceImpl implements CartService {
             duplicatedCart.setQuantity(cartInputDto.getQuantity() + duplicatedCart.getQuantity());
             cartRepo.save(duplicatedCart);
             cartRepo.delete(cart);
-            return helper(duplicatedCart);
+            return duplicatedCart.getId();
 
         }
 
@@ -114,26 +114,26 @@ public class CartServiceImpl implements CartService {
 
         cartRepo.save(cart);
 
-        return helper(cart);
+        return cart.getId();
     }
 
-    private CartOutputDto helper(Cart data ){
-        CartOutputDto dest = new CartOutputDto();
-        dest.setId(data.getId());
-        dest.setMenuitemId(data.getMenuitem().getId());
-        dest.setMenuitemTitle(data.getMenuitem().getTitle());
-
-        dest.setMilkId(data.getMilk().getId());
-        dest.setMilkTitle(data.getMilk().getTitle());
-
-        dest.setSizeId(data.getSize().getId());
-        dest.setSizeTitle(data.getSize().getTitle());
-
-        dest.setQuantity(data.getQuantity());
-        dest.setPrice(data.getPrice());
-        dest.setSugar(data.getSugar());
-        dest.setTemperature(data.getTemperature());
-
-        return dest;
-    }
+//    private CartOutputDto helper(Cart data ){
+//        CartOutputDto dest = new CartOutputDto();
+//        dest.setId(data.getId());
+//        dest.setMenuitemId(data.getMenuitem().getId());
+//        dest.setMenuitemTitle(data.getMenuitem().getTitle());
+//
+//        dest.setMilkId(data.getMilk().getId());
+//        dest.setMilkTitle(data.getMilk().getTitle());
+//
+//        dest.setSizeId(data.getSize().getId());
+//        dest.setSizeTitle(data.getSize().getTitle());
+//
+//        dest.setQuantity(data.getQuantity());
+//        dest.setPrice(data.getPrice());
+//        dest.setSugar(data.getSugar());
+//        dest.setTemperature(data.getTemperature());
+//
+//        return dest;
+//    }
 }

@@ -4,7 +4,7 @@ import com.villysiu.yumtea.dto.input.CartInputDto;
 import com.villysiu.yumtea.dto.output.CartOutputDto;
 
 public interface CartService {
-    CartOutputDto createCart(CartInputDto cartInputDto) throws RuntimeException;
+    Long createCart(CartInputDto cartInputDto) throws RuntimeException;
 
-    CartOutputDto updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException;
+    Long updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException;
 }

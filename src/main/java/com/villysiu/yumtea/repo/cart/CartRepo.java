@@ -3,11 +3,14 @@ package com.villysiu.yumtea.repo.cart;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
+import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.projection.CartProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CartRepo extends JpaRepository<Cart, Long> {
     //    List<CartLineitem> findByUserId(Long id);
@@ -22,4 +25,7 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
             Sugar sugar,
             Temperature temperature
     );
+
+    List<CartProjection> findByUser(User user);
+    CartProjection findCartById(Long id);
 }
