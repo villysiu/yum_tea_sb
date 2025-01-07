@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 @ToString
 public class Menuitem {
 
@@ -20,7 +17,7 @@ public class Menuitem {
     @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(length = 2000) //hold up to 65,535 bytes.
     private String description;
 
     @Column
@@ -36,12 +33,14 @@ public class Menuitem {
     private Category category;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name="milk_id", columnDefinition = "null")
+    @JoinColumn(name="milk_id", columnDefinition = "BIGINT DEFAULT 12" )
     private Milk milk;
 
+    @Column(length = 4, columnDefinition = "varchar(4) default 'HOT'")
     @Enumerated(EnumType.STRING)
     private Temperature temperature;
 
+    @Column(length = 12, columnDefinition = "varchar(12) default 'ZERO'")
     @Enumerated(EnumType.STRING)
     private Sugar sugar;
 

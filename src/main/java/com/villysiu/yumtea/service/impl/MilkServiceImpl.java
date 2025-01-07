@@ -27,7 +27,7 @@ public class MilkServiceImpl implements MilkService {
                     milk.setTitle((String)value);
                     break;
 
-                case "imageUrl":
+                case "price":
                     milk.setPrice((Double)value);
                     break;
                 default:
