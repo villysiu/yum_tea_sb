@@ -1,23 +1,24 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.input.CartInputDto;
-import com.villysiu.yumtea.dto.output.CartOutputDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.models.tea.Size;
 import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.projection.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
 
 import com.villysiu.yumtea.service.*;
-import com.villysiu.yumtea.validation.EmailExistsException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.boot.beanvalidation.IntegrationException;
-import org.springframework.dao.DataIntegrityViolationException;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class CartServiceImpl implements CartService {
 
         User user = userService.getCurrentUser();
 
-        Cart cart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+        Optional<Cart> cart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
                 user.getId(),
                 cartInputDto.getMenuitemId(),
                 cartInputDto.getMilkId(),
@@ -43,46 +44,50 @@ public class CartServiceImpl implements CartService {
                 cartInputDto.getTemperature()
         );
         //cart already existed, update quantity
-        if(cart != null){
-            cart.setQuantity(cart.getQuantity() + cartInputDto.getQuantity());
+        if(cart.isPresent()){
+            Cart dupCart = cart.get();
+            dupCart.setQuantity(dupCart.getQuantity() + cartInputDto.getQuantity());
+//
+            cartRepo.save(dupCart);
+            return dupCart.getId();
         }
         else{
-            cart = new Cart();
-            cart.setUser(user);
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+
             Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
-            cart.setMenuitem(menuitem);
+            newCart.setMenuitem(menuitem);
 
             Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
-            cart.setMilk(milk);
+            newCart.setMilk(milk);
 
             Size size = sizeService.getSizeById(cartInputDto.getSizeId());
-            cart.setSize(size);
+            newCart.setSize(size);
 
-            cart.setPrice(cartInputDto.getPrice());
-            cart.setQuantity(cartInputDto.getQuantity());
-            cart.setTemperature(cartInputDto.getTemperature());
-            cart.setSugar(cartInputDto.getSugar());
-            System.out.println(cart);
+            newCart.setPrice(cartInputDto.getPrice());
+            newCart.setQuantity(cartInputDto.getQuantity());
+            newCart.setTemperature(cartInputDto.getTemperature());
+            newCart.setSugar(cartInputDto.getSugar());
+            System.out.println(newCart);
+
+            cartRepo.save(newCart);
+            return newCart.getId();
+
 
         }
         // still need to catch??
         //java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '2-6-3-1-HOT-FIFTY' for key 'cart.UniqueCartAndUser'
 
-//        try{
-            cartRepo.save(cart);
-//        } catch(DataIntegrityViolationException e){
-//            throw new RuntimeException("Data integrity violation occurred", e);
-//        }
-        return cart.getId();
+//
 //        return helper(cart);
     }
 
     @Override
     public Long updateCart(Long id, CartInputDto cartInputDto) throws RuntimeException {
         User user = userService.getCurrentUser();
-        Cart cart = cartRepo.findById(id).orElseThrow(()->new RuntimeException("Cart not found."));
+        Cart cart = cartRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Cart not found"));
 
-        Cart duplicatedCart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+        Optional<Cart> duplicatedCart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
                 user.getId(),
                 cartInputDto.getMenuitemId(),
                 cartInputDto.getMilkId(),
@@ -90,11 +95,11 @@ public class CartServiceImpl implements CartService {
                 cartInputDto.getSugar(),
                 cartInputDto.getTemperature()
         );
-        if(duplicatedCart != null){
-            duplicatedCart.setQuantity(cartInputDto.getQuantity() + duplicatedCart.getQuantity());
-            cartRepo.save(duplicatedCart);
+        if(duplicatedCart.isPresent()){
+            duplicatedCart.get().setQuantity(cartInputDto.getQuantity() + duplicatedCart.get().getQuantity());
+            cartRepo.save(duplicatedCart.get());
             cartRepo.delete(cart);
-            return duplicatedCart.getId();
+            return duplicatedCart.get().getId();
 
         }
 
@@ -117,23 +122,38 @@ public class CartServiceImpl implements CartService {
         return cart.getId();
     }
 
-//    private CartOutputDto helper(Cart data ){
-//        CartOutputDto dest = new CartOutputDto();
-//        dest.setId(data.getId());
-//        dest.setMenuitemId(data.getMenuitem().getId());
-//        dest.setMenuitemTitle(data.getMenuitem().getTitle());
-//
-//        dest.setMilkId(data.getMilk().getId());
-//        dest.setMilkTitle(data.getMilk().getTitle());
-//
-//        dest.setSizeId(data.getSize().getId());
-//        dest.setSizeTitle(data.getSize().getTitle());
-//
-//        dest.setQuantity(data.getQuantity());
-//        dest.setPrice(data.getPrice());
-//        dest.setSugar(data.getSugar());
-//        dest.setTemperature(data.getTemperature());
-//
-//        return dest;
-//    }
+    @Override
+    public List<Cart> getCartsByUserId(Long id) {
+
+        return cartRepo.findByUserId(id, Cart.class);
+    }
+    @Override
+    public List<CartProjection> getCartProjectionsByUserId(Long id){
+        return cartRepo.findByUserId(id, CartProjection.class);
+    }
+    @Override
+    public Cart getCartById(Long id) throws NoSuchElementException {
+        try{
+            return cartRepo.findById(id, Cart.class);
+        }catch (NoSuchElementException e){
+            throw new NoSuchElementException("Cart not found");
+        }
+
+    }
+    @Override
+    public CartProjection getCartProjectionById(Long id) throws NoSuchElementException {
+        try {
+            return cartRepo.findById(id, CartProjection.class);
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("Cart not found");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> removeUserCart(List<Cart> userCarts){
+//        cartRepo.deleteById(id);
+        cartRepo.deleteAll(userCarts);
+        return ResponseEntity.ok("Cart removed");
+    }
+
 }

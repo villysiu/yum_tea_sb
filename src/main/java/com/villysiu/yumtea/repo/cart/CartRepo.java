@@ -9,14 +9,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Repository
 public interface CartRepo extends JpaRepository<Cart, Long> {
-    //    List<CartLineitem> findByUserId(Long id);
-    List<CartProjection> findByUserId(Long userId);
 
-    Cart findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+
+    Optional<Cart> findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
 
             Long user_id,
             Long menuitem_id,
@@ -25,7 +25,8 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
             Sugar sugar,
             Temperature temperature
     );
-
-    List<CartProjection> findByUser(User user);
-    CartProjection findCartById(Long id);
+//    Optional<Cart> findById(Long id) throws NoSuchElementException;
+    // returning either cartProjection or Cart
+    <T> List<T> findByUserId(Long id, Class<T> type);
+    <T> T findById(Long id, Class<T> type);
 }

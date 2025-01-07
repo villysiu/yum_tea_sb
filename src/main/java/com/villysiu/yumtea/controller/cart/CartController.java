@@ -23,16 +23,14 @@ import java.util.List;
 @RestController
 public class CartController {
     private final CartService cartService;
-    private final CartRepo cartRepo;
-    private final UserRepo userRepo;
+//    private final CartRepo cartRepo;
     private final UserService userService;
 
 
     @GetMapping("/cart")
     public List<CartProjection> getCartByUser() {
         User currentUser = userService.getCurrentUser();
-
-        return cartRepo.findByUser(currentUser);
+        return cartService.getCartProjectionsByUserId(currentUser.getId());
 
     }
 
@@ -43,23 +41,23 @@ public class CartController {
     public ResponseEntity<CartProjection> addCart(@RequestBody CartInputDto cartInputDto) {
 
         Long cartId = cartService.createCart(cartInputDto);
-        return new ResponseEntity<>(cartRepo.findCartById(cartId), HttpStatus.CREATED);
+        return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
     }
 
 
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto) {
         User currentUser = userService.getCurrentUser();
-        Cart cart = cartRepo.findById(id).orElseThrow(()-> new RuntimeException("Cart not found."));
+        Cart cart = cartService.getCartById(id);
         System.out.println(currentUser.getRole());
 
         // only  owner of the cart can modify the cart , or ADMIN
-        if(!cart.getUser().equals(userService.getCurrentUser())
+        if(!cart.getUser().equals(currentUser)
             && !currentUser.getRole().name().equals("ADMIN"))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
 
         Long cartId = cartService.updateCart(id, cartInputDto);
-        return new ResponseEntity<>(cartRepo.findCartById(cartId), HttpStatus.CREATED);
+        return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
     }
 }

@@ -8,3 +8,8 @@ private final JwtService jwtService;
 
     If the method is not being called in the context of an HTTP request, you will likely need to handle the AccessDeniedException yourself
     @PreAuthorize("hasAuthority('permission:read') || hasRole('ADMIN')")
+
+
+purchaseRepo.findById(id).ifPresent(purchase -> {});
+
+ <T> List<T> findAll(Class<T> type); //Cannot be overridden

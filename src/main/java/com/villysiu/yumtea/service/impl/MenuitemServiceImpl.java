@@ -101,6 +101,7 @@ public class MenuitemServiceImpl implements MenuitemService {
 
     @Override
     public Menuitem getMenuitemById(Long id) throws RuntimeException {
+
         return menuitemRepo.findById(id)
                 .orElseThrow(()-> new RuntimeException("Menuitem not found."));
 //        .orElse(null);
