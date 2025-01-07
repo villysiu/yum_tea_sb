@@ -28,5 +28,9 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 //    Optional<Cart> findById(Long id) throws NoSuchElementException;
     // returning either cartProjection or Cart
     <T> List<T> findByUserId(Long id, Class<T> type);
-    <T> T findById(Long id, Class<T> type);
+
+
+    <T> Optional<T> findById(Long id, Class<T> type);
+//    OR
+//    <T> T findById(Long id, Class<T> type);
 }

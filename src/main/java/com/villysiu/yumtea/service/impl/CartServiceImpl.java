@@ -32,7 +32,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Long createCart(CartInputDto cartInputDto) throws RuntimeException {
-
+        System.out.println(cartInputDto);
         User user = userService.getCurrentUser();
 
         Optional<Cart> cart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
@@ -52,6 +52,7 @@ public class CartServiceImpl implements CartService {
             return dupCart.getId();
         }
         else{
+            System.out.println("creating a new cart");
             Cart newCart = new Cart();
             newCart.setUser(user);
 
@@ -64,7 +65,8 @@ public class CartServiceImpl implements CartService {
             Size size = sizeService.getSizeById(cartInputDto.getSizeId());
             newCart.setSize(size);
 
-            newCart.setPrice(cartInputDto.getPrice());
+            newCart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
+
             newCart.setQuantity(cartInputDto.getQuantity());
             newCart.setTemperature(cartInputDto.getTemperature());
             newCart.setSugar(cartInputDto.getSugar());
@@ -75,11 +77,6 @@ public class CartServiceImpl implements CartService {
 
 
         }
-        // still need to catch??
-        //java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '2-6-3-1-HOT-FIFTY' for key 'cart.UniqueCartAndUser'
-
-//
-//        return helper(cart);
     }
 
     @Override
@@ -112,7 +109,7 @@ public class CartServiceImpl implements CartService {
         Size size = sizeService.getSizeById(cartInputDto.getSizeId());
         cart.setSize(size);
 
-        cart.setPrice(cartInputDto.getPrice());
+        cart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
         cart.setQuantity(cartInputDto.getQuantity());
         cart.setTemperature(cartInputDto.getTemperature());
         cart.setSugar(cartInputDto.getSugar());
@@ -124,30 +121,33 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Cart> getCartsByUserId(Long id) {
-
         return cartRepo.findByUserId(id, Cart.class);
     }
+
     @Override
     public List<CartProjection> getCartProjectionsByUserId(Long id){
         return cartRepo.findByUserId(id, CartProjection.class);
     }
+
     @Override
     public Cart getCartById(Long id) throws NoSuchElementException {
-        try{
-            return cartRepo.findById(id, Cart.class);
-        }catch (NoSuchElementException e){
-            throw new NoSuchElementException("Cart not found");
-        }
+            Optional<Cart> cart = cartRepo.findById(id, Cart.class);
+            if(cart.isPresent())
+                return cart.get();
+            else
+                throw new NoSuchElementException("Cart not found");
 
     }
     @Override
     public CartProjection getCartProjectionById(Long id) throws NoSuchElementException {
-        try {
-            return cartRepo.findById(id, CartProjection.class);
-        } catch (NoSuchElementException e) {
+        Optional<CartProjection> cartProjection = cartRepo.findById(id, CartProjection.class);
+        if(cartProjection.isPresent())
+            return cartProjection.get();
+        else
             throw new NoSuchElementException("Cart not found");
-        }
+
     }
+
 
     @Override
     public ResponseEntity<String> removeUserCart(List<Cart> userCarts){

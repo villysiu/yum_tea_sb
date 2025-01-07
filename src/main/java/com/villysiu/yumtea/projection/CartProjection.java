@@ -6,8 +6,9 @@ import lombok.Data;
 public interface CartProjection {
 
     Long getId();
-    Long getMenuitemId();
-    String getMenuitemTitle();
+    PurchaseProjection.MenuitemProjection getMenuitem();
+//    Long getMenuitemId();
+//    String getMenuitemTitle();
 
     Long getSizeId();
     String getSizeTitle();
@@ -22,4 +23,6 @@ public interface CartProjection {
     Double getPrice();
     Integer getQuantity();
 
+
 }
+

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @RequiredArgsConstructor
@@ -47,8 +48,10 @@ public class CartController {
 
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto) {
-        User currentUser = userService.getCurrentUser();
         Cart cart = cartService.getCartById(id);
+
+        User currentUser = userService.getCurrentUser();
+
         System.out.println(currentUser.getRole());
 
         // only  owner of the cart can modify the cart , or ADMIN
@@ -60,4 +63,6 @@ public class CartController {
         Long cartId = cartService.updateCart(id, cartInputDto);
         return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
     }
+
+    //Not doing patch to avoid complicated calculation add this and minus the previous etc
 }

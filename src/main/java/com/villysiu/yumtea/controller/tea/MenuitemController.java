@@ -21,8 +21,10 @@ public class MenuitemController {
 
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
+        System.out.println("mnun controller");
         return menuitemRepo.findAll();
     }
+
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
         return menuitemRepo.findByCategoryId(id);

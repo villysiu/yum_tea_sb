@@ -18,10 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,14 +31,17 @@ public class PurchaseServiceImpl implements PurchaseService {
 //    private final CartRepo cartRepo;
 
     @Override
-    public Long createPurchase() {
+    public Long createPurchase(Map<String, Object> purchaseDto) {
 
         User user = userService.getCurrentUser();
         List<Cart> cart = cartService.getCartsByUserId(user.getId());
         Purchase purchase = new Purchase();
         purchase.setUser(user);
         purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
+        purchase.setTip((Double) purchaseDto.get("tip"));
         purchase.setPurchaseLineitemList(new ArrayList<PurchaseLineitem>());
+
+
         purchaseRepo.save(purchase);
         for(Cart cartLineitem : cart){
             System.out.println(cartLineitem.toString());
@@ -62,7 +62,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             purchase.getPurchaseLineitemList().add(purchaseLineitem);
         }
 
-//        cartService.removeUserCart(cart);
+        cartService.removeUserCart(cart);
 
         return purchase.getId();
 

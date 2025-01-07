@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CartInputDto {
     private Long menuitemId;
     private Long milkId;
-    private Double price;
+//    private Double price;
     private Temperature temperature;
     private Sugar sugar;
     private Long sizeId;

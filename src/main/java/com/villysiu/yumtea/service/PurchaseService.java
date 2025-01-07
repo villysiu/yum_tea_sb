@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface PurchaseService {
-    Long createPurchase();
+    Long createPurchase(Map<String, Object> purchaseDto);
 
 //    List<PurchaseProjection> getPurchases();
     List<PurchaseProjection> getUserPurchases(Long userId);

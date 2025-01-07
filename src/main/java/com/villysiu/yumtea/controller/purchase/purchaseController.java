@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.controller.purchase;
 
+import com.villysiu.yumtea.dto.input.CartInputDto;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.user.User;
 
@@ -13,9 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,29 +35,17 @@ public class purchaseController {
     @GetMapping("/purchases")
     public List<PurchaseProjection> getUserPurchase(){
          User user = userService.getCurrentUser();
-//         if(user.getRole().name().equals("ADMIN") ) {
-//             return purchaseService.getPurchases();
-//             return null;
-//         }
+
 
          return purchaseService.getUserPurchases(user.getId());
     }
 
-    @GetMapping("/fullpurchases")
-    public List<Purchase> getFullPurchase(){
-        User user = userService.getCurrentUser();
-        return purchaseService.getFullPurchases(user.getId());
-    }
-//    @GetMapping("/purchaseProjectionWithChildren")
-//    public List<PurchaseProjection> getPurchaseProjectionWithChildren(){
-//        User user = userService.getCurrentUser();
-//        return purchaseService.getPurchaseProjectionWithChildren(user.getId());
-//    }
+
 
     @PostMapping("/purchase")
-    public ResponseEntity<PurchaseProjection> createPurchase() {
+    public ResponseEntity<PurchaseProjection> createPurchase(@RequestBody Map<String, Object> purchaseDto) {
 
-        Long id = purchaseService.createPurchase();
+        Long id = purchaseService.createPurchase(purchaseDto);
         return new ResponseEntity<>(purchaseService.getPurchaseById(id), HttpStatus.CREATED);
     }
 
