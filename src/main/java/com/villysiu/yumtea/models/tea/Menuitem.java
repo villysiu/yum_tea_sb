@@ -31,6 +31,7 @@ public class Menuitem {
 
     // belong to a category, if category deleted, this becomes null
     @ManyToOne(optional = true)
+    @JsonBackReference
     @JoinColumn(name = "category_id", columnDefinition = "null")
     private Category category;
 
