@@ -1,8 +1,8 @@
 package com.villysiu.yumtea.controller.user;
 
-import com.villysiu.yumtea.dao.request.SignupRequest;
+import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dao.response.JwtAuthenticationResponse;
-import com.villysiu.yumtea.dao.request.SigninRequest;
+import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.service.AuthenticationService;
 import com.villysiu.yumtea.validation.EmailExistsException;
 import lombok.RequiredArgsConstructor;

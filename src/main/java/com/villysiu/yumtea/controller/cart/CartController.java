@@ -1,11 +1,9 @@
 package com.villysiu.yumtea.controller.cart;
 
-import com.villysiu.yumtea.dto.input.CartInputDto;
+import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.projection.CartProjection;
-import com.villysiu.yumtea.repo.cart.CartRepo;
-import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.UserService;
 
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package com.villysiu.yumtea.service;
 
-import com.villysiu.yumtea.dto.input.CartInputDto;
+import com.villysiu.yumtea.dto.request.CartInputDto;
 
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.projection.CartProjection;

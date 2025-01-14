@@ -10,11 +10,13 @@ public interface CartProjection {
 //    Long getMenuitemId();
 //    String getMenuitemTitle();
 
-    Long getSizeId();
-    String getSizeTitle();
+    PurchaseProjection.SizeProjection getSize();
+//    Long getSizeId();
+//    String getSizeTitle();
 
-    Long getMilkId();
-    String getMilkTitle();
+    PurchaseProjection.MilkProjection getMilk();
+//    Long getMilkId();
+//    String getMilkTitle();
 
     String getTemperature();
 

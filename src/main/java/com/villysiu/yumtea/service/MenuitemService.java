@@ -1,6 +1,6 @@
 package com.villysiu.yumtea.service;
 
-import com.villysiu.yumtea.dto.input.MenuitemDto;
+import com.villysiu.yumtea.dto.request.MenuitemDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
 
 import java.util.Map;

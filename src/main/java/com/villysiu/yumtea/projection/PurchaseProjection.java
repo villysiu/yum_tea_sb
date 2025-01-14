@@ -25,6 +25,7 @@ public interface PurchaseProjection {
 
         MilkProjection getMilk();
         SizeProjection getSize();
+
         Temperature getTemperature();
         Sugar getSugar();
 

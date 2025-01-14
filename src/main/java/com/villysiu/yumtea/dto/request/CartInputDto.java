@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.dto.input;
+package com.villysiu.yumtea.dto.request;
 
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class CartInputDto {
     private Long menuitemId;
     private Long milkId;
-//    private Double price;
     private Temperature temperature;
     private Sugar sugar;
     private Long sizeId;

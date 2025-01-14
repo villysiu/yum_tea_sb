@@ -1,10 +1,8 @@
 package com.villysiu.yumtea.service.impl;
 
-import com.villysiu.yumtea.dto.input.CartInputDto;
+import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
-import com.villysiu.yumtea.models.tea.Menuitem;
-import com.villysiu.yumtea.models.tea.Milk;
-import com.villysiu.yumtea.models.tea.Size;
+import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.projection.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -59,7 +58,9 @@ public class CartServiceImpl implements CartService {
             Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
             newCart.setMenuitem(menuitem);
 
-            Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
+//            if(Objects.equals(menuitem.getMilk().getId(), Long.valueOf("1"))) {
+            Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
+                    menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
             newCart.setMilk(milk);
 
             Size size = sizeService.getSizeById(cartInputDto.getSizeId());
@@ -68,8 +69,16 @@ public class CartServiceImpl implements CartService {
             newCart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
 
             newCart.setQuantity(cartInputDto.getQuantity());
-            newCart.setTemperature(cartInputDto.getTemperature());
-            newCart.setSugar(cartInputDto.getSugar());
+
+
+            Temperature NATemperature = Temperature.valueOf("NA");
+            newCart.setTemperature(
+                    menuitem.getTemperature().equals(NATemperature)  ? NATemperature : cartInputDto.getTemperature()
+            );
+            Sugar NASugar = Sugar.valueOf("NA");
+            newCart.setSugar(
+                    menuitem.getSugar().equals(NASugar) ? NASugar : cartInputDto.getSugar()
+            );
             System.out.println(newCart);
 
             cartRepo.save(newCart);

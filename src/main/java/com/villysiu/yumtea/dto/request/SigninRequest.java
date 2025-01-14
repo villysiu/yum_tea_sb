@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.dao.request;
+package com.villysiu.yumtea.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

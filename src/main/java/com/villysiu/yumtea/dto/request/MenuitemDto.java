@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.dto.input;
+package com.villysiu.yumtea.dto.request;
 
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
