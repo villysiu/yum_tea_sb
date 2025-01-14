@@ -58,7 +58,6 @@ public class CartServiceImpl implements CartService {
             Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
             newCart.setMenuitem(menuitem);
 
-//            if(Objects.equals(menuitem.getMilk().getId(), Long.valueOf("1"))) {
             Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
                     menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
             newCart.setMilk(milk);
@@ -69,7 +68,6 @@ public class CartServiceImpl implements CartService {
             newCart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
 
             newCart.setQuantity(cartInputDto.getQuantity());
-
 
             Temperature NATemperature = Temperature.valueOf("NA");
             newCart.setTemperature(
@@ -106,13 +104,14 @@ public class CartServiceImpl implements CartService {
             cartRepo.save(duplicatedCart.get());
             cartRepo.delete(cart);
             return duplicatedCart.get().getId();
-
         }
+//        during update, only properties are allowed to update, not the menuitem
+//        Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
+//        cart.setMenuitem(menuitem);
+        Menuitem menuitem = cart.getMenuitem();
 
-        Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
-        cart.setMenuitem(menuitem);
-
-        Milk milk = milkService.getMilkById(cartInputDto.getMilkId());
+        Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
+                menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
         cart.setMilk(milk);
 
         Size size = sizeService.getSizeById(cartInputDto.getSizeId());
@@ -120,8 +119,15 @@ public class CartServiceImpl implements CartService {
 
         cart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
         cart.setQuantity(cartInputDto.getQuantity());
-        cart.setTemperature(cartInputDto.getTemperature());
-        cart.setSugar(cartInputDto.getSugar());
+
+        Temperature NATemperature = Temperature.valueOf("NA");
+        cart.setTemperature(
+                menuitem.getTemperature().equals(NATemperature)  ? NATemperature : cartInputDto.getTemperature()
+        );
+        Sugar NASugar = Sugar.valueOf("NA");
+        cart.setSugar(
+                menuitem.getSugar().equals(NASugar) ? NASugar : cartInputDto.getSugar()
+        );
 
         cartRepo.save(cart);
 
