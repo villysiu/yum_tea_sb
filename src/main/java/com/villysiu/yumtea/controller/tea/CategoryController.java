@@ -23,6 +23,7 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public List<Category> getCategories() {
+
         return categoryRepo.findAll();
     }
 

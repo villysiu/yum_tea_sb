@@ -5,6 +5,7 @@ import lombok.*;
 
 @Data
 @Entity
+@Table(name="milk")
 public class Milk {
 
     @Id

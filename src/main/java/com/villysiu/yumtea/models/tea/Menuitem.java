@@ -6,7 +6,7 @@ import lombok.*;
 
 @Entity
 @Data
-@ToString
+@Table(name="menuitem")
 public class Menuitem {
 
     @Id

@@ -4,6 +4,7 @@ import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,7 +13,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
+        @Autowired
     private final CategoryRepo categoryRepo;
+
+//    CategoryRepo categoryRepo;
 
     @Override
     public Category updateCategory(Long id, Map<String, Object> categoryDto) throws RuntimeException {

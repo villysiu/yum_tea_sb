@@ -13,3 +13,10 @@ private final JwtService jwtService;
 purchaseRepo.findById(id).ifPresent(purchase -> {});
 
  <T> List<T> findAll(Class<T> type); //Cannot be overridden
+
+ do we need to write exception for every request to repo
+
+ ie UserServiceImpl
+ if a service class impelemwnt a spring secuirty interface,
+ override the menthod in the spring sec interface
+ when later called spring  secuirty interface, it use the overridden methoid

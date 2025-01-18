@@ -1,7 +1,7 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.SignupRequest;
-import com.villysiu.yumtea.dao.response.JwtAuthenticationResponse;
+import com.villysiu.yumtea.dto.response.JwtAuthenticationResponse;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.models.user.User;
@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepo.save(user);
 
 
-        String jwt = jwtService.generateToken(user);
+        String jwt = jwtService.generateToken(user.getUsername());
         return JwtAuthenticationResponse.builder().token(jwt).build();
     }
 
@@ -66,12 +66,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         System.out.println("authenticated?");
 
-
-        User user = userRepo.findByEmail(request.getEmail());
-
-        String jwt = jwtService.generateToken(user);
+        String jwt = jwtService.generateToken(request.getEmail());
 
         return JwtAuthenticationResponse.builder().token(jwt).build();
+
 
     }
 

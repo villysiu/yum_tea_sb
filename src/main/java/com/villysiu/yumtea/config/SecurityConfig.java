@@ -1,6 +1,5 @@
 package com.villysiu.yumtea.config;
 
-import com.villysiu.yumtea.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,18 +28,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserService userService;
+//    private final UserService userService;
 
-
+    private final UserDetailsService userDetailsService;
+//    private final UserDetailServiceImpl userDetailsService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
 //            .cors(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-//
+
                 .requestMatchers("/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
-                .requestMatchers("/category/**", "milk/**", "menuitem/**").hasAuthority("ADMIN")
+                .requestMatchers("/category/**", "/milk/**", "/menuitem/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
 
             )
@@ -59,11 +60,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+//    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userService.userDetailsService());
-        authProvider.setUserDetailsService(userService.userDetailsService());
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

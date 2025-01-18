@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.dao.response;
+package com.villysiu.yumtea.dto.response;
 
 import lombok.*;
 
