@@ -1,16 +1,15 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.SignupRequest;
-import com.villysiu.yumtea.dto.response.JwtAuthenticationResponse;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.AuthenticationService;
-import com.villysiu.yumtea.service.JwtService;
 import com.villysiu.yumtea.validation.EmailExistsException;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -25,14 +24,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     private final UserRepo userRepo;
-    private final JwtService jwtService;
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
 
     @Override
-    public JwtAuthenticationResponse signup(SignupRequest request) throws EmailExistsException {
+    public ResponseEntity<String> signup(SignupRequest request) throws EmailExistsException {
 
         if(userRepo.findByEmail(request.getEmail()) != null) {
             throw new EmailExistsException("Email already existed");
@@ -46,16 +44,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setRole(Role.USER);
         userRepo.save(user);
 
-
-        String jwt = jwtService.generateToken(user.getUsername());
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        return ResponseEntity.ok("Signup successful");
     }
 
 
 
     @Override
-    public JwtAuthenticationResponse signin(SigninRequest request) {
-        System.out.println("in JwtAuthenticationResponse signin");
+    public ResponseEntity<String> signin(SigninRequest request) {
+        System.out.println("in AuthenticationServiceImpl signin");
         System.out.println(request.toString());
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -66,10 +62,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         System.out.println("authenticated?");
 
-        String jwt = jwtService.generateToken(request.getEmail());
 
-        return JwtAuthenticationResponse.builder().token(jwt).build();
 
+        return ResponseEntity.ok("Signin successful");
 
     }
 
