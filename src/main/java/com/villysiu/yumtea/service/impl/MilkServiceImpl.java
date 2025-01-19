@@ -6,6 +6,7 @@ import com.villysiu.yumtea.service.MilkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -16,8 +17,7 @@ public class MilkServiceImpl implements MilkService {
 
     @Override
     public Milk updateMilk(Long id, Map<String, Object> milkDto) throws RuntimeException {
-        Milk milk = milkRepo.findById(id)
-                .orElseThrow(()->new RuntimeException("Milk not found."));
+        Milk milk = milkRepo.findById(id).orElseThrow(()->new RuntimeException("Milk not found."));
         for(Map.Entry<String, Object> milkDtoEntry : milkDto.entrySet()) {
             String field = milkDtoEntry.getKey();
             Object value = milkDtoEntry.getValue();
@@ -41,5 +41,23 @@ public class MilkServiceImpl implements MilkService {
     public Milk getMilkById(Long id) throws RuntimeException {
         return milkRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Milk not found."));
+    }
+
+    @Override
+    public List<Milk> getMilks() {
+        return milkRepo.findAll();
+    }
+
+    @Override
+    public Milk createMilk(Milk milk) throws RuntimeException {
+        return milkRepo.save(milk);
+    }
+
+    @Override
+    public String deleteMilk(Long id) throws RuntimeException {
+        milkRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Milk not found."));
+        milkRepo.deleteById(id);
+        return "Milk deleted";
     }
 }
