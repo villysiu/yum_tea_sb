@@ -6,6 +6,7 @@ import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,25 +15,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @RestController
 public class CategoryController {
 
-    private final CategoryRepo categoryRepo;
     private final CategoryService categoryService;
+    @Autowired
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping("/categories")
     public List<Category> getCategories() {
-
-        return categoryRepo.findAll();
+        return categoryService.getCategories();
+//        return categoryRepo.findAll();
     }
 
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value="/category")
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
-        categoryRepo.save(category);
-        return new ResponseEntity<>(category, HttpStatus.CREATED);
+        return new ResponseEntity<>(categoryService.createCategory(category), HttpStatus.CREATED);
     }
 
     @PatchMapping("/category/{id}")
@@ -42,9 +45,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/category/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
-        Category category = categoryRepo.findById(id).orElseThrow(()-> new RuntimeException("Category not found"));
-        categoryRepo.delete(category);
-        return ResponseEntity.ok("Category deleted.");
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id){
+        return ResponseEntity.ok(categoryService.deleteCategory(id));
     }
 }

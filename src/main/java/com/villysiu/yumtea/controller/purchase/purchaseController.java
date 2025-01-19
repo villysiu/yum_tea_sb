@@ -2,7 +2,7 @@ package com.villysiu.yumtea.controller.purchase;
 
 import com.villysiu.yumtea.models.user.User;
 
-import com.villysiu.yumtea.projection.PurchaseProjection;
+import com.villysiu.yumtea.dao.PurchaseProjection;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
 import com.villysiu.yumtea.service.PurchaseService;
 import com.villysiu.yumtea.service.UserService;

@@ -2,10 +2,8 @@ package com.villysiu.yumtea.service;
 
 
 import com.villysiu.yumtea.models.purchase.Purchase;
-import com.villysiu.yumtea.projection.PurchaseProjection;
-import org.springframework.http.ResponseEntity;
+import com.villysiu.yumtea.dao.PurchaseProjection;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

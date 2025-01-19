@@ -4,7 +4,7 @@ import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.User;
-import com.villysiu.yumtea.projection.CartProjection;
+import com.villysiu.yumtea.dao.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
 
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service

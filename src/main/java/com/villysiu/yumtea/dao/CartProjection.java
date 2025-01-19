@@ -1,6 +1,4 @@
-package com.villysiu.yumtea.projection;
-
-import lombok.Data;
+package com.villysiu.yumtea.dao;
 
 
 public interface CartProjection {

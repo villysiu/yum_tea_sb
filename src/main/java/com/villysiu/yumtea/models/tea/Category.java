@@ -27,9 +27,5 @@ public class Category {
     @Column
     private String imageUrl;
 
-//    @OneToMany(mappedBy = "category", cascade = CascadeType.DETACH, orphanRemoval = true, fetch = FetchType.EAGER)
-//    @JsonManagedReference
-//    private List<Menuitem> menuitems = new ArrayList<>();
-//
 
 }

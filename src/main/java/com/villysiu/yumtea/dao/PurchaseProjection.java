@@ -1,10 +1,7 @@
-package com.villysiu.yumtea.projection;
+package com.villysiu.yumtea.dao;
 
-import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
-import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
-import com.villysiu.yumtea.models.user.User;
 
 import java.util.Date;
 import java.util.List;

@@ -4,9 +4,7 @@ import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
 import com.villysiu.yumtea.models.user.User;
-import com.villysiu.yumtea.projection.CartProjection;
-import com.villysiu.yumtea.projection.PurchaseProjection;
-import com.villysiu.yumtea.repo.cart.CartRepo;
+import com.villysiu.yumtea.dao.PurchaseProjection;
 
 
 import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;

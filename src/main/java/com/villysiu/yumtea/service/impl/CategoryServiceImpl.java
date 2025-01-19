@@ -7,26 +7,32 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-        @Autowired
-    private final CategoryRepo categoryRepo;
+    @Autowired
+    private CategoryRepo categoryRepo;
 
-//    CategoryRepo categoryRepo;
+
+    @Override
+    public List<Category> getCategories() {
+        return categoryRepo.findAll();
+    }
 
     @Override
     public Category updateCategory(Long id, Map<String, Object> categoryDto) throws RuntimeException {
         Category category = categoryRepo.findById(id)
                 .orElseThrow(()->new RuntimeException("Category not found."));
+
         for(Map.Entry<String, Object> categoryDtoEntry : categoryDto.entrySet()) {
-            String field = categoryDtoEntry.getKey();
+            String key = categoryDtoEntry.getKey();
             Object value = categoryDtoEntry.getValue();
 
-            switch (field) {
+            switch (key) {
                 case "title":
                     category.setTitle((String)value);
                     break;
@@ -42,6 +48,18 @@ public class CategoryServiceImpl implements CategoryService {
             categoryRepo.save(category);
         }
         return category;
+    }
+
+    @Override
+    public Category createCategory(Category category) throws RuntimeException {
+        return categoryRepo.save(category);
+    }
+
+    @Override
+    public String deleteCategory(Long id) {
+        Category category = categoryRepo.findById(id).orElseThrow(()-> new RuntimeException("Category not found"));
+        categoryRepo.delete(category);
+        return "Category deleted";
     }
 }
 
