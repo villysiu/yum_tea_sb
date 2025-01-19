@@ -5,6 +5,7 @@ import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.service.MenuitemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,21 +14,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequiredArgsConstructor
 public class MenuitemController {
 
-    private final MenuitemRepo menuitemRepo;
+    @Autowired
     private final MenuitemService menuitemService;
+    MenuitemController(MenuitemService menuitemService) {
+        this.menuitemService = menuitemService;
+    }
 
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
-        System.out.println("mnun controller");
-        return menuitemRepo.findAll();
+        return menuitemService.getMenuitems();
     }
 
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
-        return menuitemRepo.findByCategoryId(id);
+        return menuitemService.getMenuitemByCategoryId(id);
+
     }
 
     @PostMapping("/menuitem")
@@ -44,13 +47,7 @@ public class MenuitemController {
 
     @DeleteMapping("/menuitem/{id}")
     public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
-        Menuitem menuitem = menuitemRepo.findById(id)
-                .orElseThrow(()->new RuntimeException("Menuitem not found."));
-        menuitemRepo.delete(menuitem);
-        return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
-
-
-
+        return new ResponseEntity<>(menuitemService.deleteMenuitem(id), HttpStatus.OK);
     }
 
 }

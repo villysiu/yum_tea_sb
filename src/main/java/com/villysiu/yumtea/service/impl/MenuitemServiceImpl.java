@@ -6,23 +6,28 @@ import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.service.MenuitemService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 
 @Service
-@RequiredArgsConstructor
 public class MenuitemServiceImpl implements MenuitemService {
-
-
-    private final MenuitemRepo menuitemRepo;
-
     private final CategoryRepo categoryRepo;
-
+    private final MenuitemRepo menuitemRepo;
     private final MilkRepo milkRepo;
 
+    MenuitemServiceImpl(MenuitemRepo menuitemRepo, CategoryRepo categoryRepo, MilkRepo milkRepo) {
+        this.menuitemRepo = menuitemRepo;
+        this.categoryRepo = categoryRepo;
+        this.milkRepo = milkRepo;
+    }
+
+    @Override
+    public List<Menuitem> getMenuitems(){
+        return menuitemRepo.findAll();
+    }
 
     @Override
     public Menuitem createMenuitem(MenuitemDto menuitemDto) throws RuntimeException {
@@ -74,14 +79,15 @@ public class MenuitemServiceImpl implements MenuitemService {
                     menuitem.setPrice((Double) value);
                     break;
                 case "categoryId":
-                    Long longValue = Long.parseLong(String.valueOf(value));
-                    Category category = categoryRepo.findById(longValue)
+                    Long categoryId = (long) value;
+                    Category category = categoryRepo.findById(categoryId)
                             .orElseThrow(() -> new RuntimeException("Category not found."));
                     menuitem.setCategory(category);
                     break;
                 case "milkId":
-                    Long longmValue = Long.parseLong(String.valueOf(value));
-                    Milk milk = milkRepo.findById(longmValue)
+
+                    Long milkId = (long) value;
+                    Milk milk = milkRepo.findById(milkId)
                             .orElseThrow(() -> new RuntimeException("Milk not found."));
                     menuitem.setMilk(milk);
                     break;
@@ -104,7 +110,17 @@ public class MenuitemServiceImpl implements MenuitemService {
 
         return menuitemRepo.findById(id)
                 .orElseThrow(()-> new RuntimeException("Menuitem not found."));
-//        .orElse(null);
+    }
+    @Override
+    public List<Menuitem> getMenuitemByCategoryId(Long categoryId){
+        return menuitemRepo.findByCategoryId(categoryId);
+    }
+    @Override
+    public String deleteMenuitem(Long id){
+        Menuitem menuitem = menuitemRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Menuitem not found."));
+        menuitemRepo.delete(menuitem);
+        return "Menuitem deleted.";
     }
 }
 
