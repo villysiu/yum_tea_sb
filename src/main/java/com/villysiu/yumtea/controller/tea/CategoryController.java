@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@RequiredArgsConstructor
+
 @RestController
 public class CategoryController {
 
@@ -28,7 +28,6 @@ public class CategoryController {
     @GetMapping("/categories")
     public List<Category> getCategories() {
         return categoryService.getCategories();
-//        return categoryRepo.findAll();
     }
 
 

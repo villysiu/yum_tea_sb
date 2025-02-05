@@ -1,14 +1,13 @@
 package com.villysiu.yumtea.repo.user;
 
-import com.villysiu.yumtea.models.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.villysiu.yumtea.models.user.Role;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepo extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
-    Boolean existsByEmail(String email);
+public interface RoleRepo extends JpaRepository<Role, Long> {
+    Optional<Role> findByName(String name);
 
 }

@@ -8,9 +8,11 @@ import java.util.Map;
 
 public interface MenuitemService {
     List<Menuitem> getMenuitems();
-    Menuitem createMenuitem(MenuitemDto menuitemDto) throws RuntimeException;
-    Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws RuntimeException;
-    Menuitem getMenuitemById(Long id) throws RuntimeException;
-    List<Menuitem> getMenuitemByCategoryId(Long categoryId);
-    String deleteMenuitem(Long id) throws RuntimeException;
+    List<Menuitem> getMenuitemsByCategoryId(Long categoryId);
+
+    Menuitem getMenuitemById(Long id);
+
+    Menuitem createMenuitem(MenuitemDto menuitemDto);
+    Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto);
+    String deleteMenuitem(Long id);
 }

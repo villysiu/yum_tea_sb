@@ -11,86 +11,88 @@ import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
 import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
-import com.villysiu.yumtea.service.UserService;
-import lombok.RequiredArgsConstructor;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class PurchaseServiceImpl implements PurchaseService {
-    private final UserService userService;
+//    private final CustomUserDetailsServiceImpl userDetailsService;
     private final CartService cartService;
 
     private final PurchaseRepo purchaseRepo;
     private final PurchaseLineitemRepo purchaseLineitemRepo;
-//    private final CartRepo cartRepo;
+
+
+//    public PurchaseServiceImpl(CustomUserDetailsServiceImpl userDetailsService, CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo) {
+//        this.userDetailsService = userDetailsService;
+//        this.cartService = cartService;
+//        this.purchaseRepo = purchaseRepo;
+//        this.purchaseLineitemRepo = purchaseLineitemRepo;
+//
+//    }
+
 
     @Override
-    public Long createPurchase(Map<String, Object> purchaseDto) {
-
-        User user = userService.getCurrentUser();
-        List<Cart> cart = cartService.getCartsByUserId(user.getId());
+    public Long createPurchase(Map<String, Object> purchaseDto, User user) {
         Purchase purchase = new Purchase();
-        purchase.setUser(user);
-        purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
-        purchase.setTip((Double) purchaseDto.get("tip"));
-        purchase.setPurchaseLineitemList(new ArrayList<PurchaseLineitem>());
-
-
-        purchaseRepo.save(purchase);
-        for(Cart cartLineitem : cart){
-            System.out.println(cartLineitem.toString());
-            PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
-
-            purchaseLineitem.setPurchase(purchase);
-            purchaseLineitem.setMenuitem(cartLineitem.getMenuitem());
-            purchaseLineitem.setMilk(cartLineitem.getMilk());
-            purchaseLineitem.setSize(cartLineitem.getSize());
-            purchaseLineitem.setSugar(cartLineitem.getSugar());
-            purchaseLineitem.setTemperature(cartLineitem.getTemperature());
-
-            purchaseLineitem.setQuantity(cartLineitem.getQuantity());
-            purchaseLineitem.setPrice(cartLineitem.getPrice());
-
-            purchaseLineitemRepo.save(purchaseLineitem);
-//            System.out.println(purchaseLineitem.toString());
-            purchase.getPurchaseLineitemList().add(purchaseLineitem);
-        }
-
-        cartService.removeUserCart(cart);
-
         return purchase.getId();
 
+//        List<Cart> cart = cartService.getCartsByUserId(user.getId());
+//        Purchase purchase = new Purchase();
+//        purchase.setUser(user);
+//        purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
+//        purchase.setTip((Double) purchaseDto.get("tip"));
+//        purchase.setPurchaseLineitemList(new ArrayList<>());
+//
+//        purchaseRepo.save(purchase);
+//
+//        for(Cart cartLineitem : cart){
+//            System.out.println(cartLineitem.toString());
+//            PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
+//
+//            purchaseLineitem.setPurchase(purchase);
+//            purchaseLineitem.setMenuitem(cartLineitem.getMenuitem());
+//            purchaseLineitem.setMilk(cartLineitem.getMilk());
+//            purchaseLineitem.setSize(cartLineitem.getSize());
+//            purchaseLineitem.setSugar(cartLineitem.getSugar());
+//            purchaseLineitem.setTemperature(cartLineitem.getTemperature());
+//
+//            purchaseLineitem.setQuantity(cartLineitem.getQuantity());
+//            purchaseLineitem.setPrice(cartLineitem.getPrice());
+//
+//            purchaseLineitemRepo.save(purchaseLineitem);
+//
+//            purchase.getPurchaseLineitemList().add(purchaseLineitem);
+//        }
+//
+//        cartService.removeUserCart(cart);
+//
+//        return purchase.getId();
+
+
     }
 
 
+
     @Override
-    public List<PurchaseProjection> getUserPurchases(Long userId) {
-        System.out.println(" hhhhdkjfkdf");
+    public List<PurchaseProjection> getPurchasesByUserId(Long userId){
         return purchaseRepo.findByUserId(userId, PurchaseProjection.class);
-//        return purchaseRepo.findAllProjectionByUserId(userId);
-    }
-    @Override
-    public List<Purchase> getFullPurchases(Long userId){
-        return purchaseRepo.findByUserId(userId, Purchase.class);
+
     }
 
-//    @Override
-//    public List<PurchaseProjection> getPurchaseProjectionWithChildren(Long userId){
-//        return purchaseRepo.findAllWithPurchaseLineitems();
-//    }
     @Override
     public PurchaseProjection getPurchaseById(Long purchaseId) {
+       PurchaseProjection purchase = purchaseRepo.findById(purchaseId, PurchaseProjection.class )
+               .orElseThrow(()->new EntityNotFoundException("Purchase id "+ purchaseId + " not found"));
 
-        try {
-            return purchaseRepo.findById(purchaseId, PurchaseProjection.class);
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("Cart not found");
-        }
-//        return purchaseRepo.findById(purchaseId).orElseThrow(()->new RuntimeException("not foung"));
     }
 
 

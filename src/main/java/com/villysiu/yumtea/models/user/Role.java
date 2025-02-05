@@ -1,7 +1,22 @@
 package com.villysiu.yumtea.models.user;
 
+import jakarta.persistence.*;
+import lombok.*;
 
-public enum Role {
-    USER,
-    ADMIN
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    private String name;
+
+    public Role(String roleAdmin) {
+        this.name = roleAdmin;
+    }
+
 }

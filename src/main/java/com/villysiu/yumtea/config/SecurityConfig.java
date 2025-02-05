@@ -1,27 +1,38 @@
 package com.villysiu.yumtea.config;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.sql.DataSource;
+import java.io.IOException;
 
 
-//https://www.geeksforgeeks.org/spring-security-role-based-authentication/
-//https://stackoverflow.com/questions/76723051/how-to-formlogin-since-websecurityconfigureradapter-is-deprecated
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -29,24 +40,31 @@ public class SecurityConfig {
 
 //    private final UserService userService;
 
-    private final UserDetailsService userDetailsService;
-//    private final UserDetailServiceImpl userDetailsService;
+//    private final UserDetailsService userDetailsService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("security filter chain");
         http
-                .csrf(AbstractHttpConfigurer::disable)
-//            .cors(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+//            .csrf(Customizer.withDefaults())
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                )
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
-                .requestMatchers("/category/**", "/milk/**", "/menuitem/**").hasAuthority("ADMIN")
+                .requestMatchers("/cart","/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
+                .requestMatchers("/category/**", "/milk/**", "/menuitem/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
-
             )
-            .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-//            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-;
+            .logout();
+
+        http.sessionManagement((session) -> session
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        );
+
+
 
 
         return http.build();
@@ -55,22 +73,16 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authenticationManager( UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authenticationProvider);
     }
 
 

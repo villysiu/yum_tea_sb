@@ -5,23 +5,28 @@ import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
+import com.villysiu.yumtea.service.CategoryService;
 import com.villysiu.yumtea.service.MenuitemService;
+import com.villysiu.yumtea.service.MilkService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 
 @Service
 public class MenuitemServiceImpl implements MenuitemService {
-    private final CategoryRepo categoryRepo;
+    private final CategoryService categoryService;
     private final MenuitemRepo menuitemRepo;
-    private final MilkRepo milkRepo;
 
-    MenuitemServiceImpl(MenuitemRepo menuitemRepo, CategoryRepo categoryRepo, MilkRepo milkRepo) {
+    private final MilkService milkService;
+
+    MenuitemServiceImpl(MenuitemRepo menuitemRepo, CategoryService categoryService, MilkService milkService) {
         this.menuitemRepo = menuitemRepo;
-        this.categoryRepo = categoryRepo;
-        this.milkRepo = milkRepo;
+        this.categoryService = categoryService;
+        this.milkService = milkService;
     }
 
     @Override
@@ -30,13 +35,11 @@ public class MenuitemServiceImpl implements MenuitemService {
     }
 
     @Override
-    public Menuitem createMenuitem(MenuitemDto menuitemDto) throws RuntimeException {
+    public Menuitem createMenuitem(MenuitemDto menuitemDto) {
         System.out.println(menuitemDto.toString());
 
-        Category category = categoryRepo.findById(menuitemDto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found."));
-        Milk milk = milkRepo.findById(menuitemDto.getMilkId())
-                .orElseThrow(() -> new RuntimeException("Milk not found."));
+        Category category = categoryService.getCategoryById(menuitemDto.getCategoryId());
+        Milk milk = milkService.getMilkById(menuitemDto.getMilkId());
 
         Menuitem menuitem = new Menuitem();
 
@@ -55,10 +58,10 @@ public class MenuitemServiceImpl implements MenuitemService {
     }
 
     @Override
-    public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws RuntimeException {
+    public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws EntityNotFoundException {
 
         Menuitem menuitem = menuitemRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menuitem not found."));
+                .orElseThrow(() -> new EntityNotFoundException("Menuitem not found."));
 
         for (Map.Entry<String, Object> entry : menuitemDto.entrySet()) {
             String key = entry.getKey();
@@ -80,15 +83,12 @@ public class MenuitemServiceImpl implements MenuitemService {
                     break;
                 case "categoryId":
                     Long categoryId = (long) value;
-                    Category category = categoryRepo.findById(categoryId)
-                            .orElseThrow(() -> new RuntimeException("Category not found."));
+                    Category category = categoryService.getCategoryById(categoryId);
                     menuitem.setCategory(category);
                     break;
                 case "milkId":
-
                     Long milkId = (long) value;
-                    Milk milk = milkRepo.findById(milkId)
-                            .orElseThrow(() -> new RuntimeException("Milk not found."));
+                    Milk milk = milkService.getMilkById(milkId);
                     menuitem.setMilk(milk);
                     break;
                 case "temperature":
@@ -106,20 +106,20 @@ public class MenuitemServiceImpl implements MenuitemService {
     }
 
     @Override
-    public Menuitem getMenuitemById(Long id) throws RuntimeException {
-
+    public Menuitem getMenuitemById(Long id) throws EntityNotFoundException {
         return menuitemRepo.findById(id)
-                .orElseThrow(()-> new RuntimeException("Menuitem not found."));
+                .orElseThrow(()-> new EntityNotFoundException("Menuitem not found."));
     }
     @Override
-    public List<Menuitem> getMenuitemByCategoryId(Long categoryId){
+    public List<Menuitem> getMenuitemsByCategoryId(Long categoryId){
         return menuitemRepo.findByCategoryId(categoryId);
     }
     @Override
-    public String deleteMenuitem(Long id){
-        Menuitem menuitem = menuitemRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menuitem not found."));
-        menuitemRepo.delete(menuitem);
+    public String deleteMenuitem(Long id) throws RuntimeException {
+        if (!menuitemRepo.existsById(id)) {
+            throw new EntityNotFoundException("Entity not found with id: " + id);
+        }
+        menuitemRepo.deleteById(id);
         return "Menuitem deleted.";
     }
 }

@@ -3,7 +3,7 @@ package com.villysiu.yumtea.service.impl;
 import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.service.CategoryService;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-//@RequiredArgsConstructor
+
 public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
-    private CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
+    public CategoryServiceImpl(CategoryRepo categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
+
 
 
     @Override
@@ -24,9 +28,15 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(Long id, Map<String, Object> categoryDto) throws RuntimeException {
+    public Category getCategoryById(Long id){
+        return categoryRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Category not found."));
+    }
+
+    @Override
+    public Category updateCategory(Long id, Map<String, Object> categoryDto){
+
         Category category = categoryRepo.findById(id)
-                .orElseThrow(()->new RuntimeException("Category not found."));
+                .orElseThrow(()->new EntityNotFoundException("Category not found."));
 
         for(Map.Entry<String, Object> categoryDtoEntry : categoryDto.entrySet()) {
             String key = categoryDtoEntry.getKey();
@@ -51,15 +61,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category createCategory(Category category) throws RuntimeException {
+    public Category createCategory(Category category) {
         return categoryRepo.save(category);
     }
 
     @Override
     public String deleteCategory(Long id) {
-        Category category = categoryRepo.findById(id).orElseThrow(()-> new RuntimeException("Category not found"));
-        categoryRepo.delete(category);
+        if(!categoryRepo.existsById(id)) {
+            throw new EntityNotFoundException("Category not found.");
+        }
+        categoryRepo.deleteById(id);
         return "Category deleted";
     }
+
 }
 

@@ -2,6 +2,7 @@ package com.villysiu.yumtea.dao;
 
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
+import com.villysiu.yumtea.models.user.User;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,6 @@ public interface PurchaseProjection {
         String getId();
         MenuitemProjection getMenuitem();
 
-
         MilkProjection getMilk();
         SizeProjection getSize();
 
@@ -29,9 +29,10 @@ public interface PurchaseProjection {
         int getQuantity();
         Double getPrice();
     }
+
     interface UserProjection {
         Long getId();
-        String getUsername();
+        String getEmail();
     }
     interface MenuitemProjection {
         Long getId();

@@ -7,18 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class SigninRequest {
     private String email;
     private String password;
 
-    @Override
-    public String toString() {
-        return "SigninRequest{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
+
 }
 

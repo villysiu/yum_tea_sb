@@ -4,44 +4,57 @@ import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.AuthenticationService;
-import com.villysiu.yumtea.validation.EmailExistsException;
+import com.villysiu.yumtea.exception.EmailExistsException;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-
+    @Autowired
     private final UserRepo userRepo;
+    @Autowired
+    private final RoleRepo roleRepo;
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
 
     @Override
-    public ResponseEntity<String> signup(SignupRequest request) throws EmailExistsException {
-
-        if(userRepo.findByEmail(request.getEmail()) != null) {
-            throw new EmailExistsException("Email already existed");
+    public ResponseEntity<String> signup(SignupRequest signupRequest) {
+        if(userRepo.existsByEmail(signupRequest.getEmail())){
+            throw new EmailExistsException();
         }
 
-
         User user = new User();
-        user.setUsername(request.getUserName());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setRole(Role.USER);
+        user.setEmail(signupRequest.getEmail());
+        user.setNickname(signupRequest.getNickname());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+        Optional<Role> role = roleRepo.findByName("ROLE_USER");
+
+        role.ifPresent(r -> user.setRoles(Collections.singleton(r)));
         userRepo.save(user);
 
         return ResponseEntity.ok("Signup successful");
@@ -50,24 +63,41 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public ResponseEntity<String> signin(SigninRequest request) {
+    public User signin(SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in AuthenticationServiceImpl signin");
-        System.out.println(request.toString());
+        System.out.println(signinRequest.toString());
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
+            Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
+
+//            The Authentication contains:
+//
+//            principal: Identifies the user. When authenticating with a username/password this is often an instance of UserDetails.
+//            System.out.println("principal: " + authenticationResponse.getPrincipal());
+//            credentials: Often a password. In many cases, this is cleared after the user is authenticated, to ensure that it is not leaked.
+//            System.out.println("cred: " + authenticationResponse.getCredentials());
+//            authorities: The GrantedAuthority instances are high-level permissions the user is granted. Two examples are roles and scopes.
+//            System.out.println("auth: " + authenticationResponse.getAuthorities());
+
+//            principal: org.springframework.security.core.userdetails.User [Username=springuser@gg.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]]
+//            cred: null
+//            auth: [ROLE_USER]
+
+             SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
+
+            HttpSession session = request.getSession();
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+            UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
+            String email = userDetails.getUsername();
+            System.out.println("email: " + email);
+
+            return userRepo.findByEmail(email).orElse(null);
         }
         catch (AuthenticationException e){
-            System.out.println("failed?");
+            System.out.println(e.getMessage());
             throw new IllegalArgumentException("Invalid Email ot Password");
         }
-        System.out.println("authenticated?");
-
-
-
-        return ResponseEntity.ok("Signin successful");
 
     }
-
-
-
 }

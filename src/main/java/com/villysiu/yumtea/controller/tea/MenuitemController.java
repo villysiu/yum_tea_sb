@@ -29,7 +29,7 @@ public class MenuitemController {
 
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
-        return menuitemService.getMenuitemByCategoryId(id);
+        return menuitemService.getMenuitemsByCategoryId(id);
 
     }
 
