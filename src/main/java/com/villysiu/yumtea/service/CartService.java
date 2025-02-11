@@ -15,6 +15,7 @@ public interface CartService {
     // ALL
     List<Object[]> getCartsByUserQuery(User user);
     List<CartProjection> getCartProjectionsByUserId(Long userId);
+    List<Cart> getCartsByUserId(Long userId);
 
     //SINGLE
     // used by update or remove

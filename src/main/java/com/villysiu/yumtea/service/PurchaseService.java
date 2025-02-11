@@ -19,4 +19,7 @@ public interface PurchaseService {
 
 
     PurchaseProjection getPurchaseById(Long id);
+
+//    Purchase getPurchaseById(Long id);
+    void deletePurchaseById(Long id);
 }

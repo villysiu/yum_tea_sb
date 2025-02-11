@@ -76,7 +76,7 @@ public class CartServiceImpl implements CartService {
             newCart.setQuantity(cartInputDto.getQuantity());
 
             newCart.setTemperature(
-                    menuitem.getTemperature().equals(Temperature.NA)  ? Temperature.NA : cartInputDto.getTemperature()
+                    menuitem.getTemperature().equals(Temperature.FREE)  ? cartInputDto.getTemperature() : menuitem.getTemperature()
             );
             newCart.setSugar(
                     menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
@@ -85,8 +85,6 @@ public class CartServiceImpl implements CartService {
 
             cartRepo.save(newCart);
             return newCart.getId();
-
-
         }
     }
 
@@ -126,7 +124,7 @@ public class CartServiceImpl implements CartService {
 
 
         cart.setTemperature(
-                menuitem.getTemperature().equals(Temperature.NA)  ? Temperature.NA : cartInputDto.getTemperature()
+                menuitem.getTemperature().equals(Temperature.FREE)  ? cartInputDto.getTemperature() : menuitem.getTemperature()
         );
         cart.setSugar(
                 menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
@@ -146,6 +144,10 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartProjection> getCartProjectionsByUserId(Long userId){
         return cartRepo.findByUserId(userId, CartProjection.class);
+    }
+    @Override
+    public List<Cart> getCartsByUserId(Long userId){
+        return cartRepo.findByUserId(userId, Cart.class);
     }
     @Override
     public Cart getCartById(Long id){
@@ -176,17 +178,6 @@ public class CartServiceImpl implements CartService {
 
     }
 
-//
 
-
-
-//
-//
-//    @Override
-//    public ResponseEntity<String> removeUserCart(List<Cart> userCarts){
-////        cartRepo.deleteById(id);
-//        cartRepo.deleteAll(userCarts);
-//        return ResponseEntity.ok("Cart removed");
-//    }
 
 }

@@ -28,9 +28,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Configuration
@@ -45,9 +50,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         System.out.println("security filter chain");
+
         http
             .csrf(AbstractHttpConfigurer::disable)
-//            .csrf(Customizer.withDefaults())
+                .cors(c -> c
+                        .configurationSource(request -> {
+                            CorsConfiguration corsConfig = new CorsConfiguration();
+                            corsConfig.setAllowedOrigins(Arrays.asList("http://127.0.0.1:8001")); // Frontend URL
+                            corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // HTTP methods
+                            corsConfig.setAllowedHeaders(Arrays.asList("*")); // All headers
+                            corsConfig.setAllowCredentials(true); // Allow credentials (cookies)
+                            return corsConfig;
+                        })
+                )
+
+
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
@@ -57,8 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/cart","/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
                 .requestMatchers("/category/**", "/milk/**", "/menuitem/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
-            )
-            .logout();
+            );
 
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -84,6 +100,7 @@ public class SecurityConfig {
 
         return new ProviderManager(authenticationProvider);
     }
+
 
 
 }

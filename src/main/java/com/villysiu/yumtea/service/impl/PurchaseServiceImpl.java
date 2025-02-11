@@ -24,9 +24,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
-//    private final CustomUserDetailsServiceImpl userDetailsService;
-    private final CartService cartService;
 
+    private final CartService cartService;
     private final PurchaseRepo purchaseRepo;
     private final PurchaseLineitemRepo purchaseLineitemRepo;
 
@@ -42,40 +41,41 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public Long createPurchase(Map<String, Object> purchaseDto, User user) {
-        Purchase purchase = new Purchase();
-        return purchase.getId();
 
-//        List<Cart> cart = cartService.getCartsByUserId(user.getId());
-//        Purchase purchase = new Purchase();
-//        purchase.setUser(user);
-//        purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
-//        purchase.setTip((Double) purchaseDto.get("tip"));
-//        purchase.setPurchaseLineitemList(new ArrayList<>());
+        List<Cart> carts = cartService.getCartsByUserId(user.getId());
+        if(carts.isEmpty())
+            throw new EntityNotFoundException("Cart is empty for user: " + user.getId());
+
+        Purchase purchase = new Purchase();
+        purchase.setUser(user);
+        purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
+        purchase.setTip((Double) purchaseDto.get("tip"));
+        purchase.setPurchaseLineitemList(new ArrayList<>());
+
+        purchaseRepo.save(purchase);
+
+        for(Cart cartLineitem : carts){
+            System.out.println(cartLineitem.toString());
+            PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
+
+            purchaseLineitem.setPurchase(purchase);
+            purchaseLineitem.setMenuitem(cartLineitem.getMenuitem());
+            purchaseLineitem.setMilk(cartLineitem.getMilk());
+            purchaseLineitem.setSize(cartLineitem.getSize());
+            purchaseLineitem.setSugar(cartLineitem.getSugar());
+            purchaseLineitem.setTemperature(cartLineitem.getTemperature());
+
+            purchaseLineitem.setQuantity(cartLineitem.getQuantity());
+            purchaseLineitem.setPrice(cartLineitem.getPrice());
+
+            purchaseLineitemRepo.save(purchaseLineitem);
+
+            purchase.getPurchaseLineitemList().add(purchaseLineitem);
+        }
+
+        cartService.deleteCartsByUserId(user.getId());
 //
-//        purchaseRepo.save(purchase);
-//
-//        for(Cart cartLineitem : cart){
-//            System.out.println(cartLineitem.toString());
-//            PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
-//
-//            purchaseLineitem.setPurchase(purchase);
-//            purchaseLineitem.setMenuitem(cartLineitem.getMenuitem());
-//            purchaseLineitem.setMilk(cartLineitem.getMilk());
-//            purchaseLineitem.setSize(cartLineitem.getSize());
-//            purchaseLineitem.setSugar(cartLineitem.getSugar());
-//            purchaseLineitem.setTemperature(cartLineitem.getTemperature());
-//
-//            purchaseLineitem.setQuantity(cartLineitem.getQuantity());
-//            purchaseLineitem.setPrice(cartLineitem.getPrice());
-//
-//            purchaseLineitemRepo.save(purchaseLineitem);
-//
-//            purchase.getPurchaseLineitemList().add(purchaseLineitem);
-//        }
-//
-//        cartService.removeUserCart(cart);
-//
-//        return purchase.getId();
+        return purchase.getId();
 
 
     }
@@ -90,9 +90,15 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseProjection getPurchaseById(Long purchaseId) {
-       PurchaseProjection purchase = purchaseRepo.findById(purchaseId, PurchaseProjection.class )
+       return purchaseRepo.findById(purchaseId, PurchaseProjection.class )
                .orElseThrow(()->new EntityNotFoundException("Purchase id "+ purchaseId + " not found"));
 
+    }
+    @Override
+    public void deletePurchaseById(Long purhcaseId){
+        Purchase p = purchaseRepo.findById(purhcaseId, Purchase.class)
+                .orElseThrow(()->new EntityNotFoundException("Purchase id "+ purhcaseId + " not found"));
+        purchaseRepo.delete(p);
     }
 
 

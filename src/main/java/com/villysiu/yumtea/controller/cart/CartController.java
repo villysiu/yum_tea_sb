@@ -38,14 +38,6 @@ public class CartController {
     }
 
 
-//    @GetMapping("/cart")
-//    public List<CartProjection> getCartByUser(@AuthenticationPrincipal UserDetails userDetails) {
-//        User user = userDetailsService.findByEmail(userDetails.getUsername());
-//
-////        return cartService.getCartProjectionsByUserId(user.getId());
-//        return cartService.getCartsByUser(user);
-//    }
-
     @GetMapping("cartsByQuery")
     public List<Object[]> getCartsByUserQuery(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userDetailsService.findByEmail(userDetails.getUsername());

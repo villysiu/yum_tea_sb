@@ -6,9 +6,13 @@ import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.service.AuthenticationService;
 import com.villysiu.yumtea.exception.EmailExistsException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+    private final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
@@ -40,6 +46,20 @@ public class AuthenticationController {
         } catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
+        System.out.println("logging out");
+
+        logoutHandler.logout(request, response, authentication);
+
+        request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+        return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
+
 
     }
 }
