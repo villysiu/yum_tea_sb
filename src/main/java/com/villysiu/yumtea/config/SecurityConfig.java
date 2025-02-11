@@ -71,8 +71,8 @@ public class SecurityConfig {
                 )
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/cart","/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems").permitAll()
-                .requestMatchers("/category/**", "/milk/**", "/menuitem/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/cart","/api/v1/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems", "/sizes", "/sugars").permitAll()
+                .requestMatchers("/category/**", "/milk/**", "/menuitem/**", "size/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             );
 

@@ -15,7 +15,7 @@ public class SizeController {
     }
 
     @GetMapping("/sizes")
-    public List<Size> getSize() {
+    public List<Size> getSzie() {
         return sizeService.getSize();
     }
 }
