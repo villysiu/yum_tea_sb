@@ -2,7 +2,7 @@ package com.villysiu.yumtea.models.tea;
 
 public enum Temperature {
 
-    NA,
+    FREE,
     HOT,
     ICED
 }
