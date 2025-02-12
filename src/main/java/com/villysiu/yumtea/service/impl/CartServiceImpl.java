@@ -143,11 +143,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<CartProjection> getCartProjectionsByUserId(Long userId){
-        return cartRepo.findByUserId(userId, CartProjection.class);
+        return cartRepo.findByUserIdOrderByIdDesc(userId, CartProjection.class);
     }
     @Override
     public List<Cart> getCartsByUserId(Long userId){
-        return cartRepo.findByUserId(userId, Cart.class);
+        return cartRepo.findByUserIdOrderByIdDesc(userId, Cart.class);
     }
     @Override
     public Cart getCartById(Long id){

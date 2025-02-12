@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.controller.user;
 
+import ch.qos.logback.core.encoder.JsonEscapeUtil;
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.models.user.User;
@@ -16,7 +17,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
@@ -35,12 +36,12 @@ public class AuthenticationController {
 
     }
 
-    @PostMapping("/signin")
-    public ResponseEntity<String> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+    @PostMapping("/login")
+    public ResponseEntity<User> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in sign in controller");
         try{
             User user = authenticationService.signin(signinRequest, request );
-            return new ResponseEntity<>(user.getEmail()+" signed in" ,HttpStatus.OK);
+            return new ResponseEntity<>(user ,HttpStatus.OK);
 
 
         } catch (IllegalArgumentException e){

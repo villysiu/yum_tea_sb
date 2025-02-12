@@ -36,9 +36,9 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 
 
     // returning either cartProjection or Cart
-    <T> List<T> findByUserId(Long id, Class<T> type);
+//    <T> List<T> findByUserId(Long id, Class<T> type);
 
-
+    <T> List<T> findByUserIdOrderByIdDesc(Long id, Class<T> type);
     void deleteByUserId(Long userId);
     //    OR
 //    @Modifying

@@ -2,17 +2,26 @@ package com.villysiu.yumtea.controller.user;
 
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.UserRepo;
+import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/resource")
+@RequestMapping("/resource")
 public class AuthorizationController {
 
+    @Autowired
+    private final CustomUserDetailsServiceImpl userDetailsService;
+
+    public AuthorizationController(CustomUserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @GetMapping
     public ResponseEntity<String> sayHello() {
@@ -21,9 +30,8 @@ public class AuthorizationController {
     }
 
     @GetMapping("/user")
-    public User getCurrentUser(@AuthenticationPrincipal User user) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return "User Details: " + authentication.getName();
+    public User getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        User user = userDetailsService.findByEmail(userDetails.getUsername());
         return user;
     }
 
