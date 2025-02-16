@@ -10,6 +10,7 @@ import com.villysiu.yumtea.repo.cart.CartRepo;
 
 import com.villysiu.yumtea.service.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -160,9 +161,10 @@ public class CartServiceImpl implements CartService {
     }
 
 
+    @Transactional
     @Override
     public void deleteCartsByUserId(Long userId){
-        cartRepo.deleteByUserId(userId);
+        cartRepo.deleteAllByUserId(userId);
     }
     @Override
     public void deleteCarts(){

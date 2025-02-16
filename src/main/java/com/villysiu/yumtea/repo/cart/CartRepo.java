@@ -39,7 +39,7 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 //    <T> List<T> findByUserId(Long id, Class<T> type);
 
     <T> List<T> findByUserIdOrderByIdDesc(Long id, Class<T> type);
-    void deleteByUserId(Long userId);
+//    void deleteByUserId(Long userId);
     //    OR
 //    @Modifying
 //    @Query ("delete from Cart c where c.user.id = ?1")
@@ -48,5 +48,9 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 
     <T> Optional<T> findById(Long id, Class<T> type);
 
+//    void deleteCartsByUserId(Long userId);
 
+//void removeCartByUserId(Long userId);
+    void deleteById(Long id);
+    void deleteAllByUserId(Long userId);
 }

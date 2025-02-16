@@ -74,7 +74,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         }
 
         cartService.deleteCartsByUserId(user.getId());
-//
+
         return purchase.getId();
 
 

@@ -65,6 +65,7 @@ public class CartController {
 
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("updating cart");
         User user = userDetailsService.findByEmail(userDetails.getUsername());
 
         Cart cart = cartService.getCartById(id);
