@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartService {
 
     }
 
-
+    @Transactional
     @Override
     public Long createCart(CartInputDto cartInputDto, User user) throws RuntimeException {
         System.out.println(cartInputDto);
@@ -89,6 +89,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    @Transactional
     @Override
     public Long updateCart(Long id, CartInputDto cartInputDto, User user) {
 

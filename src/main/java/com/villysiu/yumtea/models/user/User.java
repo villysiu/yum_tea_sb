@@ -25,6 +25,8 @@ public class User  {
     private String email;
 
     private String nickname;
+
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(targetEntity = Role.class)

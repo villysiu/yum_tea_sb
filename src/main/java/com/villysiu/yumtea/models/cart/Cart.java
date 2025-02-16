@@ -19,26 +19,28 @@ public class Cart {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 
-    @JoinColumn(name = "menuitem_id")
+    @JoinColumn(name = "menuitem_id", nullable = false)
     @ManyToOne(optional = false)
     private Menuitem menuitem;
 
-    @JoinColumn(name = "milk_id")
+    @JoinColumn(name = "milk_id", nullable = false)
     @ManyToOne(optional = false)
     private Milk milk;
 
-    @JoinColumn(name = "size_id")
+    @JoinColumn(name = "size_id", nullable = false)
     @ManyToOne(optional = false)
     private Size size;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Temperature temperature;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Sugar sugar;
 
     @Column(columnDefinition = "int default 1", nullable = false)
