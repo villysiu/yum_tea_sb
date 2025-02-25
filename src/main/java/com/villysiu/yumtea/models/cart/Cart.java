@@ -46,6 +46,6 @@ public class Cart {
     @Column(columnDefinition = "int default 1", nullable = false)
     private Integer quantity;
 
-    @Column(columnDefinition = "double default 0", nullable = false)
-    private Double price;
+    @Column(columnDefinition = "double default 0.0", nullable = false)
+    private Double price = 0.0;
 }

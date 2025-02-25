@@ -3,12 +3,10 @@ package com.villysiu.yumtea.service;
 import com.villysiu.yumtea.dto.request.CartInputDto;
 
 import com.villysiu.yumtea.models.cart.Cart;
-import com.villysiu.yumtea.dao.CartProjection;
+import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.models.user.User;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CartService {
 

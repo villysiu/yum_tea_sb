@@ -6,6 +6,7 @@ import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.service.AuthenticationService;
 import com.villysiu.yumtea.exception.EmailExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,12 @@ public class AuthenticationController {
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         System.out.println("in signup");
         //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
-        try{
+//        try{
             return authenticationService.signup(request);
-        } catch (EmailExistsException e){
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
+//        } catch (EmailExistsException e){
+//            System.out.println("emal nort found");
+//            return new ResponseEntity<>(HttpStatus.CONFLICT);
+//        }
 
     }
 
@@ -62,5 +64,16 @@ public class AuthenticationController {
         return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
 
 
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(EmailExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleEmailExistsExceptionException(EmailExistsException e) {
+ System.out.println("emal nort found");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("email not exist");
     }
 }

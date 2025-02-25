@@ -12,10 +12,14 @@ public class PurchaseLineitem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonBackReference
+//    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="purchase_id", nullable=false)
     private Purchase purchase;
+
+//    @ManyToOne
+//    @JoinColumn(name="doctor_id")
+//    private Doctor doctor;
 
     @ManyToOne
     @JoinColumn(name="menuitem_id", nullable=false)
@@ -38,6 +42,8 @@ public class PurchaseLineitem {
     @Column(columnDefinition = "int default 1", nullable = false)
     private Integer quantity;
 
-    @Column(columnDefinition = "double default 0", nullable = false)
-    private Double price;
+    @Column(columnDefinition = "double default 0.0", nullable = false)
+    private Double price= 0.0;
+
+
 }

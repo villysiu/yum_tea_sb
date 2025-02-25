@@ -1,14 +1,11 @@
 package com.villysiu.yumtea.service;
 
 
-import com.villysiu.yumtea.models.purchase.Purchase;
-import com.villysiu.yumtea.dao.PurchaseProjection;
+import com.villysiu.yumtea.dto.response.PurchaseProjection;
 import com.villysiu.yumtea.models.user.User;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface PurchaseService {
     // return id for the newly create purchase order

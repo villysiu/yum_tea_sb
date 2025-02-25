@@ -1,8 +1,7 @@
-package com.villysiu.yumtea.dao;
+package com.villysiu.yumtea.dto.response;
 
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
-import com.villysiu.yumtea.models.user.User;
 
 import java.util.Date;
 import java.util.List;
@@ -13,6 +12,8 @@ public interface PurchaseProjection {
 
     Date getPurchaseDate();
     Double getTip();
+    Double getTax();
+    Double getTotal();
 
     List<PurchaseLineitemProjection> getPurchaseLineitemList();
 

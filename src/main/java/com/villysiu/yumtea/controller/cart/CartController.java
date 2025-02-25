@@ -2,14 +2,12 @@ package com.villysiu.yumtea.controller.cart;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
-import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.models.user.User;
-import com.villysiu.yumtea.dao.CartProjection;
+import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.service.CartService;
 
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 
 @RestController

@@ -1,11 +1,9 @@
 package com.villysiu.yumtea.repo.cart;
 
-import com.villysiu.yumtea.dao.CartProjection;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.dao;
+package com.villysiu.yumtea.dto.response;
 
 
 public interface CartProjection {

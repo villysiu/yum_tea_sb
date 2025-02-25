@@ -24,10 +24,19 @@ public class Purchase {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date purchaseDate;
 
-    @Column
+    @Column(columnDefinition = "double default 0.0", nullable = false)
     private Double tip = 0.0;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Column(columnDefinition = "double default 0.0", nullable = false)
+    private Double tax = 0.0;
+
+    @Column(columnDefinition = "double default 0.0", nullable = false)
+    private Double total = 0.0;
+
+//    @JsonManagedReference
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PurchaseLineitem> purchaseLineitemList;
+
+//    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//   private List<Appointment> appointments = new ArrayList<>();
 }

@@ -4,21 +4,17 @@ import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.User;
-import com.villysiu.yumtea.dao.CartProjection;
+import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
 
 import com.villysiu.yumtea.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
