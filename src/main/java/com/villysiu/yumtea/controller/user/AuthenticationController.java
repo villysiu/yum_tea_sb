@@ -30,12 +30,12 @@ public class AuthenticationController {
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         System.out.println("in signup");
         //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
-//        try{
-            return authenticationService.signup(request);
-//        } catch (EmailExistsException e){
-//            System.out.println("emal nort found");
-//            return new ResponseEntity<>(HttpStatus.CONFLICT);
-//        }
+        try{
+            Long id = authenticationService.signup(request);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (EmailExistsException e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
 
     }
 
@@ -45,7 +45,6 @@ public class AuthenticationController {
         try{
             SigninResponse signinResponse = authenticationService.signin(signinRequest, request );
             return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
-
 
         } catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -71,11 +70,11 @@ public class AuthenticationController {
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-
-    @ExceptionHandler(EmailExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleEmailExistsExceptionException(EmailExistsException e) {
- System.out.println("emal nort found");
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("email not exist");
-    }
+//
+//    @ExceptionHandler(EmailExistsException.class)
+//    @ResponseStatus(HttpStatus.CONFLICT)
+//    public ResponseEntity<String> handleEmailExistsExceptionException(EmailExistsException e) {
+// System.out.println("emal nort found");
+//        return ResponseEntity.status(HttpStatus.CONFLICT).body("email not exist");
+//    }
 }

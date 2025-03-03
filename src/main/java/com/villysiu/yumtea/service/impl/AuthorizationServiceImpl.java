@@ -33,22 +33,21 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
 
     @Override
-    public User updateUser(Map<String, Object> userRequestDto, User user) {
+    public SigninResponse updateUser(Map<String, Object> userRequestDto, User user) {
         for(Map.Entry<String, Object> entry : userRequestDto.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
 
             if(key.equals("nickname")) {
                 user.setNickname((String) value);
-
             }
-
-
         }
         userRepo.save(user);
-//        UserResponseDto userResponseDto = new UserResponseDto();
-//        userResponseDto.setNickname(user.getNickname());
-        return user;
+        SigninResponse signinResponse = new SigninResponse();
+        signinResponse.setEmail(user.getEmail());
+        signinResponse.setNickname(user.getNickname());
+
+        return signinResponse;
     }
 
     @Override
@@ -57,14 +56,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         String newPassword = passwordRequestDto.getNewPassword();
 
         System.out.println(user.getPassword());
-        System.out.println(passwordEncoder.encode(currentPassword));
+        System.out.println(currentPassword);
 //        System.out.println(user.getPassword().equals(passwordEncoder.encode(currentPassword)));
         try{
             Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(user.getEmail(), currentPassword);
             Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
-    //        if(!user.getPassword().equals(passwordEncoder.encode(currentPassword))) {
-    //            throw new RuntimeException("Password is incorrect");
-    //        }
+
+            System.out.println("authenticted!!");
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepo.save(user);
         }

@@ -51,13 +51,8 @@ public class AuthorizationController {
     public ResponseEntity<SigninResponse> updateUser(@RequestBody Map<String, Object> userRequestDto, @AuthenticationPrincipal UserDetails userDetails){
         System.out.println("update user info");
         User user = userDetailsService.findByEmail(userDetails.getUsername());
-        authorizationService.updateUser(userRequestDto, user);
 
-        SigninResponse signinResponse = new SigninResponse();
-        signinResponse.setEmail(user.getEmail());
-        signinResponse.setNickname(user.getNickname());
-
-        return ResponseEntity.ok(signinResponse);
+        return ResponseEntity.ok(authorizationService.updateUser(userRequestDto, user));
     }
 
     @PatchMapping("/updatePassword")
@@ -67,7 +62,7 @@ public class AuthorizationController {
         User user = userDetailsService.findByEmail(userDetails.getUsername());
        try{
             authorizationService.updatePassword(passwordRequestDto, user);
-            return ResponseEntity.ok("Password updated");
+           return new ResponseEntity<>(HttpStatus.OK);
 
         }catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

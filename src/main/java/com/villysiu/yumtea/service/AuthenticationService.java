@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
-    ResponseEntity<String> signup(SignupRequest signupRequest);
-
+    Long signup(SignupRequest signupRequest);
     SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request);
 }

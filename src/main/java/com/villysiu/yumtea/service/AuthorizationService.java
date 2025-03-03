@@ -8,6 +8,6 @@ import com.villysiu.yumtea.models.user.User;
 import java.util.Map;
 
 public interface AuthorizationService {
-    User updateUser(Map<String, Object> userRequestDto, User user);
+    SigninResponse updateUser(Map<String, Object> userRequestDto, User user);
     void updatePassword(PasswordRequestDto passwordRequestDto, User user);
 }

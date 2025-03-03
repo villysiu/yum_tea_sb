@@ -45,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public ResponseEntity<String> signup(SignupRequest signupRequest) {
+    public Long signup(SignupRequest signupRequest) {
         if(userRepo.existsByEmail(signupRequest.getEmail())){
             throw new EmailExistsException();
         }
@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         role.ifPresent(r -> user.setRoles(Collections.singleton(r)));
         userRepo.save(user);
 
-        return ResponseEntity.ok("Signup successful");
+        return user.getId();
     }
 
 
@@ -105,8 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return signinResponse;
         }
         catch (AuthenticationException e){
-            System.out.println(e.getMessage());
-            throw new IllegalArgumentException("Invalid Email ot Password");
+            throw new IllegalArgumentException(e.getMessage());
         }
 
     }
