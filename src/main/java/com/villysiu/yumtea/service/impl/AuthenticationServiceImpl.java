@@ -40,6 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleRepo roleRepo;
 
     private final AuthenticationManager authenticationManager;
+
     private final PasswordEncoder passwordEncoder;
 
 

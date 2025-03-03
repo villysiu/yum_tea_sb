@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.controller.user;
 
+import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.dto.response.UserResponseDto;
 import com.villysiu.yumtea.models.user.User;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -56,6 +58,20 @@ public class AuthorizationController {
         signinResponse.setNickname(user.getNickname());
 
         return ResponseEntity.ok(signinResponse);
+    }
+
+    @PatchMapping("/updatePassword")
+    public ResponseEntity<String> updatePassword(@RequestBody PasswordRequestDto passwordRequestDto,
+                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("update user password");
+        User user = userDetailsService.findByEmail(userDetails.getUsername());
+       try{
+            authorizationService.updatePassword(passwordRequestDto, user);
+            return ResponseEntity.ok("Password updated");
+
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
     }
 
 //    @GetMapping("/invalidSession")
