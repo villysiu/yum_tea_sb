@@ -21,6 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 
@@ -53,11 +54,24 @@ public class SecurityConfig {
         http
             .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        );
+//                            .maximumSessions(1)
+//                    https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html#_detecting_timeouts
+//                            .invalidSessionUrl("/invalidSession")
+
+
+            );
 
         return http.build();
     }
 
+//    @Controller
+//public class SessionController {
+//
+//    @GetMapping("/session-expired")
+//    public String sessionExpired() {
+//        return "sessionExpired";  // This is your session expired view (e.g., a page saying the session expired)
+//    }
+//}
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -2,6 +2,7 @@ package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
+import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.RoleRepo;
@@ -9,6 +10,7 @@ import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.AuthenticationService;
 import com.villysiu.yumtea.exception.EmailExistsException;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +65,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public User signin(SigninRequest signinRequest, HttpServletRequest request) {
+    public SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in AuthenticationServiceImpl signin");
         System.out.println(signinRequest.toString());
         try {
@@ -85,14 +87,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
              SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
 
+
             HttpSession session = request.getSession();
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
 
             UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
             String email = userDetails.getUsername();
             System.out.println("email: " + email);
+            User user = userRepo.findByEmail(email).orElseThrow(()->new EntityNotFoundException("email not found"));
 
-            return userRepo.findByEmail(email).orElse(null);
+            SigninResponse signinResponse = new SigninResponse();
+            signinResponse.setEmail(user.getEmail());
+            signinResponse.setNickname(user.getNickname());
+
+            return signinResponse;
         }
         catch (AuthenticationException e){
             System.out.println(e.getMessage());

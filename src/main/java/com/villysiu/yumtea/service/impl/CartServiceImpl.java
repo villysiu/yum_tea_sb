@@ -136,6 +136,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Object[]> getCartsByUserQuery(User user) {
+
         return cartRepo.findByUserIdQuery(user.getId());
     }
 

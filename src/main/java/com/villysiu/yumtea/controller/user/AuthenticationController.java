@@ -3,6 +3,7 @@ package com.villysiu.yumtea.controller.user;
 import ch.qos.logback.core.encoder.JsonEscapeUtil;
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
+import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.service.AuthenticationService;
 import com.villysiu.yumtea.exception.EmailExistsException;
@@ -39,11 +40,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+    public ResponseEntity<SigninResponse> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in sign in controller");
         try{
-            User user = authenticationService.signin(signinRequest, request );
-            return new ResponseEntity<>(user ,HttpStatus.OK);
+            SigninResponse signinResponse = authenticationService.signin(signinRequest, request );
+            return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
 
 
         } catch (IllegalArgumentException e){
@@ -63,13 +64,14 @@ public class AuthenticationController {
         SecurityContextHolder.clearContext();
         return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
 
-
     }
+
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
     @ExceptionHandler(EmailExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<String> handleEmailExistsExceptionException(EmailExistsException e) {
