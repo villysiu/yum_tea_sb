@@ -6,6 +6,7 @@ import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.repo.user.UserRepo;
 import lombok.NonNull;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,8 +20,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
-
+    @Autowired
     private final UserRepo userRepo;
+    @Autowired
     private final RoleRepo roleRepo;
 
     public CustomUserDetailsServiceImpl(UserRepo userRepo, RoleRepo roleRepo) {
@@ -44,9 +46,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         );
     }
     public User findByEmail(String email) {
-        return userRepo.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(email + " not found." ));
+        return userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not found." ));
     }
 
     public Boolean isAdmin(@NonNull User user) {

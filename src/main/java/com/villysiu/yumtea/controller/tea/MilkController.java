@@ -22,26 +22,27 @@ public class MilkController {
         this.milkService = milkService;
     }
 
+    //read
     @GetMapping("/milks")
     public List<Milk> getMilks() {
         return milkService.getMilks();
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    // create
     @PostMapping(value="/milk")
     public ResponseEntity<Milk> createMilk(@RequestBody Milk milk) {
 
         return new ResponseEntity<>(milkService.createMilk(milk), HttpStatus.CREATED);
     }
-
+//update
     @PatchMapping("/milk/{id}")
     public ResponseEntity<Milk> updateMilk(@PathVariable Long id, @RequestBody Map<String, Object> milkDto) {
         return ResponseEntity.ok(milkService.updateMilk(id, milkDto));
     }
-
+//delete
     @DeleteMapping("/milk/{id}")
     public ResponseEntity<String> deleteMilk(@PathVariable Long id){
         milkService.deleteMilk(id);
-        return new ResponseEntity<>("Milk deleted", HttpStatus.OK);
+        return new ResponseEntity<>("Milk deleted", HttpStatus.NO_CONTENT);
     }
 }

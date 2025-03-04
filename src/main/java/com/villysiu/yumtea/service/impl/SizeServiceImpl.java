@@ -5,6 +5,7 @@ import com.villysiu.yumtea.repo.tea.SizeRepo;
 import com.villysiu.yumtea.service.SizeService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class SizeServiceImpl implements SizeService {
+    @Autowired
     private final SizeRepo sizeRepo;
 
     @Override
@@ -32,7 +34,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
-    public Size updateSize(Long id, Map<String, Object> sizeDto) {
+    public Size updateSize(Long id, Map<String, Object> sizeDto){
         Size size = sizeRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Size not found."));
         for (Map.Entry<String, Object> entry : sizeDto.entrySet()) {
             String key = entry.getKey();

@@ -2,7 +2,7 @@ package com.villysiu.yumtea.controller.user;
 
 import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;
-import com.villysiu.yumtea.dto.response.UserResponseDto;
+
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
@@ -22,17 +22,12 @@ import java.util.Map;
 @RequestMapping("/resource")
 public class AuthorizationController {
 
+    private final CustomUserDetailsServiceImpl userDetailsService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private  CustomUserDetailsServiceImpl userDetailsService;
-
-    private final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-    @Autowired
-    private AuthorizationService authorizationService;
-
-
-    public AuthorizationController(CustomUserDetailsServiceImpl userDetailsService) {
+    public AuthorizationController(CustomUserDetailsServiceImpl userDetailsService, AuthorizationService authorizationService) {
         this.userDetailsService = userDetailsService;
+        this.authorizationService = authorizationService;
     }
 
 
@@ -64,23 +59,12 @@ public class AuthorizationController {
             authorizationService.updatePassword(passwordRequestDto, user);
            return new ResponseEntity<>(HttpStatus.OK);
 
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }catch (AuthenticationException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
-//    @GetMapping("/invalidSession")
-//    public ResponseEntity<String> sessionExpired(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-//        System.out.println("handling session Expire ");
-//
-//        logoutHandler.logout(request, response, authentication);
-//
-//        request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
-//        request.getSession().invalidate();
-//        SecurityContextHolder.clearContext();
-//        return new ResponseEntity<>("session expired", HttpStatus.UNAUTHORIZED);
-////        return "sessionExpired";  // This is your session expired view (e.g., a page saying the session expired)
-//    }
+
 
 
 }

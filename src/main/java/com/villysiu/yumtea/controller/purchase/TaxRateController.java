@@ -12,6 +12,7 @@ public class TaxRateController {
     public TaxRateController(TaxRateService taxRateService) {
         this.taxRateService = taxRateService;
     }
+
     @GetMapping("/taxes/{state}")
     public Double getTaxRate(@PathVariable("state") String state) {
         return taxRateService.getTaxRateByState(state);

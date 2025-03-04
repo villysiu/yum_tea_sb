@@ -9,6 +9,7 @@ import com.villysiu.yumtea.service.CategoryService;
 import com.villysiu.yumtea.service.MenuitemService;
 import com.villysiu.yumtea.service.MilkService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,11 @@ import java.util.NoSuchElementException;
 
 @Service
 public class MenuitemServiceImpl implements MenuitemService {
+    @Autowired
     private final CategoryService categoryService;
+    @Autowired
     private final MenuitemRepo menuitemRepo;
-
+    @Autowired
     private final MilkService milkService;
 
     MenuitemServiceImpl(MenuitemRepo menuitemRepo, CategoryService categoryService, MilkService milkService) {
@@ -29,11 +32,7 @@ public class MenuitemServiceImpl implements MenuitemService {
         this.milkService = milkService;
     }
 
-    @Override
-    public List<Menuitem> getMenuitems(){
-        return menuitemRepo.findAll();
-    }
-
+//    Create
     @Override
     public Menuitem createMenuitem(MenuitemDto menuitemDto) {
         System.out.println(menuitemDto.toString());
@@ -57,6 +56,7 @@ public class MenuitemServiceImpl implements MenuitemService {
         return menuitem;
     }
 
+//    Update
     @Override
     public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws EntityNotFoundException {
 
@@ -105,6 +105,11 @@ public class MenuitemServiceImpl implements MenuitemService {
         return menuitem;
     }
 
+//    Read
+    @Override
+    public List<Menuitem> getMenuitems(){
+        return menuitemRepo.findAll();
+    }
     @Override
     public Menuitem getMenuitemById(Long id) throws EntityNotFoundException {
         return menuitemRepo.findById(id)
@@ -112,8 +117,11 @@ public class MenuitemServiceImpl implements MenuitemService {
     }
     @Override
     public List<Menuitem> getMenuitemsByCategoryId(Long categoryId){
-        return menuitemRepo.findByCategoryId(categoryId);
+        return menuitemRepo.findByCategoryIdQuery(categoryId);
+//        return menuitemRepo.findByCategoryId(categoryId);
     }
+
+//    Delete
     @Override
     public String deleteMenuitem(Long id) throws RuntimeException {
         if (!menuitemRepo.existsById(id)) {

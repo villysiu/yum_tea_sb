@@ -1,5 +1,7 @@
 package com.villysiu.yumtea.service.impl;
 
+import com.villysiu.yumtea.dto.request.PurchaseRequest;
+import com.villysiu.yumtea.exception.EntityNotBelongToUserException;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
@@ -15,47 +17,50 @@ import com.villysiu.yumtea.service.PurchaseService;
 import com.villysiu.yumtea.service.TaxRateService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@RequiredArgsConstructor
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
-
+    @Autowired
     private final CartService cartService;
+    @Autowired
     private final PurchaseRepo purchaseRepo;
+    @Autowired
     private final PurchaseLineitemRepo purchaseLineitemRepo;
+    @Autowired
     private final TaxRateService taxRateService;
 
+    public PurchaseServiceImpl(CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo, TaxRateService taxRateService, CustomUserDetailsServiceImpl userDetailsService) {
+        this.cartService = cartService;
+        this.purchaseRepo = purchaseRepo;
+        this.purchaseLineitemRepo = purchaseLineitemRepo;
+        this.taxRateService = taxRateService;
+    }
 
     @Override
-    public Long createPurchase(Map<String, Object> purchaseDto, User user) {
+    public Long createPurchase(PurchaseRequest purchaseRequest, User user) {
 
         List<Cart> carts = cartService.getCartsByUserId(user.getId());
         if(carts.isEmpty())
-            throw new EntityNotFoundException("Cart is empty for user: " + user.getId());
+            throw new RuntimeException("User's cart is empty.");
 
         Purchase purchase = new Purchase();
         purchase.setUser(user);
         purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
-//        purchase.setTip((Double) purchaseDto.get("tip"));
-        Object tip = purchaseDto.get("tip");
 
-        if (tip instanceof Double) {
-            purchase.setTip((Double) tip);
-        } else if (tip instanceof Number) {
-            purchase.setTip(((Number) tip).doubleValue());
-        } else {
-            purchase.setTip(0.0);
-        }
+        double total = 0.0;
+        Double taxRate = taxRateService.getTaxRateByState(purchaseRequest.getState());
+        Double tip = purchaseRequest.getTip();
+        purchase.setTip(tip == null ? 0 : tip);
+
         purchase.setPurchaseLineitemList(new ArrayList<>());
 
         purchaseRepo.save(purchase);
-
-        double total = 0.0;
-        double taxRate = taxRateService.getTaxRateByState(purchaseDto.get("state").toString());
-
 
         for(Cart cartLineitem : carts){
             System.out.println(cartLineitem.toString());
@@ -93,24 +98,22 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<PurchaseProjection> getPurchasesByUserId(Long userId){
         return purchaseRepo.findByUserId(userId, PurchaseProjection.class);
-
     }
 
     @Override
-    public PurchaseProjection getPurchaseById(Long purchaseId) {
+    public PurchaseProjection getPurchaseById(Long purchaseId, User user){
 
-       return purchaseRepo.findById(purchaseId, PurchaseProjection.class )
-               .orElseThrow(()->new EntityNotFoundException("Purchase id "+ purchaseId + " not found"));
+       return purchaseRepo.findByUserIdAndPurchaseIdQuery(user.getId(), purchaseId, PurchaseProjection.class)
+               .orElseThrow(()->new NoSuchElementException("Purchase not found"));
+
 
     }
     @Override
-    public void deletePurchaseById(Long purhcaseId){
-        Purchase p = purchaseRepo.findById(purhcaseId, Purchase.class)
-                .orElseThrow(()->new EntityNotFoundException("Purchase id "+ purhcaseId + " not found"));
-        purchaseRepo.delete(p);
+    public void deletePurchaseById(Long purchaseId, Long userId){
+        Purchase purchase = purchaseRepo.findByUserIdAndPurchaseIdQuery(userId, purchaseId, Purchase.class)
+                .orElseThrow(()->new NoSuchElementException("Purchase not found"));
+
+        purchaseRepo.delete(purchase);
     }
-
-
-
 
 }

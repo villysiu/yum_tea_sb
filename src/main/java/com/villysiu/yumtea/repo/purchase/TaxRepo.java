@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+
 public interface TaxRepo extends JpaRepository <TaxRate, Long>{
     Optional<TaxRate> findByState(String state);
 

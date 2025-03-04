@@ -2,7 +2,6 @@ package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;
-import com.villysiu.yumtea.dto.response.UserResponseDto;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.AuthorizationService;
@@ -57,18 +56,17 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         System.out.println(user.getPassword());
         System.out.println(currentPassword);
-//        System.out.println(user.getPassword().equals(passwordEncoder.encode(currentPassword)));
-        try{
+//try{
             Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(user.getEmail(), currentPassword);
             Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
 
             System.out.println("authenticted!!");
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepo.save(user);
-        }
-        catch (AuthenticationException e){
-            System.out.println(e.getMessage());
-            throw new IllegalArgumentException("Password not matched");
-        }
+//        }
+//        catch (AuthenticationException e){
+//            System.out.println(e.getMessage());
+//            throw new IllegalArgumentException("Password not matched");
+//        }
     }
     }

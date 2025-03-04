@@ -8,15 +8,15 @@ import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.repo.user.UserRepo;
 import com.villysiu.yumtea.service.AuthenticationService;
-import com.villysiu.yumtea.exception.EmailExistsException;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import org.springframework.security.core.Authentication;
@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Long signup(SignupRequest signupRequest) {
         if(userRepo.existsByEmail(signupRequest.getEmail())){
-            throw new EmailExistsException();
+            throw new EntityExistsException("Email already exists");
         }
 
         User user = new User();
@@ -69,7 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in AuthenticationServiceImpl signin");
         System.out.println(signinRequest.toString());
-        try {
+//        try {
             Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
             Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
 
@@ -103,10 +103,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             signinResponse.setNickname(user.getNickname());
 
             return signinResponse;
-        }
-        catch (AuthenticationException e){
-            throw new IllegalArgumentException(e.getMessage());
-        }
+//        }
+//        catch (AuthenticationException e){
+//            throw new AuthenticationException(e.getMessage()) {
+//            };
+//        }
 
     }
 }

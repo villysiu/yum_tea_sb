@@ -2,6 +2,7 @@ package com.villysiu.yumtea.service;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
 
+import com.villysiu.yumtea.dto.response.CartResponseDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.models.user.User;
@@ -11,7 +12,6 @@ import java.util.List;
 public interface CartService {
 
     // ALL
-    List<Object[]> getCartsByUserQuery(User user);
     List<CartProjection> getCartProjectionsByUserId(Long userId);
     List<Cart> getCartsByUserId(Long userId);
 

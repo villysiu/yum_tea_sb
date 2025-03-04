@@ -1,6 +1,7 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
+import com.villysiu.yumtea.dto.response.CartResponseDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.User;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,9 +51,10 @@ public class CartServiceImpl implements CartService {
         );
         //cart already existed, update quantity
         if(duplicatedCart.isPresent()){
-            duplicatedCart.get().setQuantity(duplicatedCart.get().getQuantity() + cartInputDto.getQuantity());
-            cartRepo.save(duplicatedCart.get());
-            return duplicatedCart.get().getId();
+            Cart dupCart = duplicatedCart.get();
+            dupCart.setQuantity(dupCart.getQuantity() + cartInputDto.getQuantity());
+            cartRepo.save(dupCart);
+            return dupCart.getId();
         }
         else{
             System.out.println("creating a new cart");
@@ -135,12 +138,6 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public List<Object[]> getCartsByUserQuery(User user) {
-
-        return cartRepo.findByUserIdQuery(user.getId());
-    }
-
-    @Override
     public List<CartProjection> getCartProjectionsByUserId(Long userId){
         return cartRepo.findByUserIdOrderByIdDesc(userId, CartProjection.class);
     }
@@ -148,14 +145,17 @@ public class CartServiceImpl implements CartService {
     public List<Cart> getCartsByUserId(Long userId){
         return cartRepo.findByUserIdOrderByIdDesc(userId, Cart.class);
     }
+
+
+
     @Override
     public Cart getCartById(Long id){
-        return cartRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
+        return cartRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Cart not found"));
     }
 
     @Override
     public CartProjection getCartProjectionById(Long id) {
-        return cartRepo.findById(id, CartProjection.class).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
+        return cartRepo.findById(id, CartProjection.class).orElseThrow(()-> new NoSuchElementException("Cart not found"));
     }
 
 
@@ -164,6 +164,7 @@ public class CartServiceImpl implements CartService {
     public void deleteCartsByUserId(Long userId){
         cartRepo.deleteAllByUserId(userId);
     }
+
     @Override
     public void deleteCarts(){
         cartRepo.deleteAll();
@@ -171,9 +172,6 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void deleteCartById(Long id) {
-        if(!cartRepo.existsById(id)){
-            throw new EntityNotFoundException("Cart not found");
-        }
         cartRepo.deleteById(id);
 
     }

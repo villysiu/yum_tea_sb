@@ -5,6 +5,8 @@ import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.service.MilkService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,10 +14,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
 public class MilkServiceImpl implements MilkService {
 
+    @Autowired
     private final MilkRepo milkRepo;
+
+    public MilkServiceImpl(MilkRepo milkRepo) {
+        this.milkRepo = milkRepo;
+    }
 
     @Override
     public Milk updateMilk(Long id, Map<String, Object> milkDto) {
@@ -56,11 +62,10 @@ public class MilkServiceImpl implements MilkService {
     }
 
     @Override
-    public String deleteMilk(Long id) {
+    public void deleteMilk(Long id) {
         if (!milkRepo.existsById(id)) {
             throw new EntityNotFoundException("Milk not found");
         }
         milkRepo.deleteById(id);
-        return "Milk deleted";
     }
 }

@@ -15,39 +15,39 @@ import java.util.Map;
 
 @RestController
 public class MenuitemController {
-
     @Autowired
     private final MenuitemService menuitemService;
     MenuitemController(MenuitemService menuitemService) {
         this.menuitemService = menuitemService;
     }
-
+//read
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
         return menuitemService.getMenuitems();
+
     }
 
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
         return menuitemService.getMenuitemsByCategoryId(id);
-
     }
 
+    //Create
     @PostMapping("/menuitem")
     public ResponseEntity<Menuitem> createMenuitem(@RequestBody MenuitemDto menuitemDto) {
         Menuitem menuitem = menuitemService.createMenuitem(menuitemDto);
         return new ResponseEntity<>(menuitem, HttpStatus.CREATED);
     }
-
+//Update
     @PatchMapping("/menuitem/{id}")
     public ResponseEntity<Menuitem> updateMenuitem(@PathVariable Long id, @RequestBody Map<String, Object> menuitemDto) {
         Menuitem menuitem = menuitemService.updateMenuitem(id, menuitemDto);
-        return new ResponseEntity<>(menuitem, HttpStatus.CREATED);
+        return new ResponseEntity<>(menuitem, HttpStatus.OK);
     }
-
+//delete
     @DeleteMapping("/menuitem/{id}")
     public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
-        return new ResponseEntity<>(menuitemService.deleteMenuitem(id), HttpStatus.OK);
+        return new ResponseEntity<>(menuitemService.deleteMenuitem(id), HttpStatus.NO_CONTENT);
     }
 
 }

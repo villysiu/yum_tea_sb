@@ -1,6 +1,8 @@
 package com.villysiu.yumtea.controller.cart;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
+import com.villysiu.yumtea.dto.response.CartResponseDto;
+import com.villysiu.yumtea.exception.EntityNotBelongToUserException;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.dto.response.CartProjection;
@@ -18,14 +20,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @RestController
 public class CartController {
-    @Autowired
-    private final CartService cartService;
 
-    @Autowired
+    private final CartService cartService;
     private final CustomUserDetailsServiceImpl userDetailsService;
 
     public CartController(CartService cartService, CustomUserDetailsServiceImpl userDetailsService) {
@@ -34,24 +35,21 @@ public class CartController {
     }
 
 
-    @GetMapping("cartsByQuery")
-    public List<Object[]> getCartsByUserQuery(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
-        return cartService.getCartsByUserQuery(user);
-
-    }
-    @GetMapping("/cartsByProjection")
-    public List<CartProjection> getCartProjectionByUser(@AuthenticationPrincipal UserDetails userDetails) {
+//    @GetMapping("/cartsByProjection")
+//    public List<CartProjection> getCartProjectionsByUser(@AuthenticationPrincipal UserDetails userDetails) {
+//        User user = userDetailsService.findByEmail(userDetails.getUsername());
+//        return cartService.getCartProjectionsByUserId(user.getId());
+//    }
+    @GetMapping("/carts")
+    public List<CartProjection> getCartsByUser(@AuthenticationPrincipal UserDetails userDetails) {
         User user = userDetailsService.findByEmail(userDetails.getUsername());
         return cartService.getCartProjectionsByUserId(user.getId());
     }
-
     // get input json  from frontend,
     // add into cart, or merge if already existed, return cart id
 //    convert to cart projection and return with created status
     @PostMapping("/cart")
-    public ResponseEntity<CartProjection> addCart(@RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println(userDetails);
+    public ResponseEntity<CartProjection> createCart(@RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
         User user = userDetailsService.findByEmail(userDetails.getUsername());
 
         Long cartId = cartService.createCart(cartInputDto, user);
@@ -67,8 +65,8 @@ public class CartController {
         Cart cart = cartService.getCartById(id);
 
         // only  owner of the cart can modify the cart , or ADMIN
-        if(!cart.getUser().equals(user) && !userDetailsService.isAdmin(user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if(!cart.getUser().equals(user)) {
+            throw new EntityNotBelongToUserException("Cart does not belong to user");
         }
 
         Long cartId = cartService.updateCart(id, cartInputDto, user);
@@ -79,33 +77,33 @@ public class CartController {
     //Not doing patch to avoid complicated calculation add this and minus the previous etc
 
     @DeleteMapping("/cart/{id}")
-    public ResponseEntity<Long> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+    public ResponseEntity<String> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         User user = userDetailsService.findByEmail(userDetails.getUsername());
         Cart cart = cartService.getCartById(id);
 
-
-        if(!cart.getUser().equals(user) && !userDetailsService.isAdmin(user)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        if(!cart.getUser().equals(user)) {
+            throw new EntityNotBelongToUserException("Cart does not belong to user");
         }
         cartService.deleteCartById(cart.getId());
-        return new ResponseEntity<>(id, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Cart deleted", HttpStatus.NO_CONTENT);
     }
-    // Custom exception handler when no cart found with id.
-//    @ExceptionHandler(NoSuchElementException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-//    }
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    // Custom exception handler when no cart found with id.
+    @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
+
+//    @ExceptionHandler(HttpMessageNotReadableException.class)
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//    }
 }

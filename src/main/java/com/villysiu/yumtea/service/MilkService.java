@@ -13,5 +13,5 @@ public interface MilkService {
     Milk updateMilk(Long id, Map<String, Object> milkDto);
 
     Milk createMilk(Milk milk);
-    String deleteMilk(Long id) ;
+    void deleteMilk(Long id) ;
 }
