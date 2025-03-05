@@ -2,12 +2,6 @@ package com.villysiu.yumtea.models.user;
 
 import jakarta.persistence.*;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import lombok.*;
@@ -16,7 +10,8 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class User  {
+
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,3 +29,4 @@ public class User  {
 
 
 }
+

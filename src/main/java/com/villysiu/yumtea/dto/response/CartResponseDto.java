@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CartResponseDto {
     private Long id;
-    private Long userId;
+    private Long accountId;
     private Double price;
     private Sugar sugar;
     private Temperature temperature;

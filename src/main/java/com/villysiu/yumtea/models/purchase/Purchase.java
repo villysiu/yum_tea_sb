@@ -1,8 +1,7 @@
 package com.villysiu.yumtea.models.purchase;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,8 +16,8 @@ public class Purchase {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
-    private User user;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     @Column
     @JsonFormat(pattern = "yyyy-MM-dd")

@@ -1,11 +1,10 @@
 package com.villysiu.yumtea.service.impl;
 
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
-import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.RoleRepo;
-import com.villysiu.yumtea.repo.user.UserRepo;
+import com.villysiu.yumtea.repo.user.AccountRepo;
 import lombok.NonNull;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,42 +20,40 @@ import java.util.stream.Collectors;
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    private final UserRepo userRepo;
+    private final AccountRepo accountRepo;
     @Autowired
     private final RoleRepo roleRepo;
 
-    public CustomUserDetailsServiceImpl(UserRepo userRepo, RoleRepo roleRepo) {
-        this.userRepo = userRepo;
+    public CustomUserDetailsServiceImpl(AccountRepo accountRepo, RoleRepo roleRepo) {
+        this.accountRepo = accountRepo;
         this.roleRepo = roleRepo;
     }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepo.findByEmail(email)
+        Account account = accountRepo.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + " not found."));
 
-        Set<GrantedAuthority> authorities = user
+        Set<GrantedAuthority> authorities = account
                 .getRoles()
                 .stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
 
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
+                account.getEmail(),
+                account.getPassword(),
                 authorities
         );
     }
-    public User findByEmail(String email) {
-        return userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not found." ));
+
+    public Account findByEmail(String email) {
+        return accountRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not found." ));
     }
 
-    public Boolean isAdmin(@NonNull User user) {
-        Role r = roleRepo.findByName("ROLE_ADMIN").orElse(createRole("ROLE_ADMIN"));
-        return user.getRoles().contains(r);
+    public Boolean isAdmin(@NonNull Account account) {
+        Optional<Role> r = roleRepo.findByName("ROLE_ADMIN");
+        if(r.isPresent())
+            return account.getRoles().contains(r);
+        return false;
     }
-    private Role createRole(String roleName) {
-        Role r = new Role(roleName);
-        return roleRepo.save(r);
 
-
-    }
 }

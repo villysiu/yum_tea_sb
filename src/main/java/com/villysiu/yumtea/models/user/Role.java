@@ -12,11 +12,10 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     private String name;
 
-    public Role(String roleAdmin) {
-        this.name = roleAdmin;
-    }
+//    public Role(String roleAdmin) {
+//        this.name = roleAdmin;
+//    }
 
 }

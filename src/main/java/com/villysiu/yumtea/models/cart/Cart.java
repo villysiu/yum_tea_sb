@@ -1,7 +1,7 @@
 package com.villysiu.yumtea.models.cart;
 
 import com.villysiu.yumtea.models.tea.*;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,8 +19,8 @@ public class Cart {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
 
     @JoinColumn(name = "menuitem_id", nullable = false)

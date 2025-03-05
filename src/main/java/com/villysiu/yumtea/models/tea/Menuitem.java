@@ -26,10 +26,12 @@ public class Menuitem {
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
     private double price;
 
+
+
     // belong to a category, if category deleted, this becomes null
     @ManyToOne(optional = true)
 //    @JsonBackReference
-    @JoinColumn(name = "category_id", columnDefinition = "null")
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @ManyToOne(optional = true)

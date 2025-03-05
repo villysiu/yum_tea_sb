@@ -1,11 +1,10 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.PurchaseRequest;
-import com.villysiu.yumtea.exception.EntityNotBelongToUserException;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.PurchaseProjection;
 
 
@@ -15,11 +14,7 @@ import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
 
 import com.villysiu.yumtea.service.TaxRateService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -43,14 +38,14 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public Long createPurchase(PurchaseRequest purchaseRequest, User user) {
+    public Long createPurchase(PurchaseRequest purchaseRequest, Account account) {
 
-        List<Cart> carts = cartService.getCartsByUserId(user.getId());
+        List<Cart> carts = cartService.getCartsByUserId(account.getId());
         if(carts.isEmpty())
             throw new RuntimeException("User's cart is empty.");
 
         Purchase purchase = new Purchase();
-        purchase.setUser(user);
+        purchase.setAccount(account);
         purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
 
         double total = 0.0;
@@ -86,7 +81,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setTotal(total + purchase.getTip() + purchase.getTax());
         purchaseRepo.save(purchase);
 
-        cartService.deleteCartsByUserId(user.getId());
+        cartService.deleteCartsByUserId(account.getId());
 
         return purchase.getId();
 
@@ -96,21 +91,21 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     @Override
-    public List<PurchaseProjection> getPurchasesByUserId(Long userId){
-        return purchaseRepo.findByUserId(userId, PurchaseProjection.class);
+    public List<PurchaseProjection> getPurchasesByUserId(Long accountId){
+        return purchaseRepo.findByAccountId(accountId, PurchaseProjection.class);
     }
 
     @Override
-    public PurchaseProjection getPurchaseById(Long purchaseId, User user){
+    public PurchaseProjection getPurchaseById(Long purchaseId, Account account){
 
-       return purchaseRepo.findByUserIdAndPurchaseIdQuery(user.getId(), purchaseId, PurchaseProjection.class)
+       return purchaseRepo.findByAccountIdAndPurchaseIdQuery(account.getId(), purchaseId, PurchaseProjection.class)
                .orElseThrow(()->new NoSuchElementException("Purchase not found"));
 
 
     }
     @Override
-    public void deletePurchaseById(Long purchaseId, Long userId){
-        Purchase purchase = purchaseRepo.findByUserIdAndPurchaseIdQuery(userId, purchaseId, Purchase.class)
+    public void deletePurchaseById(Long purchaseId, Long accountId){
+        Purchase purchase = purchaseRepo.findByAccountIdAndPurchaseIdQuery(accountId, purchaseId, Purchase.class)
                 .orElseThrow(()->new NoSuchElementException("Purchase not found"));
 
         purchaseRepo.delete(purchase);

@@ -26,6 +26,7 @@ public class MilkServiceImpl implements MilkService {
     @Override
     public Milk updateMilk(Long id, Map<String, Object> milkDto) {
         Milk milk = milkRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Milk not found."));
+
         for(Map.Entry<String, Object> milkDtoEntry : milkDto.entrySet()) {
             String field = milkDtoEntry.getKey();
             Object value = milkDtoEntry.getValue();
@@ -48,7 +49,7 @@ public class MilkServiceImpl implements MilkService {
 
     public Milk getMilkById(Long id) {
         return milkRepo.findById(id)
-                .orElseThrow(()->new EntityNotFoundException("Milk not found."));
+                .orElse(milkRepo.findMilkByTitle("No Milk"));
     }
 
     @Override

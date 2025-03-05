@@ -1,10 +1,9 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
-import com.villysiu.yumtea.dto.response.CartResponseDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
@@ -37,12 +36,12 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public Long createCart(CartInputDto cartInputDto, User user) throws RuntimeException {
+    public Long createCart(CartInputDto cartInputDto, Account account) throws RuntimeException {
         System.out.println(cartInputDto);
 
 
-        Optional<Cart> duplicatedCart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
-                user.getId(),
+        Optional<Cart> duplicatedCart = cartRepo.findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+                account.getId(),
                 cartInputDto.getMenuitemId(),
                 cartInputDto.getMilkId(),
                 cartInputDto.getSizeId(),
@@ -59,7 +58,7 @@ public class CartServiceImpl implements CartService {
         else{
             System.out.println("creating a new cart");
             Cart newCart = new Cart();
-            newCart.setUser(user);
+            newCart.setAccount(account);
 
             Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
             newCart.setMenuitem(menuitem);
@@ -90,12 +89,12 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public Long updateCart(Long id, CartInputDto cartInputDto, User user) {
+    public Long updateCart(Long id, CartInputDto cartInputDto, Account account) {
 
         Cart cart = cartRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
 
-        Optional<Cart> duplicatedCart = cartRepo.findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
-                user.getId(),
+        Optional<Cart> duplicatedCart = cartRepo.findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+                account.getId(),
                 cartInputDto.getMenuitemId(),
                 cartInputDto.getMilkId(),
                 cartInputDto.getSizeId(),
@@ -138,12 +137,12 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public List<CartProjection> getCartProjectionsByUserId(Long userId){
-        return cartRepo.findByUserIdOrderByIdDesc(userId, CartProjection.class);
+    public List<CartProjection> getCartProjectionsByUserId(Long accountId){
+        return cartRepo.findByAccountIdOrderByIdDesc(accountId, CartProjection.class);
     }
     @Override
     public List<Cart> getCartsByUserId(Long userId){
-        return cartRepo.findByUserIdOrderByIdDesc(userId, Cart.class);
+        return cartRepo.findByAccountIdOrderByIdDesc(userId, Cart.class);
     }
 
 
@@ -161,8 +160,8 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public void deleteCartsByUserId(Long userId){
-        cartRepo.deleteAllByUserId(userId);
+    public void deleteCartsByUserId(Long accountId){
+        cartRepo.deleteAllByAccountId(accountId);
     }
 
     @Override

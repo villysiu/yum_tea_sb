@@ -3,10 +3,10 @@ package com.villysiu.yumtea.service.impl;
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
-import com.villysiu.yumtea.models.user.User;
 import com.villysiu.yumtea.repo.user.RoleRepo;
-import com.villysiu.yumtea.repo.user.UserRepo;
+import com.villysiu.yumtea.repo.user.AccountRepo;
 import com.villysiu.yumtea.service.AuthenticationService;
 
 import jakarta.persistence.EntityExistsException;
@@ -16,18 +16,15 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Optional;
 
 
 @Service
@@ -35,7 +32,7 @@ import java.util.Optional;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
-    private final UserRepo userRepo;
+    private final AccountRepo accountRepo;
     @Autowired
     private final RoleRepo roleRepo;
 
@@ -46,21 +43,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Long signup(SignupRequest signupRequest) {
-        if(userRepo.existsByEmail(signupRequest.getEmail())){
+        Account account = accountRepo.findByEmail(signupRequest.getEmail()).orElse(null);
+        if(account != null){
             throw new EntityExistsException("Email already exists");
         }
 
-        User user = new User();
-        user.setEmail(signupRequest.getEmail());
-        user.setNickname(signupRequest.getNickname());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+        account = new Account();
+        account.setEmail(signupRequest.getEmail());
+        account.setNickname(signupRequest.getNickname());
+        account.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
-        Optional<Role> role = roleRepo.findByName("ROLE_USER");
+        Role role = roleRepo.findByName("ROLE_USER").orElse(null);
 
-        role.ifPresent(r -> user.setRoles(Collections.singleton(r)));
-        userRepo.save(user);
+        account.setRoles(Collections.singleton(role));
+        accountRepo.save(account);
 
-        return user.getId();
+        return account.getId();
     }
 
 
@@ -69,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request) {
         System.out.println("in AuthenticationServiceImpl signin");
         System.out.println(signinRequest.toString());
-//        try {
+
             Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
             Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
 
@@ -96,18 +94,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
             String email = userDetails.getUsername();
             System.out.println("email: " + email);
-            User user = userRepo.findByEmail(email).orElseThrow(()->new EntityNotFoundException("email not found"));
+            Account account = accountRepo.findByEmail(email).orElseThrow(()->new EntityNotFoundException("email not found"));
 
             SigninResponse signinResponse = new SigninResponse();
-            signinResponse.setEmail(user.getEmail());
-            signinResponse.setNickname(user.getNickname());
+            signinResponse.setEmail(account.getEmail());
+            signinResponse.setNickname(account.getNickname());
 
             return signinResponse;
-//        }
-//        catch (AuthenticationException e){
-//            throw new AuthenticationException(e.getMessage()) {
-//            };
-//        }
+
 
     }
 }

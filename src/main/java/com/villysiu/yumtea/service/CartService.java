@@ -2,18 +2,17 @@ package com.villysiu.yumtea.service;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
 
-import com.villysiu.yumtea.dto.response.CartResponseDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.dto.response.CartProjection;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 
 import java.util.List;
 
 public interface CartService {
 
     // ALL
-    List<CartProjection> getCartProjectionsByUserId(Long userId);
-    List<Cart> getCartsByUserId(Long userId);
+    List<CartProjection> getCartProjectionsByUserId(Long accountId);
+    List<Cart> getCartsByUserId(Long accountId);
 
     //SINGLE
     // used by update or remove
@@ -23,11 +22,11 @@ public interface CartService {
     CartProjection getCartProjectionById(Long id);
 
     // CUD
-    Long createCart(CartInputDto cartInputDto, User user);
-    Long updateCart(Long id, CartInputDto cartInputDto, User user);
+    Long createCart(CartInputDto cartInputDto, Account account);
+    Long updateCart(Long id, CartInputDto cartInputDto, Account account);
 
     void deleteCartById(Long id);
-    void deleteCartsByUserId(Long userId);
+    void deleteCartsByUserId(Long accountId);
     //admin only
     void deleteCarts();
 

@@ -3,17 +3,14 @@ package com.villysiu.yumtea.controller.user;
 import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -33,11 +30,11 @@ public class AuthorizationController {
 
     @GetMapping("/user")
     public ResponseEntity<SigninResponse> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = userDetailsService.findByEmail(userDetails.getUsername());
 
         SigninResponse signinResponse = new SigninResponse();
-        signinResponse.setEmail(user.getEmail());
-        signinResponse.setNickname(user.getNickname());
+        signinResponse.setEmail(account.getEmail());
+        signinResponse.setNickname(account.getNickname());
 
         return ResponseEntity.ok(signinResponse);
     }
@@ -45,18 +42,18 @@ public class AuthorizationController {
     @PatchMapping("/user")
     public ResponseEntity<SigninResponse> updateUser(@RequestBody Map<String, Object> userRequestDto, @AuthenticationPrincipal UserDetails userDetails){
         System.out.println("update user info");
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account =  userDetailsService.findByEmail(userDetails.getUsername());
 
-        return ResponseEntity.ok(authorizationService.updateUser(userRequestDto, user));
+        return ResponseEntity.ok(authorizationService.updateUser(userRequestDto, account));
     }
 
     @PatchMapping("/updatePassword")
     public ResponseEntity<String> updatePassword(@RequestBody PasswordRequestDto passwordRequestDto,
                                                   @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("update user password");
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account =  userDetailsService.findByEmail(userDetails.getUsername());
        try{
-            authorizationService.updatePassword(passwordRequestDto, user);
+            authorizationService.updatePassword(passwordRequestDto, account);
            return new ResponseEntity<>(HttpStatus.OK);
 
         }catch (AuthenticationException e){

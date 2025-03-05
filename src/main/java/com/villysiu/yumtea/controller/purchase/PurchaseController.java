@@ -1,7 +1,7 @@
 package com.villysiu.yumtea.controller.purchase;
 
 import com.villysiu.yumtea.dto.request.PurchaseRequest;
-import com.villysiu.yumtea.models.user.User;
+import com.villysiu.yumtea.models.user.Account;
 
 import com.villysiu.yumtea.dto.response.PurchaseProjection;
 import com.villysiu.yumtea.service.PurchaseService;
@@ -31,31 +31,31 @@ public class PurchaseController {
 
     @GetMapping("/purchases")
     public List<PurchaseProjection> getPurchases(@AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
-         return purchaseService.getPurchasesByUserId(user.getId());
+        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+         return purchaseService.getPurchasesByUserId(account.getId());
     }
 
     @GetMapping("/purchases/{id}")
     public PurchaseProjection getPurchaseById(@PathVariable("id") Long id,
                                            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = userDetailsService.findByEmail(userDetails.getUsername());
 
-        return purchaseService.getPurchaseById(id, user);
+        return purchaseService.getPurchaseById(id, account);
     }
 
     @PostMapping("/purchase")
     public ResponseEntity<PurchaseProjection> createPurchase(@RequestBody PurchaseRequest purchaseRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = userDetailsService.findByEmail(userDetails.getUsername());
 //        {"tip": 10.55, stata: "WA"}
-        Long id = purchaseService.createPurchase(purchaseRequest, user);
-        return new ResponseEntity<>(purchaseService.getPurchaseById(id, user), HttpStatus.CREATED);
+        Long id = purchaseService.createPurchase(purchaseRequest, account);
+        return new ResponseEntity<>(purchaseService.getPurchaseById(id, account), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/purchases/{id}")
     public ResponseEntity<String> deletePurchase(@PathVariable("id") Long id,
                                             @AuthenticationPrincipal UserDetails userDetails) {
-        User user = userDetailsService.findByEmail(userDetails.getUsername());
-        purchaseService.deletePurchaseById(id, user.getId());
+        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        purchaseService.deletePurchaseById(id, account.getId());
         return new ResponseEntity<>("Purchase deleted", HttpStatus.NO_CONTENT);
     }
 

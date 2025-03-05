@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PurchaseProjection {
     Long getId();
-    UserProjection getUser();
+    AccountProjection getAccount();
 
     Date getPurchaseDate();
     Double getTip();
@@ -31,7 +31,7 @@ public interface PurchaseProjection {
         Double getPrice();
     }
 
-    interface UserProjection {
+    interface AccountProjection {
         Long getId();
         String getEmail();
     }

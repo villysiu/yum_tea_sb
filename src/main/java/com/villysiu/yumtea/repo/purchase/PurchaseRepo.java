@@ -11,13 +11,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-
+@Repository
 public interface PurchaseRepo extends JpaRepository<Purchase, Long> {
 
-    <T> List<T> findByUserId(Long userId, Class<T> type);
+    <T> List<T> findByAccountId(Long accountId, Class<T> type);
 
-    @Query("SELECT p FROM Purchase p WHERE p.id = :purchaseId AND p.user.id = :userId")
-    <T> Optional<T> findByUserIdAndPurchaseIdQuery(@Param("userId") Long userId, @Param("purchaseId") Long purchaseId,
+    @Query("SELECT p FROM Purchase p WHERE p.id = :purchaseId AND p.account.id = :accountId")
+    <T> Optional<T> findByAccountIdAndPurchaseIdQuery(@Param("accountId") Long accountId,
+                                                   @Param("purchaseId") Long purchaseId,
                                                Class<T> type);
 
 

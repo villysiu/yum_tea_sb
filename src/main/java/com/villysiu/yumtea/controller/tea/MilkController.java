@@ -28,6 +28,11 @@ public class MilkController {
         return milkService.getMilks();
     }
 
+    @GetMapping("/milks/{id}")
+    public Milk getMilkById(@PathVariable Long id) {
+        return milkService.getMilkById(id);
+    }
+
     // create
     @PostMapping(value="/milk")
     public ResponseEntity<Milk> createMilk(@RequestBody Milk milk) {

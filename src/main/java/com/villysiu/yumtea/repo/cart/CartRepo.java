@@ -15,9 +15,10 @@ import java.util.Optional;
 public interface CartRepo extends JpaRepository<Cart, Long> {
 
 
-    Optional<Cart> findByUserIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
 
-            Long user_id,
+    Optional<Cart> findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
+
+            Long account_id,
             Long menuitem_id,
             Long milk_id,
             Long size_id,
@@ -38,11 +39,11 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 //            "where c.user.id = :userId")
 //    List<Object>  findByUserIdQuery(Long userId);
 
-    <T> List<T> findByUserIdOrderByIdDesc(Long id, Class<T> type);
+    <T> List<T> findByAccountIdOrderByIdDesc(Long accountId, Class<T> type);
 
 
 
     <T> Optional<T> findById(Long id, Class<T> type);
 
-    void deleteAllByUserId(Long userId);
+    void deleteAllByAccountId(Long accountId);
 }
