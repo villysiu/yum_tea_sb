@@ -1,6 +1,7 @@
 package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.dto.request.MenuitemDto;
+import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
@@ -10,8 +11,12 @@ import com.villysiu.yumtea.service.MenuitemService;
 import com.villysiu.yumtea.service.MilkService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.ObjectError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -120,8 +125,24 @@ public class MenuitemServiceImpl implements MenuitemService {
         return menuitemRepo.findByCategoryIdQuery(categoryId);
 //        return menuitemRepo.findByCategoryId(categoryId);
     }
+    @Override
+    public List<BestSellerDto> getBestsellers(){
+        Pageable pageable = PageRequest.of(0, 3);
+        List<Object[]> bestsellers = menuitemRepo.bestSellerMenuitems(pageable);
+        List<BestSellerDto> bestSellerDtos = new ArrayList<>();
+        for (Object[] row : bestsellers) {
+            BestSellerDto dto = new BestSellerDto();
+            dto.setMenuitemId((Long) row[0]);
+            dto.setMenuitemTitle((String) row[1]);
+            dto.setCount((Long) row[2]);
+            bestSellerDtos.add(dto);
 
-//    Delete
+        }
+
+        return bestSellerDtos;
+    }
+
+    //    Delete
     @Override
     public String deleteMenuitem(Long id) throws RuntimeException {
         if (!menuitemRepo.existsById(id)) {

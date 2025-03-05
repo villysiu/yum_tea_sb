@@ -1,6 +1,7 @@
 package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.dto.request.MenuitemDto;
+import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.service.MenuitemService;
@@ -30,6 +31,10 @@ public class MenuitemController {
     @GetMapping("/category/{id}/menuitems")
     public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
         return menuitemService.getMenuitemsByCategoryId(id);
+    }
+    @GetMapping("/bestsellers")
+    public List<BestSellerDto> getBestsellers() {
+        return menuitemService.getBestsellers();
     }
 
     //Create
