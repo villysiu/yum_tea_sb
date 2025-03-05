@@ -11,12 +11,9 @@ import java.util.List;
 public interface CartService {
 
     // ALL
-    List<CartProjection> getCartProjectionsByUserId(Long accountId);
-    List<Cart> getCartsByUserId(Long accountId);
+    List<CartProjection> getCartProjectionsByAccountId(Long accountId);
+    List<Cart> getCartsByAccountId(Long accountId);
 
-    //SINGLE
-    // used by update or remove
-    Cart getCartById(Long id);
 
     // used for return to frontend
     CartProjection getCartProjectionById(Long id);
@@ -25,7 +22,7 @@ public interface CartService {
     Long createCart(CartInputDto cartInputDto, Account account);
     Long updateCart(Long id, CartInputDto cartInputDto, Account account);
 
-    void deleteCartById(Long id);
+    void deleteCartById(Long id, Long accountId);
     void deleteCartsByUserId(Long accountId);
     //admin only
     void deleteCarts();

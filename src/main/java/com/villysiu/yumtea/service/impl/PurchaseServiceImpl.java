@@ -40,7 +40,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public Long createPurchase(PurchaseRequest purchaseRequest, Account account) {
 
-        List<Cart> carts = cartService.getCartsByUserId(account.getId());
+        List<Cart> carts = cartService.getCartsByAccountId(account.getId());
         if(carts.isEmpty())
             throw new RuntimeException("User's cart is empty.");
 

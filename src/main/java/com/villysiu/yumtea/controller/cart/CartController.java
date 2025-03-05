@@ -39,7 +39,7 @@ public class CartController {
     @GetMapping("/carts")
     public List<CartProjection> getCartsByUser(@AuthenticationPrincipal UserDetails userDetails) {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
-        return cartService.getCartProjectionsByUserId(account.getId());
+        return cartService.getCartProjectionsByAccountId(account.getId());
     }
     // get input json  from frontend,
     // add into cart, or merge if already existed, return cart id
@@ -58,12 +58,13 @@ public class CartController {
         System.out.println("updating cart");
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
 
-        Cart cart = cartService.getCartById(id);
-
-        // only  owner of the cart can modify the cart , or ADMIN
-        if(!cart.getAccount().equals(account)) {
-            throw new EntityNotBelongToUserException("Cart does not belong to user");
-        }
+//        Cart cart = cartService.getCartById(id);
+//
+//        // only  owner of the cart can modify the cart , or ADMIN
+//        if(!cart.getAccount().equals(account)) {
+//            throw new EntityNotBelongToUserException("Cart does not belong to user");
+//        }
+//        Cart cart = cartService.getCartByIdAndAccountId(id, account.getId());
 
         Long cartId = cartService.updateCart(id, cartInputDto, account);
         return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
@@ -75,12 +76,12 @@ public class CartController {
     @DeleteMapping("/cart/{id}")
     public ResponseEntity<String> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
-        Cart cart = cartService.getCartById(id);
-
-        if(!cart.getAccount().equals(account)) {
-            throw new EntityNotBelongToUserException("Cart does not belong to user");
-        }
-        cartService.deleteCartById(cart.getId());
+//        Cart cart = cartService.getCartById(id);
+//
+//        if(!cart.getAccount().equals(account)) {
+//            throw new EntityNotBelongToUserException("Cart does not belong to user");
+//        }
+        cartService.deleteCartById(id, account.getId());
         return new ResponseEntity<>("Cart deleted", HttpStatus.NO_CONTENT);
     }
 

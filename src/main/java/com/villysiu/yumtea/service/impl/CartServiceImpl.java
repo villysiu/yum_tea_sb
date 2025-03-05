@@ -91,7 +91,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public Long updateCart(Long id, CartInputDto cartInputDto, Account account) {
 
-        Cart cart = cartRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
+        Cart cart = cartRepo.findByIdAndAccountId(id, account.getId(), Cart.class)
+                .orElseThrow(()->new NoSuchElementException("Cart not found"));
 
         Optional<Cart> duplicatedCart = cartRepo.findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
                 account.getId(),
@@ -137,20 +138,14 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public List<CartProjection> getCartProjectionsByUserId(Long accountId){
+    public List<CartProjection> getCartProjectionsByAccountId(Long accountId){
         return cartRepo.findByAccountIdOrderByIdDesc(accountId, CartProjection.class);
     }
     @Override
-    public List<Cart> getCartsByUserId(Long userId){
-        return cartRepo.findByAccountIdOrderByIdDesc(userId, Cart.class);
+    public List<Cart> getCartsByAccountId(Long accountId){
+        return cartRepo.findByAccountIdOrderByIdDesc(accountId, Cart.class);
     }
 
-
-
-    @Override
-    public Cart getCartById(Long id){
-        return cartRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Cart not found"));
-    }
 
     @Override
     public CartProjection getCartProjectionById(Long id) {
@@ -170,7 +165,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCartById(Long id) {
+    public void deleteCartById(Long id, Long accountId) {
+        Cart cart = cartRepo.findByIdAndAccountId(id, accountId, Cart.class)
+                .orElseThrow(()->new NoSuchElementException("Cart not found"));
+
         cartRepo.deleteById(id);
 
     }
