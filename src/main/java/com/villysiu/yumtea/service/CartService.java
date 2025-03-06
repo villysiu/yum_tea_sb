@@ -23,7 +23,7 @@ public interface CartService {
     Long updateCart(Long id, CartInputDto cartInputDto, Account account);
 
     void deleteCartById(Long id, Long accountId);
-    void deleteCartsByUserId(Long accountId);
+    void deleteCartsByAccountId(Long accountId);
     //admin only
     void deleteCarts();
 

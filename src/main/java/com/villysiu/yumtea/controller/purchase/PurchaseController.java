@@ -32,7 +32,7 @@ public class PurchaseController {
     @GetMapping("/purchases")
     public List<PurchaseProjection> getPurchases(@AuthenticationPrincipal UserDetails userDetails) {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
-         return purchaseService.getPurchasesByUserId(account.getId());
+         return purchaseService.getPurchasesByAccountId(account.getId());
     }
 
     @GetMapping("/purchases/{id}")

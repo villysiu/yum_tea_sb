@@ -31,13 +31,8 @@ public class CartController {
     }
 
 
-//    @GetMapping("/cartsByProjection")
-//    public List<CartProjection> getCartProjectionsByUser(@AuthenticationPrincipal UserDetails userDetails) {
-//        User user = userDetailsService.findByEmail(userDetails.getUsername());
-//        return cartService.getCartProjectionsByUserId(user.getId());
-//    }
     @GetMapping("/carts")
-    public List<CartProjection> getCartsByUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public List<CartProjection> getCartsByAccount(@AuthenticationPrincipal UserDetails userDetails) {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
         return cartService.getCartProjectionsByAccountId(account.getId());
     }

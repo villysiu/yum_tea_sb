@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name="UniqueCartAndUser", columnNames = {"user_id", "menuitem_id", "milk_id", "size_id","temperature", "sugar"})
+        @UniqueConstraint(name="UniqueCartAndAccount", columnNames = {"account_id", "menuitem_id", "milk_id", "size_id","temperature", "sugar"})
 }) //java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '2-6-3-1-HOT-FIFTY' for key 'cart.UniqueCartAndUser'
 
 public class Cart {

@@ -18,7 +18,7 @@ public interface MenuitemRepo extends JpaRepository<Menuitem, Long> {
             "inner join Menuitem m on m.id=pl.menuitem.id " +
             "group by pl.menuitem.id " +
             "order by count(*) desc ")
-    List<Object[]> bestSellerMenuitems(Pageable pageable);
+    List<Object[]> findBestSellers(Pageable pageable);
 
 
 }

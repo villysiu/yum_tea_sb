@@ -81,7 +81,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setTotal(total + purchase.getTip() + purchase.getTax());
         purchaseRepo.save(purchase);
 
-        cartService.deleteCartsByUserId(account.getId());
+        cartService.deleteCartsByAccountId(account.getId());
 
         return purchase.getId();
 
@@ -91,7 +91,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     @Override
-    public List<PurchaseProjection> getPurchasesByUserId(Long accountId){
+    public List<PurchaseProjection> getPurchasesByAccountId(Long accountId){
         return purchaseRepo.findByAccountId(accountId, PurchaseProjection.class);
     }
 

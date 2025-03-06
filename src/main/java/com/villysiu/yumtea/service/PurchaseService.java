@@ -12,7 +12,7 @@ public interface PurchaseService {
     Long createPurchase(PurchaseRequest purchaseRequest, Account account);
 
     //return a list of all purchases by the current user
-    List<PurchaseProjection> getPurchasesByUserId(Long accountId);
+    List<PurchaseProjection> getPurchasesByAccountId(Long accountId);
 
 
     PurchaseProjection getPurchaseById(Long purchaseId, Account account);

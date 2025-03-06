@@ -27,6 +27,10 @@ public class Account {
     @ManyToMany(targetEntity = Role.class)
     private Set<Role> roles;
 
-
+    public Account(String email, String nickname, String password) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+    }
 }
 

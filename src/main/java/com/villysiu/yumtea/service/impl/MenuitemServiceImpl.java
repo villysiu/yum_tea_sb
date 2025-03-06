@@ -128,7 +128,7 @@ public class MenuitemServiceImpl implements MenuitemService {
     @Override
     public List<BestSellerDto> getBestsellers(){
         Pageable pageable = PageRequest.of(0, 3);
-        List<Object[]> bestsellers = menuitemRepo.bestSellerMenuitems(pageable);
+        List<Object[]> bestsellers = menuitemRepo.findBestSellers(pageable);
         List<BestSellerDto> bestSellerDtos = new ArrayList<>();
         for (Object[] row : bestsellers) {
             BestSellerDto dto = new BestSellerDto();

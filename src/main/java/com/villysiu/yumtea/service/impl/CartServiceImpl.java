@@ -155,7 +155,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public void deleteCartsByUserId(Long accountId){
+    public void deleteCartsByAccountId(Long accountId){
         cartRepo.deleteAllByAccountId(accountId);
     }
 

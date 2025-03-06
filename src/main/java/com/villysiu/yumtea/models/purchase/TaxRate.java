@@ -18,8 +18,8 @@ public class TaxRate {
     @Column(nullable = false, unique = true)
     private String state;
 
-    @Column(nullable = false, columnDefinition = "double default 0" )
-    private Double rate;
+    @Column(nullable = false, columnDefinition = "double default 0.0" )
+    private Double rate=0.0;
 
     public TaxRate(String state, Double rate) {
         this.state = state;

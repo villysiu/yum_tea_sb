@@ -49,7 +49,7 @@ public class MilkServiceImpl implements MilkService {
 
     public Milk getMilkById(Long id) {
         return milkRepo.findById(id)
-                .orElse(milkRepo.findMilkByTitle("No Milk"));
+                .orElse(milkRepo.findMilkByTitle("No Milk").get());
     }
 
     @Override

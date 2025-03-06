@@ -4,8 +4,10 @@ import com.villysiu.yumtea.models.tea.Milk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 public interface MilkRepo extends JpaRepository<Milk, Long> {
-    Milk findMilkByTitle(String title);
+    Optional<Milk> findMilkByTitle(String title);
 
 
 }

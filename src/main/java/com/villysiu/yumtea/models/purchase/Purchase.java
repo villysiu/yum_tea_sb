@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.villysiu.yumtea.models.user.Account;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +21,9 @@ public class Purchase {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date purchaseDate;
+    @Column(columnDefinition = "DATE DEFAULT CURRENT_DATE")  //ensures database has a current date
+    @JsonFormat(pattern = "yyyy-MM-dd")  //ensure date is return in restAPI as "yyyy-MM-dd"
+    private Date purchaseDate = new Date(); //ensures JAVA object has a date when initialized
 
     @Column(columnDefinition = "double default 0.0", nullable = false)
     private Double tip = 0.0;
@@ -36,6 +38,7 @@ public class Purchase {
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PurchaseLineitem> purchaseLineitemList;
 
-//    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//   private List<Appointment> appointments = new ArrayList<>();
+    public Purchase(Account account) {
+        this.account = account;
+    }
 }

@@ -22,6 +22,6 @@ class RoleRepoTest {
 
         Role fetchedRole = roleRepo.findByName("ROLE_USER").orElse(null);;
         assertNotNull(fetchedRole);
-        assertEquals(fetchedRole.getName(), "ROLE_USER");
+        assertEquals("ROLE_USER", fetchedRole.getName());
     }
 }

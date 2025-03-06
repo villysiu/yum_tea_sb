@@ -27,8 +27,6 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
     );
 
 
-
-
     <T> List<T> findByAccountIdOrderByIdDesc(Long accountId, Class<T> type);
 
     <T> Optional<T> findByIdAndAccountId(Long id, Long accountId, Class<T> type);

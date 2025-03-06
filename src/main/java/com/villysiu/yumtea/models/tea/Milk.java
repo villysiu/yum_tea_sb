@@ -5,6 +5,7 @@ import lombok.*;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name="milk")
 public class Milk {
 
@@ -16,18 +17,9 @@ public class Milk {
     private String title;
 
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
-    private double price;
+    private double price=0.0;
 
-
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
-//
-//    public void setTitle(String title) {
-//        this.title = title;
-//    }
-//
-//    public void setPrice(double price) {
-//        this.price = price;
-//    }
+    public Milk(String title) {
+        this.title = title;
+    }
 }

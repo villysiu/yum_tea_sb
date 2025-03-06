@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name="menuitem")
 public class Menuitem {
 
@@ -23,28 +24,46 @@ public class Menuitem {
     @Column
     private String imageUrl;
 
-    @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
-    private double price;
-
-
+    @Column(columnDefinition = "DOUBLE DEFAULT 0.0" )
+    private double price = 0.0;
 
     // belong to a category, if category deleted, this becomes null
     @ManyToOne(optional = true)
-//    @JsonBackReference
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(optional = true)
+    @ManyToOne()
     @JoinColumn(name="milk_id", columnDefinition = "BIGINT DEFAULT 12" )
     private Milk milk;
 
-    @Column(length = 4, columnDefinition = "varchar(4) default 'HOT'")
+//    @Column(length = 4, columnDefinition = "varchar(4) default 'FREE'")
     @Enumerated(EnumType.STRING)
     private Temperature temperature;
 
-    @Column(length = 12, columnDefinition = "varchar(12) default 'ZERO'")
+//    @Column(length = 12, columnDefinition = "varchar(12) default 'ZERO'")
     @Enumerated(EnumType.STRING)
     private Sugar sugar;
 
+    @PrePersist
+    private void setDefaultValue() {
+        if (this.sugar == null) {
+            this.sugar = Sugar.ZERO;  // Set the default value
+        }
+        if(this.temperature == null) {
+            this.temperature = Temperature.FREE;
+        }
+        if(this.milk == null) {
+            this.milk = new Milk();
+            this.milk.setId(12L);
+        }
+
+
+    }
+
+    public Menuitem(String title, Category category, Milk milk) {
+        this.title = title;
+        this.category = category;
+        this.milk = milk;
+    }
 }
 
