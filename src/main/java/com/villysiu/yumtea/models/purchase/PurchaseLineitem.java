@@ -38,10 +38,10 @@ public class PurchaseLineitem {
     private Sugar sugar;
 
     @Column(columnDefinition = "int default 1", nullable = false)
-    private Integer quantity;
+    private Integer quantity = 1;
 
     @Column(columnDefinition = "double default 0.0", nullable = false) //ensure database defult to 0.0
-    private Double price= 0.0;
+    private Double price = 0.0;
 
     // ensures the POJO has a default value when nothing is privided in constructor
     @PrePersist
@@ -52,9 +52,9 @@ public class PurchaseLineitem {
         if(this.temperature == null) {
             this.temperature = Temperature.HOT;
         }
-        if(this.quantity == null) {
-            this.quantity = 1;
-        }
+//        if(this.quantity == null) {
+//            this.quantity = 1;
+//        }
         if(this.milk == null) {
             this.milk = new Milk();
             this.milk.setId(12L);

@@ -29,7 +29,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request){
         System.out.println("in signup");
         //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
         try{

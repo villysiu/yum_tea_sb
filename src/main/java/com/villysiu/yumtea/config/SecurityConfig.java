@@ -64,14 +64,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Controller
-//public class SessionController {
-//
-//    @GetMapping("/session-expired")
-//    public String sessionExpired() {
-//        return "sessionExpired";  // This is your session expired view (e.g., a page saying the session expired)
-//    }
-//}
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -101,14 +93,6 @@ public class SecurityConfig {
         return source;
     }
 
-
-
-//    CorsConfiguration corsConfig = new CorsConfiguration();
-//    corsConfig.setAllowedOrigins(Arrays.asList("http://127.0.0.1:8001")); // Frontend URL
-//    corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // HTTP methods
-//    corsConfig.setAllowedHeaders(Arrays.asList("*")); // All headers
-//    corsConfig.setAllowCredentials(true); // Allow credentials (cookies)
-//    return corsConfig;
 
 }
 

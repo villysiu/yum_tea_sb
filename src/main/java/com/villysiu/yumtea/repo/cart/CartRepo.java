@@ -1,7 +1,5 @@
 package com.villysiu.yumtea.repo.cart;
 
-import com.villysiu.yumtea.dto.request.CartInputDto;
-import com.villysiu.yumtea.dto.response.CartResponseDto;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.Sugar;
 import com.villysiu.yumtea.models.tea.Temperature;
@@ -15,7 +13,7 @@ import java.util.Optional;
 public interface CartRepo extends JpaRepository<Cart, Long> {
 
 
-
+    //Look up duplicated cart
     Optional<Cart> findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
 
             Long account_id,
