@@ -155,6 +155,12 @@ The public resources is open to all, no account needed.
     - get all `Sugar` from SugarRepo`
     - return `Sugar` list  with http status `200 OK`
 
+**TaxRateController **
+- **GET**: `/taxes/{state}`
+  - get `taxRate` by state from database using `TaxRepo`
+  - return `taxRate` with http status `200 OK`
+
+
 ### Private resources for USER_ADMIN
 Thees private resources are **ONLY** available to `Account` with `Role` **USER_ADMIN** authority.
 
@@ -174,7 +180,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
       }
       ```
     - create new `Menuitem` 
-    - save `Menuitem` to database using MenuitemRepo
+    - save `Menuitem` to database using `MenuitemRepo`
     - return Menuiem http status `201 CREATED`
 - **PATCH** : `/menuitem/{id}`
     - `Map<String, Object> menuitemDto` DTO is used to map the following Json object.
@@ -184,14 +190,14 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
         "sugar": "FIFTY"
       }
       ```
-    - fetch `Menuitem` by `id` from database using MenuitemRepo
+    - fetch `Menuitem` by `id` from database using `MenuitemRepo`
     - update `Menuitem` fields
-    - save `Menuitem` to database using MenuitemRepo
+    - save `Menuitem` to database using `MenuitemRepo`
     - return `Menuitem` http status `200 OK`
 - **DELETE** : `/menuitem/{id}`
 
-  - verify `Menuitem` existed in database using MenuitemRepo
-  - delete `Menuitem` to database using MenuitemRepo
+  - verify `Menuitem` existed in database using `MenuitemRepo`
+  - delete `Menuitem` to database using `MenuitemRepo`
   - return http status `404 No Content`
   - 
 **CategoryController**
@@ -221,7 +227,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
 - **DELETE** : `/category/{id}`
 
     - verify `Category` existed in database using `CategoryRepo`
-    - delete `Category` to database using `CategoryRepo`
+    - delete `Category` from database using `CategoryRepo`
     - return http status `404 No Content`
 
 **MilkController**
@@ -238,7 +244,93 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
 - **POST** : `/sugar`
 - **PATCH** : `/sugar/{id}`
 - **DELETE** : `/sugar/{id}`
-- 
+
+### Private Resources accessed **only** by authenticated account. 
+- Authenticated `Account` with `ROLE_USER` can only access his own `Cart` and `Purchase` objects.
+
+**CartController**
+- **GET** : `/carts`
+    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
+    - get all `Cart` owned by `Account` from database using `Cartepo` 
+    - return `Cart` list  with http status `200 OK`
+
+- **POST** : `/cart`
+    - `CartInputDto` DTO is used to map the following Json object.
+      ``` 
+      {
+         "menuitemId": 2,
+         "milkId": 9,
+         "sizeId": 2,
+         "quantity": 1,
+         "sugar": "TWENTY_FIVE",
+         "temperature": "HOT"
+      }
+      ```
+    - create new `Cart`
+    - save `Cart` to database using `CartRepo`
+    - return `Cart` http status `201 CREATED`
+  
+- **PUT** : `/cart/{id}`
+    - `CartInputDto` DTO is used to map the following Json object.
+      ``` 
+      {
+         "milkId": 3,
+         "sizeId": 2,
+         "quantity": 2,
+         "sugar": "SEVENTY_FIVE",
+         "temperature": "HOT"
+      }
+      ```
+    - fetch `Cart` by `id` from database using `CartRepo`
+    - update `Cart` fields
+    - save `Cart` to database using `CartRepo`
+    - return `Cart` http status `200 OK`
+  
+
+- **DELETE** : `/cart/{id}`
+
+    - verify `Cart` existed in database using `CartRepo`
+    - delete `Cart` from database using `CartRepo`
+    - return http status `404 No Content`
+
+
+**PurchaseController**
+- **GET** : `/purchases`
+    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
+    - get all `Purchase` owned by `Account` from database using `PurchaseRepo`
+    - return `Purchase` list  with http status `200 OK`
+- **GET** : `/purchases/{id}`
+    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
+    - get `Purchase` by `id` and `Account` from database using `PurchaseRepo`
+    - return `Purchase`  with http status `200 OK`
+
+- **POST** : `/purchase`
+    - `PurchaseRequest` DTO is used to map the following Json object.
+      ``` 
+      {
+         "tip": 5.5,
+         "state": "WA"
+      }
+      ```
+    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
+    - create new `Purchase`
+    - save `Purchase` to database using `PurchaseRepo`
+    - fetch all `Cart` belonged to `Account` from database using `CartRepo`
+    - save each `Cart` to `PurchaseLineitem`
+    - calculate `tax` by `state` and `total` 
+    - save `Purchase` to database using `PurchaseRepo` again
+    - remove all `Cart` belonged to `Account` from database usign `CartRepo`
+    - return `Purchase` with http status `201 CREATED`
+
+
+- **DELETE** : `/purchase/{id}`
+
+    - verify `Purchase` existed in database using `PurchaseRepo`
+    - delete `Purchase` from database using `PurchaseRepo`
+    - return http status `404 No Content`
+
+
+
 ### Entity ###
 - user
   - Account
