@@ -37,7 +37,7 @@ Youtube: Coming soon
 
 
 ## Endpoints ##
-**Authentication Controller**
+### Authentication Controller
 
 This controller provides APIs for register, login and logout actions.
 - **POST** : `/auth/signup`
@@ -76,7 +76,7 @@ This controller provides APIs for register, login and logout actions.
   - return http status `200 OK`
 
 
-**Authorization Controller**
+### Authorization Controller
 
 This controller provides APIs for authenticated user to fetch user, update nickname and password.
 - **GET** : `/resource/user`
@@ -92,7 +92,7 @@ This controller provides APIs for authenticated user to fetch user, update nickn
        ```
     - get account from `@AuthenticationPrincipal` (provided by Spring Security)
     - update nickname and save to database using `AccountRepo` 
-    - return a `SigninResponse` DTO with http status 200 OK
+    - return a `SigninResponse` DTO with http status `200 OK`
 - **PATCH** : `/resource/updatePassword`
     - `PasswordRequestDto passwordRequestDto` is used to map the following Json object.
        ``` 
@@ -104,8 +104,58 @@ This controller provides APIs for authenticated user to fetch user, update nickn
     - get account from `@AuthenticationPrincipal` (provided by Spring Security)
     - verify currentPassword matches account password
     - update password and save to database using `AccountRepo`
-    - return http status 200 OK
+    - return http status `200 OK`
 
+### Public resources
+The public resources is open to all, no account needed.
+
+**MenuitemController**
+   - **GET** : `/menuitems`
+     - get all `Menuitem` from `MenuitemRepo`
+     - return `Menuitem` list  with http status `200 OK`
+     
+   - **GET** : `/bestseller`
+     - get top 3 bestselling `Menuitem` from a query
+       ```
+       @Query ("SELECT pl.menuitem.id, m.title, sum(pl.quantity) " +
+            "FROM PurchaseLineitem pl " +
+            "inner join Menuitem m on m.id = pl.menuitem.id " +
+            "group by pl.menuitem.id " +
+            "order by 3 desc"
+        )
+        ```
+     - return `Menuitem` list  with http status `200 OK`
+- **GET** : `/category/{id}/menuitems`
+    - get `Menuitem` by `CategoryId` from a query
+      ```
+      @Query("SELECT m FROM Menuitem m Where m.category.id=:categoryId")
+       ```
+    - return `Menuitem` list  with http status `200 OK`
+  
+**CategoryController**
+  - **GET** : `/categories`
+      - get all `Category` from `CategoryRepo`
+      - return `Category` list  with http status `200 OK`
+
+**MilkController**
+- **GET** : `/milks`
+    - get all `Milk` from `MilkRepo`
+    - return `Milk` list  with http status `200 OK`
+- **GET** : `/milks/{id}`
+  - get Milk by id from `MilkRepo`
+  - return `Milk` object with http status `200 OK`
+
+**SizeController**
+- **GET** : `/sizes`
+    - get all `Size` from SizeRepo`
+    - return `Size` list  with http status `200 OK`
+     
+**SugarController**
+- **GET** : `/sugars`
+    - get all `Sugar` from SugarRepo`
+    - return `Sugar` list  with http status `200 OK`
+
+  
 ### Entity ###
 - user
   - Account
