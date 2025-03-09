@@ -155,7 +155,7 @@ The public resources is open to all, no account needed.
     - get all `Sugar` from SugarRepo`
     - return `Sugar` list  with http status `200 OK`
 
-**TaxRateController **
+**TaxRateController**
 - **GET**: `/taxes/{state}`
   - get `taxRate` by state from database using `TaxRepo`
   - return `taxRate` with http status `200 OK`
