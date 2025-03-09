@@ -330,25 +330,12 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
     - return http status `404 No Content`
 
 
+## Database Diagram
+![](/Users/villysiu/Documents/Coding/JAVA Projects/yumtea3/yumtea_sb@localhost.png)
 
-### Entity ###
-- user
-  - Account
-  - Role
-- tea
-    - Category
-    - Menuitem
-    - Milk
-    - Size
-    - Sugar (Enum)
-    - Temperature (Enum)
-  -cart
-    - Cart
-  - purchase
-    - Purchase
-    - purchaseLineitem
-    - taxRare
-
+**Thank you for reading this far. 
+I hope you found this API helpful in creating ecommerce in Springboot.
+Happy Coding!**
 
 
 
