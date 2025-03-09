@@ -1,6 +1,11 @@
 # YumTea #
 This is the backend API for a tea e-commerce website.
 It is a Springboot application with Maven developed in Intellij IDEA.
+
+The Frontend is created in **React.js** and can be found here: 
+https://github.com/villysiu/yumtea_sb_frontend
+
+Youtube: Coming soon
 ### Technology 
 - Java 17
 - JDK 23
@@ -18,11 +23,9 @@ It is a Springboot application with Maven developed in Intellij IDEA.
 - jakarta.validation (Optional)
 - slf4j (Optional)
 
-The Frontend is created in **React.js** and can be found here:  https://github.com/villysiu/yumtea_sb_frontend 
-Youtube: 
 
 ## Running the project ##
-- Clone the Git repository
+- Clone the Git repository https://github.com/villysiu/yum_tea_sb.git
 - Open Intellij, 
   - File -> New -> Project from Version Control
   - Paste the cloned git link into the `URL` box
