@@ -155,7 +155,90 @@ The public resources is open to all, no account needed.
     - get all `Sugar` from SugarRepo`
     - return `Sugar` list  with http status `200 OK`
 
-  
+### Private resources for USER_ADMIN
+Thees private resources are **ONLY** available to `Account` with `Role` **USER_ADMIN** authority.
+
+**MenuitemController**
+- **POST** : `/menuitem`
+    - `MenuitemDto` DTO is used to map the following Json object.
+      ``` 
+      {
+          "title": "Chai",
+          "imageUrl": "chai.jpg",
+          "description": "chai",
+          "categoryId": 1,
+          "milkId": 2,
+          "temperature": "FREE",
+          "sugar": "ZERO",
+          "price": 5
+      }
+      ```
+    - create new `Menuitem` 
+    - save `Menuitem` to database using MenuitemRepo
+    - return Menuiem http status `201 CREATED`
+- **PATCH** : `/menuitem/{id}`
+    - `Map<String, Object> menuitemDto` DTO is used to map the following Json object.
+      ``` 
+      {
+        "title": "Chai2",
+        "sugar": "FIFTY"
+      }
+      ```
+    - fetch `Menuitem` by `id` from database using MenuitemRepo
+    - update `Menuitem` fields
+    - save `Menuitem` to database using MenuitemRepo
+    - return `Menuitem` http status `200 OK`
+- **DELETE** : `/menuitem/{id}`
+
+  - verify `Menuitem` existed in database using MenuitemRepo
+  - delete `Menuitem` to database using MenuitemRepo
+  - return http status `404 No Content`
+  - 
+**CategoryController**
+- **POST** : `/category`
+    - `CategoryDto` DTO is used to map the following Json object.
+      ``` 
+      {
+        "title": "Black Tea",
+        "description": "Black Tea",
+        "imageUrl": "blacktea.jpg"
+      }
+      ```
+    - create new `Category`
+    - save `Category` to database using `CategoryRepo`
+    - return `Category` http status `201 CREATED`
+- **PATCH** : `/category/{id}`
+    - `Map<String, Object> categoryDto` DTO is used to map the following Json object.
+      ``` 
+      {
+        "description": "Black tea is one of the bestseller"
+      }
+      ```
+    - fetch `Category` by `id` from database using `MenuitemRepo`
+    - update `Category` fields
+    - save `Category` to database using `MenuitemRepo`
+    - return `Category` http status `200 OK`
+- **DELETE** : `/category/{id}`
+
+    - verify `Category` existed in database using `CategoryRepo`
+    - delete `Category` to database using `CategoryRepo`
+    - return http status `404 No Content`
+
+**MilkController**
+- **POST** : `/milk`
+- **PATCH** : `/milk/{id}`
+- **DELETE** : `/milk/{id}`
+
+**SizeController**
+- **POST** : `/size`
+- **PATCH** : `/size/{id}`
+- **DELETE** : `/size/{id}`
+
+**SugarController**
+- **POST** : `/sugar`
+- **PATCH** : `/sugar/{id}`
+- **DELETE** : `/sugar/{id}`
+- 
 ### Entity ###
 - user
   - Account
