@@ -50,12 +50,12 @@ This controller provides APIs for register, login and logout actions.
     } 
     ```
   - check if email already in database
-  - create new User (default with ROLE_USER)
-  - save User to database using AccountRepository
+  - create new Account (default with ROLE_USER)
+  - save User to database using AccountRepo
   - return http status `201 CREATED`
    
 
-- **POST** : `auth/login`
+- **POST** : `/auth/login`
   - `SigninRequest` DTO is used to map the following Json object.
      ``` 
      {
@@ -68,13 +68,43 @@ This controller provides APIs for register, login and logout actions.
   - persist Authentication object in HttpSession
   - return a `SigninResponse` DTO with http status 200 OK
 
-- **POST** : `auth/logout`
+- **POST** : `/auth/logout`
   
   - logout with Spring Security
   - invalidate and remove HttpSession
   - clear securityContextHolder
   - return http status `200 OK`
 
+
+**Authorization Controller**
+
+This controller provides APIs for authenticated user to fetch user, update nickname and password.
+- **GET** : `/resource/user`
+
+    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
+    - return a `SigninResponse` DTO with http status `201 CREATED`
+- **PATCH** : `/resource/user`
+    - `Map<String, Object> userRequestDto` is used to map the following Json object.
+       ``` 
+       {
+          "nickname": "JohnUser"
+       }
+       ```
+    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
+    - update nickname and save to database using `AccountRepo` 
+    - return a `SigninResponse` DTO with http status 200 OK
+- **PATCH** : `/resource/updatePassword`
+    - `PasswordRequestDto passwordRequestDto` is used to map the following Json object.
+       ``` 
+       {
+          "currentPassword": "password1",
+          "newPassword": "password2"
+       }
+       ```
+    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
+    - verify currentPassword matches account password
+    - update password and save to database using `AccountRepo`
+    - return http status 200 OK
 
 ### Entity ###
 - user
