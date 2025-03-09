@@ -59,7 +59,12 @@ public class MilkServiceImpl implements MilkService {
 
     @Override
     public Milk createMilk(Milk milk){
-        return milkRepo.save(milk);
+        System.out.println(milk.getTitle());
+        System.out.println(milk.getPrice());
+        Milk m = milkRepo.save(milk);
+        System.out.println("savrd???");
+        System.out.println(m.getTitle());
+        return m;
     }
 
     @Override

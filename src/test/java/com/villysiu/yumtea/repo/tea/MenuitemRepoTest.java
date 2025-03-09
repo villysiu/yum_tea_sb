@@ -100,32 +100,52 @@ class MenuitemRepoTest {
 
         List<Menuitem> testMenuitems = menuitemRepo.findAll();
 
-        List<Long> quantities = Arrays.asList(5L, 3L, 2L);
-        List<Integer> menuitemIds = Arrays.asList(1, 7, 3);
 
-        for(int i = 0; i < quantities.get(0); i++){
-            PurchaseLineitem purchaseLineitem = new PurchaseLineitem(testPurchase,
-                    testMenuitems.get(menuitemIds.get(0)), testMilk, testSize);
-            purchaseLineitemRepo.save(purchaseLineitem);
-        }
-
-        for(int i = 0; i < quantities.get(1); i++){
-            PurchaseLineitem purchaseLineitem = new PurchaseLineitem(testPurchase,
-                    testMenuitems.get(menuitemIds.get(1)), testMilk, testSize);
-            purchaseLineitemRepo.save(purchaseLineitem);
-        }
-        for(int i = 0; i < quantities.get(2); i++){
-            PurchaseLineitem purchaseLineitem = new PurchaseLineitem(testPurchase,
-                    testMenuitems.get(menuitemIds.get(2)), testMilk, testSize);
-            purchaseLineitemRepo.save(purchaseLineitem);
-        }
-        PurchaseLineitem purchaseLineitem1 = new PurchaseLineitem(testPurchase, testMenuitems.get(4), testMilk, testSize);
+        // create 1 each item 2 and item 1
+        PurchaseLineitem purchaseLineitem1 = new PurchaseLineitem(testPurchase, testMenuitems.get(0), testMilk, testSize);
         purchaseLineitemRepo.save(purchaseLineitem1);
-        PurchaseLineitem purchaseLineitem2 = new PurchaseLineitem(testPurchase, testMenuitems.get(6), testMilk, testSize);
+        PurchaseLineitem purchaseLineitem2 = new PurchaseLineitem(testPurchase, testMenuitems.get(1), testMilk, testSize);
         purchaseLineitemRepo.save(purchaseLineitem2);
 
+        // create 5  item 2
+        PurchaseLineitem purchaseLineitem0 = new PurchaseLineitem(testPurchase,
+                testMenuitems.get(2), testMilk, testSize);
+        purchaseLineitem0.setQuantity(5);
+        purchaseLineitemRepo.save(purchaseLineitem0);
 
-        assertEquals(12, purchaseLineitemRepo.findAll().size());
+        // create 3  item 3
+        PurchaseLineitem purchaseLineitem4 = new PurchaseLineitem(testPurchase,
+                testMenuitems.get(3), testMilk, testSize);
+        purchaseLineitem4.setQuantity(3);
+        purchaseLineitemRepo.save(purchaseLineitem4);
+
+        // create 8  item 4
+        PurchaseLineitem purchaseLineitem5 = new PurchaseLineitem(testPurchase,
+                testMenuitems.get(4), testMilk, testSize);
+        purchaseLineitem5.setQuantity(8);
+        purchaseLineitemRepo.save(purchaseLineitem5);
+
+        // create 6  item 3
+        PurchaseLineitem purchaseLineitem6 = new PurchaseLineitem(testPurchase,
+                testMenuitems.get(3), testMilk, testSize);
+        purchaseLineitem6.setQuantity(6);
+        purchaseLineitemRepo.save(purchaseLineitem6);
+        // create 2 item 5
+        PurchaseLineitem purchaseLineitem7 = new PurchaseLineitem(testPurchase,
+                testMenuitems.get(5), testMilk, testSize);
+        purchaseLineitem7.setQuantity(2);
+        purchaseLineitemRepo.save(purchaseLineitem7);
+
+
+        // create 1 each
+        PurchaseLineitem purchaseLineitem8 = new PurchaseLineitem(testPurchase, testMenuitems.get(6), testMilk, testSize);
+        purchaseLineitemRepo.save(purchaseLineitem8);
+        PurchaseLineitem purchaseLineitem9 = new PurchaseLineitem(testPurchase, testMenuitems.get(7), testMilk, testSize);
+        purchaseLineitemRepo.save(purchaseLineitem9);
+
+
+
+        assertEquals(9, purchaseLineitemRepo.findAll().size());
         Pageable pageable = PageRequest.of(0, 3);
         List<Object[]> fetchedBestSellers = menuitemRepo.findBestSellers(pageable);
 
@@ -134,16 +154,16 @@ class MenuitemRepoTest {
 
 
         Object[] row0 = fetchedBestSellers.get(0);
-        assertEquals(testMenuitems.get(menuitemIds.get(0)).getId(), (Long) row0[0]);
-        assertEquals(quantities.get(0), (Long) row0[2]);
+        assertEquals( testMenuitems.get(3).getId(), (Long) row0[0]);
+        assertEquals(9, (Long) row0[2]);
 
         Object[] row1 = fetchedBestSellers.get(1);
-        assertEquals(testMenuitems.get(menuitemIds.get(1)).getId(), (Long) row1[0]);
-        assertEquals(quantities.get(1), (Long) row1[2]);
+        assertEquals(testMenuitems.get(4).getId(), (Long) row1[0]);
+        assertEquals(8, (Long) row1[2]);
 
         Object[] row2 = fetchedBestSellers.get(2);
-        assertEquals(testMenuitems.get(menuitemIds.get(2)).getId(), (Long) row2[0]);
-        assertEquals(quantities.get(2), (Long) row2[2]);
+        assertEquals(testMenuitems.get(2).getId(), (Long) row2[0]);
+        assertEquals(5, (Long) row2[2]);
 
         // ensures list in descending order
         assertTrue((Long) row0[2] > (Long) row1[2]);

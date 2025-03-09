@@ -13,11 +13,18 @@ public interface MenuitemRepo extends JpaRepository<Menuitem, Long> {
     @Query("SELECT m FROM Menuitem m Where m.category.id=:categoryId")
     List<Menuitem> findByCategoryIdQuery(Long categoryId);
 
-    @Query("SELECT pl.menuitem.id, m.title, count(*) " +
+//    @Query("SELECT pl.menuitem.id, m.title, count(*) " +
+//            "FROM PurchaseLineitem pl " +
+//            "inner join Menuitem m on m.id=pl.menuitem.id " +
+//            "group by pl.menuitem.id " +
+//            "order by count(*) desc ")
+
+    @Query ("SELECT pl.menuitem.id, m.title, sum(pl.quantity) " +
             "FROM PurchaseLineitem pl " +
-            "inner join Menuitem m on m.id=pl.menuitem.id " +
+            "inner join Menuitem m on m.id = pl.menuitem.id " +
             "group by pl.menuitem.id " +
-            "order by count(*) desc ")
+            "order by 3 desc"
+    )
     List<Object[]> findBestSellers(Pageable pageable);
 
 

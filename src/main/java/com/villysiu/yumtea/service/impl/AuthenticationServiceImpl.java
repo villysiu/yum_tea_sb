@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Optional;
 
 
 @Service
@@ -35,25 +36,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AccountRepo accountRepo;
     @Autowired
     private final RoleRepo roleRepo;
-
+    @Autowired
     private final AuthenticationManager authenticationManager;
-
+    @Autowired
     private final PasswordEncoder passwordEncoder;
 
 
     @Override
     public Long signup(SignupRequest signupRequest) {
-        Account account = accountRepo.findByEmail(signupRequest.getEmail()).orElse(null);
-        if(account != null){
+        Optional<Account> dup = accountRepo.findByEmail(signupRequest.getEmail());
+        if(dup.isPresent()){
             throw new EntityExistsException("Email already exists");
         }
 
-        account = new Account();
+        Account account = new Account();
         account.setEmail(signupRequest.getEmail());
         account.setNickname(signupRequest.getNickname());
         account.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
-        Role role = roleRepo.findByName("ROLE_USER").orElse(null);
+        Role role = roleRepo.findByName("ROLE_USER").orElse(
+                roleRepo.save(null)
+        );
 
         account.setRoles(Collections.singleton(role));
         accountRepo.save(account);

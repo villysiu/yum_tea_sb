@@ -18,7 +18,10 @@ public class TaxRateServiceImpl implements TaxRateService {
 
     @Override
     public Double getTaxRateByState(String state) {
+//        return taxRepo.findRateByState(state).orElse(0.0);
         TaxRate taxRate = taxRepo.findByState(state).orElse(null);
         return taxRate == null ? 0.0 : taxRate.getRate();
+
+
     }
 }
