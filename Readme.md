@@ -331,7 +331,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
 
 
 ## Database Diagram
-![](/images/yumtea_sb@localhost.png)
+![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/yumtea_sb@localhost.png?raw=true)
 
 **Thank you for reading this far. 
 I hope you found this API helpful in creating ecommerce in Springboot.
