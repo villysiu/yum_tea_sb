@@ -20,13 +20,9 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public Size getSizeById(Long id) {
-        return sizeRepo.findById(id)
-                .orElse(sizeRepo.findByTitle("8oz")
-                        .orElse(
-                                sizeRepo.save(new Size("8oz"))
-                        ));
-    }
 
+        return sizeRepo.findById(id).orElseThrow(()->new NoSuchElementException("Size not found."));
+    }
     @Override
     public List<Size> getSize() {
         return sizeRepo.findAll();

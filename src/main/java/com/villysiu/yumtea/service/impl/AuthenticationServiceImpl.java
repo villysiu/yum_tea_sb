@@ -54,9 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setNickname(signupRequest.getNickname());
         account.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
 
-        Role role = roleRepo.findByName("ROLE_USER").orElse(
-                roleRepo.save(null)
-        );
+        Role role = roleRepo.findByName("ROLE_USER").orElseThrow(()->new EntityNotFoundException("Role not found"));
 
         account.setRoles(Collections.singleton(role));
         accountRepo.save(account);

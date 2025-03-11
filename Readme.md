@@ -23,6 +23,8 @@ Youtube: Coming soon
 - jakarta.validation (Optional)
 - slf4j (Optional)
 
+## Database Diagram
+![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/yumtea_sb@localhost.png?raw=true)
 
 ## Running the project ##
 - Clone the Git repository https://github.com/villysiu/yum_tea_sb.git
@@ -330,8 +332,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
     - return http status `404 No Content`
 
 
-## Database Diagram
-![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/yumtea_sb@localhost.png?raw=true)
+
 
 **Thank you for reading this far. 
 I hope you found this API helpful in creating ecommerce in Springboot.
