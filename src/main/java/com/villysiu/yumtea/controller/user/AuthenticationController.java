@@ -16,6 +16,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 
@@ -50,6 +53,24 @@ public class AuthenticationController {
 
         } catch (AuthenticationException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @PostMapping("/adminLogin")
+    public ResponseEntity<?> adminSignin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+        System.out.println("in admin sign in controller");
+        try{
+            SigninResponse signinResponse = authenticationService.adminSignin(signinRequest, request );
+            return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
+
+        } catch (AuthenticationException e){
+            System.out.println("AuthenticationException");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+        catch(EntityNotFoundException e){
+            System.out.println("EntityNotFoundException");
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
     }

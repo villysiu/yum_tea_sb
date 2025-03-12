@@ -105,4 +105,53 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     }
+
+    @Override
+    public SigninResponse adminSignin(SigninRequest signinRequest, HttpServletRequest request) {
+        System.out.println("in admin signin");
+
+
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
+        Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
+
+//            The Authentication contains:
+//
+//            principal: Identifies the user. When authenticating with a username/password this is often an instance of UserDetails.
+//            System.out.println("principal: " + authenticationResponse.getPrincipal());
+//            credentials: Often a password. In many cases, this is cleared after the user is authenticated, to ensure that it is not leaked.
+//            System.out.println("cred: " + authenticationResponse.getCredentials());
+//            authorities: The GrantedAuthority instances are high-level permissions the user is granted. Two examples are roles and scopes.
+            System.out.println("auth: " + authenticationResponse.getAuthorities());
+
+//            principal: org.springframework.security.core.userdetails.User [Username=springuser@gg.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]]
+//            cred: null
+//            auth: [ROLE_USER]
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+
+        if(authenticationResponse.getAuthorities().stream()
+                .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(adminRole.getName()))){
+            System.out.println("not a admin");
+            throw new EntityNotFoundException("User is not Admin");
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
+
+        HttpSession session = request.getSession();
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+
+        UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
+        String email = userDetails.getUsername();
+        System.out.println("email: " + email);
+        Account account = accountRepo.findByEmail(email).orElseThrow(()->new EntityNotFoundException("email not found"));
+
+        SigninResponse signinResponse = new SigninResponse();
+        signinResponse.setEmail(account.getEmail());
+        signinResponse.setNickname(account.getNickname());
+
+        return signinResponse;
+
+
+    }
+
 }
