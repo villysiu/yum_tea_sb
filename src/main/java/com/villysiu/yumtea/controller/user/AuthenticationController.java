@@ -57,23 +57,7 @@ public class AuthenticationController {
 
     }
 
-    @PostMapping("/adminLogin")
-    public ResponseEntity<?> adminSignin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
-        System.out.println("in admin sign in controller");
-        try{
-            SigninResponse signinResponse = authenticationService.adminSignin(signinRequest, request );
-            return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
 
-        } catch (AuthenticationException e){
-            System.out.println("AuthenticationException");
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        }
-        catch(EntityNotFoundException e){
-            System.out.println("EntityNotFoundException");
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
-
-    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
