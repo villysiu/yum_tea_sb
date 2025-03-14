@@ -10,5 +10,4 @@ import org.springframework.stereotype.Service;
 public interface AuthenticationService {
     Long signup(SignupRequest signupRequest);
     SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request);
-    SigninResponse adminSignin(SigninRequest signinRequest, HttpServletRequest request);
 }

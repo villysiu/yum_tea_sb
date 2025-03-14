@@ -25,13 +25,13 @@ public class AuthorizationController {
 
     private final CustomUserDetailsServiceImpl userDetailsService;
     private final AuthorizationService authorizationService;
+    private final RoleRepo roleRepo;
 //    private final RoleRepo roleRepo;
 
     public AuthorizationController(CustomUserDetailsServiceImpl userDetailsService, AuthorizationService authorizationService, RoleRepo roleRepo) {
         this.userDetailsService = userDetailsService;
         this.authorizationService = authorizationService;
-
-//        this.roleRepo = roleRepo;
+        this.roleRepo = roleRepo;
     }
 
 
@@ -43,6 +43,9 @@ public class AuthorizationController {
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
 
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+
+        signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
         return ResponseEntity.ok(signinResponse);
     }
 

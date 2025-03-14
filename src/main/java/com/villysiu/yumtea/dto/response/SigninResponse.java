@@ -10,5 +10,6 @@ public class SigninResponse {
 
     String nickname;
     String email;
+    Boolean isAdmin = false;
 
 }
