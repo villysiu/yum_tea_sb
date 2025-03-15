@@ -87,20 +87,35 @@ public class MenuitemServiceImpl implements MenuitemService {
                     menuitem.setPrice((Double) value);
                     break;
                 case "categoryId":
-                    Long categoryId = (long) value;
+//                    System.out.println(value instanceof String);
+//                    System.out.println(value instanceof Integer);
+                    Integer catInt = (Integer) value;
+                    Long categoryId = catInt.longValue();
                     Category category = categoryService.getCategoryById(categoryId);
                     menuitem.setCategory(category);
                     break;
                 case "milkId":
-                    Long milkId = (long) value;
+//                    System.out.println(value instanceof String);
+//                    System.out.println(value instanceof Integer);
+//                    Long milkId = Long.parseLong((String) value);
+
+                    Integer mkInt = (Integer) value;
+                    Long milkId = mkInt.longValue();
+
                     Milk milk = milkService.getMilkById(milkId);
+
                     menuitem.setMilk(milk);
                     break;
                 case "temperature":
-                    menuitem.setTemperature((Temperature) value);
+//                    System.out.println(value instanceof Temperature);
+//                    System.out.println(value instanceof String);
+                    Temperature temperature = Temperature.valueOf((String) value);
+                    menuitem.setTemperature(temperature);
                     break;
                 case "sugar":
-                    menuitem.setSugar((Sugar) value);
+                    Sugar sugar = Sugar.valueOf((String) value);
+                    menuitem.setSugar(sugar);
+//                    menuitem.setSugar((Sugar) value);
                     break;
                 default:
                     break;
