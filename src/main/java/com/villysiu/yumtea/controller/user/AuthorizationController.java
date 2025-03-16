@@ -8,8 +8,6 @@ import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
-import com.villysiu.yumtea.service.impl.RoleService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -17,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -69,6 +68,13 @@ public class AuthorizationController {
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
+
+    }
+
+
+    @GetMapping("/accounts")
+    public ResponseEntity<List<SigninResponse>> getAccounts(@AuthenticationPrincipal UserDetails userDetails) {
+        return new ResponseEntity<>(authorizationService.getAllAccounts(), HttpStatus.OK);
 
     }
 }

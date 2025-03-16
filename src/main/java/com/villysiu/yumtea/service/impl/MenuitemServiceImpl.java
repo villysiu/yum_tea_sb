@@ -84,7 +84,12 @@ public class MenuitemServiceImpl implements MenuitemService {
                     menuitem.setImageUrl((String) value);
                     break;
                 case "price":
-                    menuitem.setPrice((Double) value);
+                    System.out.println(value instanceof String);
+                    Double updatePrice = Double.parseDouble(value.toString());
+
+
+                    menuitem.setPrice(updatePrice);
+
                     break;
                 case "categoryId":
 //                    System.out.println(value instanceof String);

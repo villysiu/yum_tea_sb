@@ -4,31 +4,34 @@ import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 
 import com.villysiu.yumtea.models.user.Account;
+import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.AccountRepo;
+import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.service.AuthorizationService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class AuthorizationServiceImpl implements AuthorizationService {
-    @Autowired
-    private final AccountRepo accountRepo;
-    @Autowired
-    private final PasswordEncoder passwordEncoder;
-    @Autowired
-    private final AuthenticationManager authenticationManager;
 
-    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    private final AccountRepo accountRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final RoleRepo roleRepo;
+
+    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepo roleRepo) {
         this.accountRepo = accountRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.roleRepo = roleRepo;
     }
 
 
@@ -65,5 +68,24 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         account.setPassword(passwordEncoder.encode(newPassword));
         accountRepo.save(account);
 
+    }
+
+    @Override
+    public List<SigninResponse> getAllAccounts() {
+
+        List<SigninResponse> accounts = new ArrayList<>();
+
+        for(Account account: accountRepo.findAll()){
+            SigninResponse signinResponse = new SigninResponse();
+            signinResponse.setEmail(account.getEmail());
+            signinResponse.setNickname(account.getNickname());
+
+            Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+            signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
+
+            signinResponse.setIsAdmin(false);
+            accounts.add(signinResponse);
+        }
+        return accounts;
     }
 }
