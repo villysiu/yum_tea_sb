@@ -39,6 +39,7 @@ public class AuthorizationController {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
 
         SigninResponse signinResponse = new SigninResponse();
+        signinResponse.setId(account.getId());
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
 
@@ -73,8 +74,19 @@ public class AuthorizationController {
 
 
     @GetMapping("/accounts")
-    public ResponseEntity<List<SigninResponse>> getAccounts(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<SigninResponse>> getAccounts() {
         return new ResponseEntity<>(authorizationService.getAllAccounts(), HttpStatus.OK);
+
+    }
+    @PatchMapping("/accounts/{id}")
+    public ResponseEntity<SigninResponse> toggleAdminRole(@PathVariable Long id) {
+        return new ResponseEntity<>(authorizationService.toggleAdminRole(id), HttpStatus.OK);
+
+    }
+    @DeleteMapping("/accounts/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+        authorizationService.deleteAccount(id);
+        return ResponseEntity.noContent().build();
 
     }
 }

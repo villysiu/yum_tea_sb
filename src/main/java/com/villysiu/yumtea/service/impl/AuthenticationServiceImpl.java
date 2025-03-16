@@ -99,6 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
             SigninResponse signinResponse = new SigninResponse();
+            signinResponse.setId(account.getId());
             signinResponse.setEmail(account.getEmail());
             signinResponse.setNickname(account.getNickname());
 

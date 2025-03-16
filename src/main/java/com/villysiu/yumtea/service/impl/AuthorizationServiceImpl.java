@@ -9,6 +9,7 @@ import com.villysiu.yumtea.repo.user.AccountRepo;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.service.AuthorizationService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthorizationServiceImpl implements AuthorizationService {
@@ -73,19 +75,47 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public List<SigninResponse> getAllAccounts() {
 
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
         List<SigninResponse> accounts = new ArrayList<>();
 
         for(Account account: accountRepo.findAll()){
             SigninResponse signinResponse = new SigninResponse();
+            signinResponse.setId(account.getId());
             signinResponse.setEmail(account.getEmail());
             signinResponse.setNickname(account.getNickname());
 
-            Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
             signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
 
-            signinResponse.setIsAdmin(false);
             accounts.add(signinResponse);
         }
         return accounts;
+    }
+
+    @Override
+    public SigninResponse toggleAdminRole(Long id) {
+        Account account = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+
+        if(account.getRoles().contains(adminRole)){
+            account.getRoles().remove(adminRole);
+        }
+        else{
+            account.getRoles().add(adminRole);
+        }
+//        System.out.println(account.getRoles());
+        accountRepo.save(account);
+
+
+        SigninResponse signinResponse = new SigninResponse();
+        signinResponse.setEmail(account.getEmail());
+        signinResponse.setNickname(account.getNickname());
+        signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
+        return signinResponse;
+    }
+
+    @Override
+    public void deleteAccount(Long id) {
+        Optional<Account> account = accountRepo.findById(id);
+        account.ifPresent(accountRepo::delete);
     }
 }

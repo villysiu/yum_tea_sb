@@ -12,4 +12,6 @@ public interface AuthorizationService {
     SigninResponse updateUser(Map<String, Object> userRequestDto, Account account);
     void updatePassword(PasswordRequestDto passwordRequestDto, Account account);
     List<SigninResponse> getAllAccounts();
+    SigninResponse toggleAdminRole(Long id);
+    void deleteAccount(Long id);
 }

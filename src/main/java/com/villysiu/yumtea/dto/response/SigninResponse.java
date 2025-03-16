@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class SigninResponse {
-
+    Long id;
     String nickname;
     String email;
     Boolean isAdmin = false;
