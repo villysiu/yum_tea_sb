@@ -29,17 +29,20 @@ import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    @Autowired
+
     private final AccountRepo accountRepo;
-    @Autowired
     private final RoleRepo roleRepo;
-    @Autowired
     private final AuthenticationManager authenticationManager;
-    @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleRepo roleRepo, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+        this.accountRepo = accountRepo;
+        this.roleRepo = roleRepo;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
     @Override

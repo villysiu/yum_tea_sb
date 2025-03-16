@@ -3,7 +3,9 @@ package com.villysiu.yumtea.service;
 import com.villysiu.yumtea.dto.request.MenuitemDto;
 import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,4 +19,6 @@ public interface MenuitemService {
     Menuitem createMenuitem(MenuitemDto menuitemDto);
     Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto);
     String deleteMenuitem(Long id);
+
+    String saveImage(MultipartFile file) throws IOException;
 }

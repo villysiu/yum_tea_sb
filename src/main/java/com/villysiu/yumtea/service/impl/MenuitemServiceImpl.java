@@ -11,11 +11,17 @@ import com.villysiu.yumtea.service.MenuitemService;
 import com.villysiu.yumtea.service.MilkService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +43,8 @@ public class MenuitemServiceImpl implements MenuitemService {
         this.milkService = milkService;
     }
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 //    Create
     @Override
     public Menuitem createMenuitem(MenuitemDto menuitemDto) {
@@ -171,5 +179,29 @@ public class MenuitemServiceImpl implements MenuitemService {
         menuitemRepo.deleteById(id);
         return "Menuitem deleted.";
     }
+
+    @Override
+    public String saveImage(MultipartFile file) throws IOException {
+        System.out.println("in saveimage service");
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        // Create the directory if it doesn't exist
+        Path path = Paths.get(uploadDir);
+        if (!Files.exists(path)) {
+            Files.createDirectories(path);
+        }
+        // Save the file
+        Path filePath = path.resolve(fileName);
+        System.out.println("ready to save image: "+filePath);
+        file.transferTo(filePath.toFile());
+
+        System.out.println("/images/" + fileName);
+
+        // Return the file path or URL
+        return "/images/" + fileName;
+    }
+
+
 }
+
 
