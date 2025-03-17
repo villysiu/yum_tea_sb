@@ -172,7 +172,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
       ``` 
       {
           "title": "Chai",
-          "imageUrl": "chai.jpg",
+          "imageUrl": "",
           "description": "chai",
           "categoryId": 1,
           "milkId": 2,
@@ -201,7 +201,17 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
   - verify `Menuitem` existed in database using `MenuitemRepo`
   - delete `Menuitem` to database using `MenuitemRepo`
   - return http status `404 No Content`
-  - 
+
+
+- **POST** : `/menuitem/img/{id}`
+  - stores `file` in Multipart object in designated folder `src/main/resources/static/images`
+  - update `Menuitem` with `image` file. 
+  - return `Menuitem` http status `200 OK`
+
+- **DELETE** : `/menuitem/img/{id}`
+ - update `menuitem.imageUrl` to null.
+ - return http status `404 No Content`
+- 
 **CategoryController**
 - **POST** : `/category`
     - `CategoryDto` DTO is used to map the following Json object.
@@ -248,7 +258,7 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
 - **DELETE** : `/sugar/{id}`
 
 ### Private Resources accessed **only** by authenticated account. 
-- Authenticated `Account` with `ROLE_USER` can only access his own `Cart` and `Purchase` objects.
+- **Only** authenticated `Account` with `ROLE_USER` can  access his own `Cart` and `Purchase` objects.
 
 **CartController**
 - **GET** : `/carts`

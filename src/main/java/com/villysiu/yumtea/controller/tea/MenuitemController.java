@@ -44,6 +44,7 @@ public class MenuitemController {
         return menuitemService.getBestsellers();
     }
 
+    // ADMIN ONLY
     //Create
     @PostMapping("/menuitem")
     public ResponseEntity<Menuitem> createMenuitem(@RequestBody MenuitemDto menuitemDto) {
@@ -59,6 +60,7 @@ public class MenuitemController {
 //delete
     @DeleteMapping("/menuitem/{id}")
     public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
+
         return new ResponseEntity<>(menuitemService.deleteMenuitem(id), HttpStatus.NO_CONTENT);
     }
 
