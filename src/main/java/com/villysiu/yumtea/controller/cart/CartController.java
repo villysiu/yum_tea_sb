@@ -5,11 +5,13 @@ import com.villysiu.yumtea.exception.EntityNotBelongToUserException;
 import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
+import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.CartService;
 
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,17 +26,18 @@ import java.util.NoSuchElementException;
 public class CartController {
 
     private final CartService cartService;
-    private final CustomUserDetailsServiceImpl userDetailsService;
+    private final AuthorizationService authorizationService;
 
-    public CartController(CartService cartService, CustomUserDetailsServiceImpl userDetailsService) {
+    @Autowired
+    public CartController(CartService cartService,  AuthorizationService authorizationService) {
         this.cartService = cartService;
-        this.userDetailsService = userDetailsService;
+        this.authorizationService = authorizationService;
     }
 
 
     @GetMapping("/carts")
     public List<CartProjection> getCartsByAccount(@AuthenticationPrincipal UserDetails userDetails) {
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
         return cartService.getCartProjectionsByAccountId(account.getId());
     }
     // get input json  from frontend,
@@ -42,7 +45,7 @@ public class CartController {
 //    convert to cart projection and return with created status
     @PostMapping("/cart")
     public ResponseEntity<CartProjection> createCart(@RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         Long cartId = cartService.createCart(cartInputDto, account);
         return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
@@ -52,7 +55,7 @@ public class CartController {
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("updating cart");
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
 
 //        Cart cart = cartService.getCartById(id);
 //
@@ -69,10 +72,9 @@ public class CartController {
 
     //Not doing patch to avoid complicated calculation add this and minus the previous etc
 
-    @Transactional
     @DeleteMapping("/cart/{id}")
     public ResponseEntity<String> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         try {
             cartService.deleteCartById(id, account);

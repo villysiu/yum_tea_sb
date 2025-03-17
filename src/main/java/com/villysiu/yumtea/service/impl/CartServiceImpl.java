@@ -5,10 +5,9 @@ import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
+import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
-
-import com.villysiu.yumtea.repo.user.AccountRepo;
 import com.villysiu.yumtea.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,18 +26,21 @@ public class CartServiceImpl implements CartService {
     private final CartRepo cartRepo;
     private final MenuitemService menuitemService;
     private final MilkService milkService;
-
+    private final RoleService roleService;
     private final SizeService sizeService;
-    private final AuthorizationService authorizationService;
+
     private static final Logger logger = LoggerFactory.getLogger(CartServiceImpl.class);
 
-    public CartServiceImpl(CartRepo cartRepo, MenuitemService menuitemService, MilkService milkService, SizeService sizeService, AuthorizationService authorizationService) {
+    public CartServiceImpl(CartRepo cartRepo, MenuitemService menuitemService, MilkService milkService, RoleService roleService, SizeService sizeService) {
         this.cartRepo = cartRepo;
         this.menuitemService = menuitemService;
         this.milkService = milkService;
+        this.roleService = roleService;
         this.sizeService = sizeService;
-        this.authorizationService = authorizationService;
+
     }
+
+
 
     @Transactional
     @Override
@@ -162,19 +165,18 @@ public class CartServiceImpl implements CartService {
     @Override
     public void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) {
         try{
-            if(authorizationService.isAdmin(authenticatedAccount)){
-                logger.info("Admin deleting all cart by {} ", accountId);
+            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
+                logger.info("Deleting carts by {} ", accountId);
                 cartRepo.deleteAllByAccountId(accountId);
                 logger.info("Successfully deleted all cart by account {}", accountId);
             }
-            else {
-                logger.info("Deleting carts by account {}", accountId);
-                cartRepo.deleteAllByAccountId(accountId);
-                logger.info("Successfully deleted all cart by acocunt {} ", accountId);
+            else{
+                logger.error("You do not have permission to delete purchases");
+                throw new SecurityException("You do not have permission to delete purchases.");
             }
-        } catch( Exception e ){
+        } catch (Exception e){
             logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
-            throw new RuntimeException("Error occurred while deleting cart", e);
+            throw new RuntimeException("Error occurred while deleting purchases", e);
         }
 
     }
@@ -182,30 +184,26 @@ public class CartServiceImpl implements CartService {
 
 
 
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or #cart_account.id == authenticatedAccount.id")
     @Transactional
     @Override
     public void deleteCartById(Long id, Account authenticatedAccount) {
+        Cart cart = cartRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+
         try{
-            if(authorizationService.isAdmin(authenticatedAccount)){
-                logger.info("Admin Deleting cart" + id);
+            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), cart.getAccount().getId())){
+                logger.info("Deleting cart {}", id);
                 cartRepo.deleteById(id);
-                logger.info("Successfully deleted cart" + id);
+                logger.info("Successfully deleted cart {}", id);
             }
-            else {
-
-                Cart cart = cartRepo.findByIdAndAccountId(id, authenticatedAccount.getId(), Cart.class)
-                        .orElseThrow(() -> new SecurityException("You do not have permission to delete this cart."));
-
-                cartRepo.delete(cart);
+            else{
+                logger.error("You do not have permission to delete cart");
+                throw new SecurityException("You do not have permission to delete cart.");
             }
-        } catch( Exception e ){
+        } catch (Exception e){
             logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
-            throw new RuntimeException("Error occurred while deleting cart", e);
+            throw new RuntimeException("Error occurred while deleting purchases", e);
         }
-
-
     }
-
-
-
 }

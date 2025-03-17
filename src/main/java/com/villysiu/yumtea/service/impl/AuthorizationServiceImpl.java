@@ -13,16 +13,19 @@ import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 public class AuthorizationServiceImpl implements AuthorizationService {
@@ -30,15 +33,19 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private final AccountRepo accountRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final RoleRepo roleRepo;
+    private final RoleService roleService;
     private final CartService cartService;
     private final PurchaseService purchaseService;
 
-    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepo roleRepo, CartService cartService, PurchaseService purchaseService) {
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
+
+    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleService roleService
+            , CartService cartService, PurchaseService purchaseService
+    ) {
         this.accountRepo = accountRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.roleRepo = roleRepo;
+        this.roleService = roleService;
         this.cartService = cartService;
         this.purchaseService = purchaseService;
     }
@@ -82,7 +89,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public List<SigninResponse> getAllAccounts() {
 
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+        Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
+
         List<SigninResponse> accounts = new ArrayList<>();
 
         for(Account account: accountRepo.findAll()){
@@ -101,7 +109,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     @Override
     public SigninResponse toggleAdminRole(Long id) {
         Account account = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+        Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
 
         if(account.getRoles().contains(adminRole)){
             account.getRoles().remove(adminRole);
@@ -122,17 +130,36 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Transactional
     @Override
-    public void deleteAccount(Long id) {
-        Account account = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
-        cartService.deleteCartsByAccountId(id, account);
-        purchaseService.deleteAllPurchasesByAccountId(account.getId());
-        accountRepo.delete(account);
+    public void deleteAccount(Long id, Account authenticatedAccount) {
+
+        Account deleteAccount = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
+        if (roleService.isAdmin(authenticatedAccount) || deleteAccount == authenticatedAccount) {
+            try {
+                logger.info("Deleting Carts related to Account {}", id);
+                cartService.deleteCartsByAccountId(id, authenticatedAccount);
+
+                logger.info("Deleting Purchases related to Account {}", id);
+                purchaseService.deletePurchasesByAccountId(id, authenticatedAccount);
+
+                logger.info("Deleting Account {}", id);
+                accountRepo.delete(deleteAccount);
+                logger.info("Successfully deleting Account {}", id);
+            }  catch(Exception e) {
+                logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
+                throw new RuntimeException("Error occurred while deleting purchases", e);
+            }
+        } else {
+            logger.error("You do not have permission to delete Account {}", id);
+            throw new SecurityException("You do not have permission to delete purchases.");
+        }
+
+
     }
 
-    public boolean isAdmin(Account account) {
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
-//        Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElse(new Role("ROLE_ADMIN"));
-        return account.getRoles().contains(adminRole);
+
+    @Override
+    public Account findByEmail(String email) {
+        return accountRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not found."));
     }
 }
 

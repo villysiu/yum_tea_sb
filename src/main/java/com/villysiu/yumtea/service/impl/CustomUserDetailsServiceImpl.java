@@ -45,15 +45,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         );
     }
 
-    public Account findByEmail(String email) {
-        return accountRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email + " not found." ));
-    }
 
-    public Boolean isAdmin(@NonNull Account account) {
-        Optional<Role> r = roleRepo.findByName("ROLE_ADMIN");
-        if(r.isPresent())
-            return account.getRoles().contains(r);
-        return false;
-    }
+
+
 
 }

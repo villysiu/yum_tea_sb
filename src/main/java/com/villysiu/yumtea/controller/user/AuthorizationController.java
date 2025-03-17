@@ -10,6 +10,7 @@ import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +23,12 @@ import java.util.Map;
 @RequestMapping("/resource")
 public class AuthorizationController {
 
-    private final CustomUserDetailsServiceImpl userDetailsService;
     private final AuthorizationService authorizationService;
     private final RoleRepo roleRepo;
 //    private final RoleRepo roleRepo;
 
-    public AuthorizationController(CustomUserDetailsServiceImpl userDetailsService, AuthorizationService authorizationService, RoleRepo roleRepo) {
-        this.userDetailsService = userDetailsService;
+    public AuthorizationController(AuthorizationService authorizationService, RoleRepo roleRepo) {
+
         this.authorizationService = authorizationService;
         this.roleRepo = roleRepo;
     }
@@ -36,7 +36,7 @@ public class AuthorizationController {
 
     @GetMapping("/user")
     public ResponseEntity<SigninResponse> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         SigninResponse signinResponse = new SigninResponse();
         signinResponse.setId(account.getId());
@@ -52,7 +52,7 @@ public class AuthorizationController {
     @PatchMapping("/user")
     public ResponseEntity<SigninResponse> updateUser(@RequestBody Map<String, Object> userRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("update user info");
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         return ResponseEntity.ok(authorizationService.updateUser(userRequestDto, account));
     }
@@ -61,7 +61,7 @@ public class AuthorizationController {
     public ResponseEntity<String> updatePassword(@RequestBody PasswordRequestDto passwordRequestDto,
                                                  @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("update user password");
-        Account account = userDetailsService.findByEmail(userDetails.getUsername());
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
         try {
             authorizationService.updatePassword(passwordRequestDto, account);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -83,9 +83,11 @@ public class AuthorizationController {
         return new ResponseEntity<>(authorizationService.toggleAdminRole(id), HttpStatus.OK);
 
     }
+
     @DeleteMapping("/accounts/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        authorizationService.deleteAccount(id);
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
+        authorizationService.deleteAccount(id, account);
         return ResponseEntity.noContent().build();
 
     }

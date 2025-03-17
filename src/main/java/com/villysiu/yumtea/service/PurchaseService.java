@@ -18,6 +18,6 @@ public interface PurchaseService {
     PurchaseProjection getPurchaseById(Long purchaseId, Account account);
 
 //    Purchase getPurchaseById(Long id);
-    void deletePurchaseById(Long purchaseId, Long accountId);
-    void deleteAllPurchasesByAccountId(Long accountId);
+    void deletePurchaseById(Long purchaseId, Account authenticatedAccount);
+    void deletePurchasesByAccountId(Long accountId, Account authenticatedAccount);
 }

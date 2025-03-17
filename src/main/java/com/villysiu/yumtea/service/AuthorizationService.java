@@ -13,6 +13,6 @@ public interface AuthorizationService {
     void updatePassword(PasswordRequestDto passwordRequestDto, Account account);
     List<SigninResponse> getAllAccounts();
     SigninResponse toggleAdminRole(Long id);
-    void deleteAccount(Long id);
-    boolean isAdmin(Account account);
+    void deleteAccount(Long id, Account authenticatedAccount);
+    Account findByEmail(String email);
 }

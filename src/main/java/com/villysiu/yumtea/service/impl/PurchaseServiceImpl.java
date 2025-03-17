@@ -10,11 +10,14 @@ import com.villysiu.yumtea.dto.response.PurchaseProjection;
 
 import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
+import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
 
 import com.villysiu.yumtea.service.TaxRateService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +30,17 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseRepo purchaseRepo;
     private final PurchaseLineitemRepo purchaseLineitemRepo;
     private final TaxRateService taxRateService;
-
+    private final RoleService roleService;
     @Autowired
-    public PurchaseServiceImpl(CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo, TaxRateService taxRateService, CustomUserDetailsServiceImpl userDetailsService) {
+    public PurchaseServiceImpl(CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo, TaxRateService taxRateService,  RoleService roleService) {
         this.cartService = cartService;
         this.purchaseRepo = purchaseRepo;
         this.purchaseLineitemRepo = purchaseLineitemRepo;
         this.taxRateService = taxRateService;
+        this.roleService = roleService;
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(PurchaseServiceImpl.class);
 
     @Transactional
     @Override
@@ -105,16 +111,40 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
     @Transactional
     @Override
-    public void deletePurchaseById(Long purchaseId, Long accountId){
-        Purchase purchase = purchaseRepo.findByAccountIdAndPurchaseIdQuery(accountId, purchaseId, Purchase.class)
-                .orElseThrow(()->new NoSuchElementException("Purchase not found"));
+    public void deletePurchaseById(Long purchaseId, Account authenticatedAccount){
+        try{
+            Purchase purchase = purchaseRepo.findById(purchaseId)
+                    .orElseThrow(()->new NoSuchElementException("Purchase not found"));
+            if(roleService.isAdmin(authenticatedAccount)  || Objects.equals(authenticatedAccount.getId(), purchase.getAccount().getId())){
+                logger.info("Deleting purchase {}", purchaseId);
+                purchaseRepo.delete(purchase);
+                logger.info("Successfully deleted purchase {}", purchaseId);
+            }
+            else{
+                throw new SecurityException("You do not have permission to delete purchases.");
+            }
+        } catch (Exception e){
+            throw new RuntimeException("Error occurred while deleting purchases", e);
+        }
 
-        purchaseRepo.delete(purchase);
+
     }
+
+//    purchase owner and admin can delete all purchases
     @Transactional
     @Override
-    public void deleteAllPurchasesByAccountId(Long accountId) {
-        purchaseRepo.deleteAllByAccountId(accountId);
+    public void deletePurchasesByAccountId(Long accountId, Account authenticatedAccount) throws SecurityException{
+        try{
+            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
+                purchaseRepo.deleteAllByAccountId(accountId);
+            }
+            else{
+                throw new SecurityException("You do not have permission to delete purchases.");
+            }
+        } catch (Exception e){
+            throw new RuntimeException("Error occurred while deleting purchases", e);
+        }
+
     }
 
 }
