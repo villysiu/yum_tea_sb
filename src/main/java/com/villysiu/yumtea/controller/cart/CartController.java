@@ -9,6 +9,7 @@ import com.villysiu.yumtea.service.CartService;
 
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -68,34 +69,20 @@ public class CartController {
 
     //Not doing patch to avoid complicated calculation add this and minus the previous etc
 
+    @Transactional
     @DeleteMapping("/cart/{id}")
     public ResponseEntity<String> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Account account = userDetailsService.findByEmail(userDetails.getUsername());
-//        Cart cart = cartService.getCartById(id);
-//
-//        if(!cart.getAccount().equals(account)) {
-//            throw new EntityNotBelongToUserException("Cart does not belong to user");
-//        }
-        cartService.deleteCartById(id, account.getId());
-        return new ResponseEntity<>("Cart deleted", HttpStatus.NO_CONTENT);
-    }
 
-    // Custom exception handler when no cart found with id.
-    @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
+        try {
+            cartService.deleteCartById(id, account);
+            return new ResponseEntity<>("Cart deleted", HttpStatus.NO_CONTENT);
+        } catch(SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this cart.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
+        }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
     }
-
-//    @ExceptionHandler(HttpMessageNotReadableException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-//    }
 }
+

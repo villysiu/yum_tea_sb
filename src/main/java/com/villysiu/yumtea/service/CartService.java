@@ -22,10 +22,11 @@ public interface CartService {
     Long createCart(CartInputDto cartInputDto, Account account);
     Long updateCart(Long id, CartInputDto cartInputDto, Account account);
 
-    void deleteCartById(Long id, Long accountId);
-    void deleteCartsByAccountId(Long accountId);
-    //admin only
-    void deleteCarts();
+
+    void deleteCartById(Long id, Account authenticatedAccount);
+    void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) ;
+
+
 
 
 

@@ -19,4 +19,5 @@ public interface PurchaseService {
 
 //    Purchase getPurchaseById(Long id);
     void deletePurchaseById(Long purchaseId, Long accountId);
+    void deleteAllPurchasesByAccountId(Long accountId);
 }

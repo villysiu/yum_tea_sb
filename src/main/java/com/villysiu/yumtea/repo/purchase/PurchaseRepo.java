@@ -21,6 +21,6 @@ public interface PurchaseRepo extends JpaRepository<Purchase, Long> {
     <T> Optional<T> findByAccountIdAndPurchaseIdQuery(
             @Param("accountId") Long accountId, @Param("purchaseId") Long purchaseId, Class<T> type);
 
-
-
+    void deleteByAccountId(Long accountId);
+void deleteAllByAccountId(Long accountId);
 }

@@ -14,6 +14,7 @@ import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
 
 import com.villysiu.yumtea.service.TaxRateService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +22,13 @@ import java.util.*;
 
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
-    @Autowired
+
     private final CartService cartService;
-    @Autowired
     private final PurchaseRepo purchaseRepo;
-    @Autowired
     private final PurchaseLineitemRepo purchaseLineitemRepo;
-    @Autowired
     private final TaxRateService taxRateService;
 
+    @Autowired
     public PurchaseServiceImpl(CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo, TaxRateService taxRateService, CustomUserDetailsServiceImpl userDetailsService) {
         this.cartService = cartService;
         this.purchaseRepo = purchaseRepo;
@@ -37,6 +36,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         this.taxRateService = taxRateService;
     }
 
+    @Transactional
     @Override
     public Long createPurchase(PurchaseRequest purchaseRequest, Account account) {
 
@@ -81,7 +81,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setTotal(total + purchase.getTip() + purchase.getTax());
         purchaseRepo.save(purchase);
 
-        cartService.deleteCartsByAccountId(account.getId());
+        cartService.deleteCartsByAccountId(account.getId(), account);
 
         return purchase.getId();
 
@@ -103,12 +103,18 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     }
+    @Transactional
     @Override
     public void deletePurchaseById(Long purchaseId, Long accountId){
         Purchase purchase = purchaseRepo.findByAccountIdAndPurchaseIdQuery(accountId, purchaseId, Purchase.class)
                 .orElseThrow(()->new NoSuchElementException("Purchase not found"));
 
         purchaseRepo.delete(purchase);
+    }
+    @Transactional
+    @Override
+    public void deleteAllPurchasesByAccountId(Long accountId) {
+        purchaseRepo.deleteAllByAccountId(accountId);
     }
 
 }

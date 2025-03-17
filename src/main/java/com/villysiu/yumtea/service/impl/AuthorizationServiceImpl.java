@@ -9,7 +9,10 @@ import com.villysiu.yumtea.repo.user.AccountRepo;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.service.AuthorizationService;
 
+import com.villysiu.yumtea.service.CartService;
+import com.villysiu.yumtea.service.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,12 +31,16 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RoleRepo roleRepo;
+    private final CartService cartService;
+    private final PurchaseService purchaseService;
 
-    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepo roleRepo) {
+    public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleRepo roleRepo, CartService cartService, PurchaseService purchaseService) {
         this.accountRepo = accountRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.roleRepo = roleRepo;
+        this.cartService = cartService;
+        this.purchaseService = purchaseService;
     }
 
 
@@ -113,9 +120,19 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return signinResponse;
     }
 
+    @Transactional
     @Override
     public void deleteAccount(Long id) {
-        Optional<Account> account = accountRepo.findById(id);
-        account.ifPresent(accountRepo::delete);
+        Account account = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
+        cartService.deleteCartsByAccountId(id, account);
+        purchaseService.deleteAllPurchasesByAccountId(account.getId());
+        accountRepo.delete(account);
+    }
+
+    public boolean isAdmin(Account account) {
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+//        Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElse(new Role("ROLE_ADMIN"));
+        return account.getRoles().contains(adminRole);
     }
 }
+

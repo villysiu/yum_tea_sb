@@ -14,4 +14,5 @@ public interface AuthorizationService {
     List<SigninResponse> getAllAccounts();
     SigninResponse toggleAdminRole(Long id);
     void deleteAccount(Long id);
+    boolean isAdmin(Account account);
 }
