@@ -6,6 +6,7 @@ import com.villysiu.yumtea.models.tea.Menuitem;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.service.MenuitemService;
 import com.villysiu.yumtea.service.storage.StorageService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,8 +61,8 @@ public class MenuitemController {
 //delete
     @DeleteMapping("/menuitem/{id}")
     public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
-
-        return new ResponseEntity<>(menuitemService.deleteMenuitem(id), HttpStatus.NO_CONTENT);
+        menuitemService.deleteMenuitem(id);
+        return new ResponseEntity<>("Menuitem deleted", HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/menuitem/img/{id}")
@@ -98,5 +99,23 @@ public class MenuitemController {
             e.printStackTrace();
             return new ResponseEntity<>("Failed to delete image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PatchMapping("/menuitem/toggleActive/{id}")
+    public ResponseEntity<?> toggleActiveMenuitem(@PathVariable Long id) {
+        try {
+            menuitemService.toggleActiveMenuitem(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
     }
 }

@@ -172,12 +172,12 @@ public class MenuitemServiceImpl implements MenuitemService {
 
     //    Delete
     @Override
-    public String deleteMenuitem(Long id) throws RuntimeException {
+    public void deleteMenuitem(Long id) throws RuntimeException {
         if (!menuitemRepo.existsById(id)) {
             throw new EntityNotFoundException("Entity not found with id: " + id);
         }
         menuitemRepo.deleteById(id);
-        return "Menuitem deleted.";
+
     }
 
     @Override
@@ -200,6 +200,13 @@ public class MenuitemServiceImpl implements MenuitemService {
         // Return the file path or URL
         return "/images/" + fileName;
     }
+    @Override
+    public void toggleActiveMenuitem(Long id){
+        Menuitem menuitem = menuitemRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("Menuitem not found."));
+        menuitem.setActive(!menuitem.getActive());
+        menuitemRepo.save(menuitem);
+    }
+
 
 
 }

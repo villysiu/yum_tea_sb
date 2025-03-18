@@ -18,7 +18,9 @@ public interface MenuitemService {
 
     Menuitem createMenuitem(MenuitemDto menuitemDto);
     Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto);
-    String deleteMenuitem(Long id);
+    void deleteMenuitem(Long id);
 
     String saveImage(MultipartFile file) throws IOException;
+
+    void toggleActiveMenuitem(Long id);
 }
