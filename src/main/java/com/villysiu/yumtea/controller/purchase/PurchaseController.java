@@ -23,7 +23,7 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
     private final AuthorizationService authorizationService;
-
+    @Autowired
     public PurchaseController(PurchaseService purchaseService, AuthorizationService authorizationService) {
         this.purchaseService = purchaseService;
         this.authorizationService = authorizationService;
@@ -37,8 +37,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/purchases/{id}")
-    public PurchaseProjection getPurchaseById(@PathVariable("id") Long id,
-                                           @AuthenticationPrincipal UserDetails userDetails) {
+    public PurchaseProjection getPurchaseById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         return purchaseService.getPurchaseById(id, account);
@@ -61,13 +60,14 @@ public class PurchaseController {
             return new ResponseEntity<>("Purchase deleted", HttpStatus.NO_CONTENT);
         } catch(SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this cart.");
-        } catch(UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Purchase not found.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
+    }
 
 }
 

@@ -64,7 +64,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseRepo.save(purchase);
 
         for(Cart cartLineitem : carts){
-            System.out.println(cartLineitem.toString());
+            logger.info("creating new purchaseLineitem for cart {}",cartLineitem.getId());
             PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
 
             purchaseLineitem.setPurchase(purchase);
@@ -76,17 +76,18 @@ public class PurchaseServiceImpl implements PurchaseService {
 
             purchaseLineitem.setQuantity(cartLineitem.getQuantity());
             purchaseLineitem.setPrice(cartLineitem.getPrice());
-
+            logger.info("saving new purchaseLineitem for cart {}",cartLineitem.getId());
             purchaseLineitemRepo.save(purchaseLineitem);
-
+            logger.info("successfully saved");
             purchase.getPurchaseLineitemList().add(purchaseLineitem);
             total += cartLineitem.getPrice() * cartLineitem.getQuantity();
         }
 
         purchase.setTax(total * taxRate / 100 );
         purchase.setTotal(total + purchase.getTip() + purchase.getTax());
+        logger.info("Saving purchase to database.");
         purchaseRepo.save(purchase);
-
+        logger.info("Successfully saved purchase to database.");
         cartService.deleteCartsByAccountId(account.getId(), account);
 
         return purchase.getId();
@@ -136,7 +137,9 @@ public class PurchaseServiceImpl implements PurchaseService {
     public void deletePurchasesByAccountId(Long accountId, Account authenticatedAccount) throws SecurityException{
         try{
             if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
+                logger.info("Deleting purchases by {} ", accountId);
                 purchaseRepo.deleteAllByAccountId(accountId);
+                logger.info("Successfully deleted all purchases by account {}", accountId);
             }
             else{
                 throw new SecurityException("You do not have permission to delete purchases.");

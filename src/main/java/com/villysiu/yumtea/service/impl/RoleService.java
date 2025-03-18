@@ -1,5 +1,6 @@
 package com.villysiu.yumtea.service.impl;
 
+import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,13 @@ public class RoleService {
     }
 
     public Role getRoleByName(String roleName){
-        Optional<Role> role = roleRepo.findByName(roleName);
-        return role.orElse(null);
+        return roleRepo.findByName(roleName).orElse(null);
+    }
+
+    public boolean isAdmin(Account account) {
+        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+//        Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElse(new Role("ROLE_ADMIN"));
+        return account.getRoles().contains(adminRole);
     }
 
 }

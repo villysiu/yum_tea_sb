@@ -10,6 +10,7 @@ import com.villysiu.yumtea.service.CartService;
 
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,15 +35,15 @@ public class CartController {
         this.authorizationService = authorizationService;
     }
 
-
+// authenticated user can get his carts
     @GetMapping("/carts")
     public List<CartProjection> getCartsByAccount(@AuthenticationPrincipal UserDetails userDetails) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
         return cartService.getCartProjectionsByAccountId(account.getId());
     }
-    // get input json  from frontend,
-    // add into cart, or merge if already existed, return cart id
-//    convert to cart projection and return with created status
+
+    // authenticated user use this to  create single  cart
+    // no admin
     @PostMapping("/cart")
     public ResponseEntity<CartProjection> createCart(@RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
@@ -51,19 +52,12 @@ public class CartController {
         return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
     }
 
-
+    //  authenticated user use this to  update his own single cart
+    // no admin
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
         System.out.println("updating cart");
         Account account = authorizationService.findByEmail(userDetails.getUsername());
-
-//        Cart cart = cartService.getCartById(id);
-//
-//        // only  owner of the cart can modify the cart , or ADMIN
-//        if(!cart.getAccount().equals(account)) {
-//            throw new EntityNotBelongToUserException("Cart does not belong to user");
-//        }
-//        Cart cart = cartService.getCartByIdAndAccountId(id, account.getId());
 
         Long cartId = cartService.updateCart(id, cartInputDto, account);
         return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
@@ -71,7 +65,8 @@ public class CartController {
     }
 
     //Not doing patch to avoid complicated calculation add this and minus the previous etc
-
+    // authenticated user use this to  delete his own single cart
+    // admin can delete
     @DeleteMapping("/cart/{id}")
     public ResponseEntity<String> deleteCart(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
@@ -81,10 +76,13 @@ public class CartController {
             return new ResponseEntity<>("Cart deleted", HttpStatus.NO_CONTENT);
         } catch(SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this cart.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
+    }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<String> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
     }
 }
 

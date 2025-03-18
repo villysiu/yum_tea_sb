@@ -17,6 +17,7 @@ public interface CartService {
 
     // used for return to frontend
     CartProjection getCartProjectionById(Long id);
+    Cart getCartById(Long id);
 
     // CUD
     Long createCart(CartInputDto cartInputDto, Account account);
@@ -24,6 +25,8 @@ public interface CartService {
 
 
     void deleteCartById(Long id, Account authenticatedAccount);
+    // delete single cart with PreAuthorize
+    void deleteCart(Cart cart);
     void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) ;
 
 
