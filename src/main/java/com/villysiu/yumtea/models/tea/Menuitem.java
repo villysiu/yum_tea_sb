@@ -18,6 +18,9 @@ public class Menuitem {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT true" )
+    private Boolean active = true;
+
     @Column(length = 2000) //hold up to 65,535 bytes.
     private String description;
 
