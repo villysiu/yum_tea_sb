@@ -13,7 +13,7 @@ public interface PurchaseService {
 
     //return a list of all purchases by the current user
     List<PurchaseProjection> getPurchasesByAccountId(Long accountId);
-
+    List<PurchaseProjection> getAllPurchases();
 
     PurchaseProjection getPurchaseById(Long purchaseId, Account account);
 

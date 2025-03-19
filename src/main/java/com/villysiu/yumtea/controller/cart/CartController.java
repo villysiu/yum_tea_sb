@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 
 @RestController
@@ -56,7 +56,6 @@ public class CartController {
     // no admin
     @PutMapping("/cart/{id}")
     public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println("updating cart");
         Account account = authorizationService.findByEmail(userDetails.getUsername());
 
         Long cartId = cartService.updateCart(id, cartInputDto, account);

@@ -19,14 +19,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
     private final AccountRepo accountRepo;
-    @Autowired
-    private final RoleRepo roleRepo;
 
-    public CustomUserDetailsServiceImpl(AccountRepo accountRepo, RoleRepo roleRepo) {
+    @Autowired
+    public CustomUserDetailsServiceImpl(AccountRepo accountRepo) {
         this.accountRepo = accountRepo;
-        this.roleRepo = roleRepo;
+
     }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

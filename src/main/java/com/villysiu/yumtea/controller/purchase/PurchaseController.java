@@ -7,15 +7,18 @@ import com.villysiu.yumtea.dto.response.PurchaseProjection;
 import com.villysiu.yumtea.service.AuthorizationService;
 import com.villysiu.yumtea.service.PurchaseService;
 import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 
 @RestController
@@ -35,6 +38,12 @@ public class PurchaseController {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
          return purchaseService.getPurchasesByAccountId(account.getId());
     }
+    @GetMapping("/purchases/all")
+    public List<PurchaseProjection> getPurchasesAll(@AuthenticationPrincipal UserDetails userDetails) {
+        Account account = authorizationService.findByEmail(userDetails.getUsername());
+        return purchaseService.getAllPurchases();
+    }
+
 
     @GetMapping("/purchases/{id}")
     public PurchaseProjection getPurchaseById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
@@ -51,16 +60,14 @@ public class PurchaseController {
         return new ResponseEntity<>(purchaseService.getPurchaseById(id, account), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/purchases/{id}")
+    @DeleteMapping("/purchase/{id}")
     public ResponseEntity<String> deletePurchase(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
+
         Account account = authorizationService.findByEmail(userDetails.getUsername());
 
-        try {
-            purchaseService.deletePurchaseById(id, account);
-            return new ResponseEntity<>("Purchase deleted", HttpStatus.NO_CONTENT);
-        } catch(SecurityException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this cart.");
-        }
+        purchaseService.deletePurchaseById(id, account);
+        return new ResponseEntity<>("Purchase deleted", HttpStatus.NO_CONTENT);
+
     }
 
     @ExceptionHandler(Exception.class)
@@ -68,6 +75,17 @@ public class PurchaseController {
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
     }
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(SecurityException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<String> handleSecurityException(SecurityException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
 
 }
 

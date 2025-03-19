@@ -30,8 +30,6 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
 
 //    private final CorsConfigurationSource corsConfiguration = new CorsConfiguration();
@@ -50,8 +48,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers("/cart","/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems", "/sizes", "/sugars", "/temperatures", "/taxes/**", "/bestsellers", "/images/**").permitAll()
-                .requestMatchers("/category", "/category/**", "/milk", "/milk/**", "/menuitem", "/menuitem/**",
-                        "/size","/size/**", "/resource/accounts", "/resource/accounts/**","/menuitem/img/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
+                                "/menuitem", "/menuitem/**", "/menuitem/img/**",
+                                "/resource/accounts", "/resource/accounts/**",
+                                "/purchases/all"
+//
+                ).hasAuthority("ROLE_ADMIN")
+
                 .anyRequest().authenticated()
             );
 

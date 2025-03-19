@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,8 +38,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private final CartService cartService;
     private final PurchaseService purchaseService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
 
+    @Autowired
     public AuthorizationServiceImpl(AccountRepo accountRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RoleService roleService
             , CartService cartService, PurchaseService purchaseService
     ) {
@@ -49,6 +50,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         this.cartService = cartService;
         this.purchaseService = purchaseService;
     }
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
 
 
     @Override
@@ -58,10 +60,13 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             Object value = entry.getValue();
 
             if(key.equals("nickname")) {
+
                 account.setNickname((String) value);
             }
         }
+        logger.info("saving account");
         accountRepo.save(account);
+        logger.info("Account successfully saved");
         SigninResponse signinResponse = new SigninResponse();
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
@@ -74,16 +79,17 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         String currentPassword = passwordRequestDto.getCurrentPassword();
         String newPassword = passwordRequestDto.getNewPassword();
 
-        System.out.println(account.getPassword());
-        System.out.println(currentPassword);
-
+        logger.info("Authenticating account");
         Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(account.getEmail(), currentPassword);
         Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
 
-        System.out.println("authenticted!!");
-        account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepo.save(account);
+        logger.info("Authenticated");
 
+        account.setPassword(passwordEncoder.encode(newPassword));
+
+        logger.info("saving account");
+        accountRepo.save(account);
+        logger.info("Account successfully saved");
     }
 
     @Override
@@ -108,9 +114,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public SigninResponse toggleAdminRole(Long id) {
-        Account account = accountRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Account not found"));
+        Account account = accountRepo.findById(id).orElseThrow(()->new UsernameNotFoundException("User not found"));
         Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
-
+        logger.info("toggling admin role");
         if(account.getRoles().contains(adminRole)){
             account.getRoles().remove(adminRole);
         }
@@ -118,8 +124,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             account.getRoles().add(adminRole);
         }
 //        System.out.println(account.getRoles());
+        logger.info("Saving account");
         accountRepo.save(account);
-
+        logger.info("Account saved");
 
         SigninResponse signinResponse = new SigninResponse();
         signinResponse.setEmail(account.getEmail());

@@ -67,49 +67,31 @@ public class MenuitemController {
 
     @PostMapping("/menuitem/img/{id}")
     public ResponseEntity<?> updateMenuitemImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
-        System.out.println("in upload contriller");
-
-        try {
+        
             storageService.store(file);
             Map<String, Object> menuitemDto = new HashMap<>();
             menuitemDto.put("imageUrl", file.getOriginalFilename());
             Menuitem menuitem = menuitemService.updateMenuitem(id, menuitemDto);
             return new ResponseEntity<>(menuitem, HttpStatus.OK);
-//            return new ResponseEntity<>("success upload image", HttpStatus.OK);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
     @DeleteMapping("/menuitem/img/{id}")
     public ResponseEntity<?> deleteMenuitemImage(@PathVariable Long id) {
-        System.out.println("in delete img controller");
-
-        try {
 //            research hoe to delete backend or data
 //            storageService.store(file);
             Map<String, Object> menuitemDto = new HashMap<>();
             menuitemDto.put("imageUrl", "");
             Menuitem menuitem = menuitemService.updateMenuitem(id, menuitemDto);
             return new ResponseEntity<>(menuitem, HttpStatus.OK);
-//            return new ResponseEntity<>("success upload image", HttpStatus.OK);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Failed to delete image", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
     }
 
     @PatchMapping("/menuitem/toggleActive/{id}")
     public ResponseEntity<?> toggleActiveMenuitem(@PathVariable Long id) {
-        try {
             menuitemService.toggleActiveMenuitem(id);
             return new ResponseEntity<>(HttpStatus.OK);
 
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
 
@@ -118,4 +100,10 @@ public class MenuitemController {
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
     }
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
 }

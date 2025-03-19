@@ -24,9 +24,10 @@ public interface CartService {
     Long updateCart(Long id, CartInputDto cartInputDto, Account account);
 
 
+
     void deleteCartById(Long id, Account authenticatedAccount);
-    // delete single cart with PreAuthorize
-    void deleteCart(Cart cart);
+
+
     void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) ;
 
 

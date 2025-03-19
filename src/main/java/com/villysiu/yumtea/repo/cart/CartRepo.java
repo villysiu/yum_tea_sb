@@ -32,4 +32,6 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
     <T> Optional<T> findById(Long id, Class<T> type);
 
     void deleteAllByAccountId(Long accountId);
+
+    boolean existsByIdAndAccountId(Long id, Long accountId);
 }

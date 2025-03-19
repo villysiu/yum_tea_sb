@@ -3,19 +3,18 @@ package com.villysiu.yumtea.service.impl;
 import com.villysiu.yumtea.dto.request.MenuitemDto;
 import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.tea.*;
-import com.villysiu.yumtea.repo.tea.CategoryRepo;
+
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
-import com.villysiu.yumtea.repo.tea.MilkRepo;
-import com.villysiu.yumtea.service.CategoryService;
-import com.villysiu.yumtea.service.MenuitemService;
-import com.villysiu.yumtea.service.MilkService;
+import com.villysiu.yumtea.service.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,30 +24,30 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 
 @Service
 public class MenuitemServiceImpl implements MenuitemService {
-    @Autowired
+
     private final CategoryService categoryService;
-    @Autowired
     private final MenuitemRepo menuitemRepo;
-    @Autowired
     private final MilkService milkService;
 
+    @Autowired
     MenuitemServiceImpl(MenuitemRepo menuitemRepo, CategoryService categoryService, MilkService milkService) {
         this.menuitemRepo = menuitemRepo;
         this.categoryService = categoryService;
         this.milkService = milkService;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(MenuitemServiceImpl.class);
+
     @Value("${file.upload-dir}")
     private String uploadDir;
 //    Create
     @Override
     public Menuitem createMenuitem(MenuitemDto menuitemDto) {
-        System.out.println(menuitemDto.toString());
+        logger.info("Create menuitem");
 
         Category category = categoryService.getCategoryById(menuitemDto.getCategoryId());
         Milk milk = milkService.getMilkById(menuitemDto.getMilkId());
@@ -64,15 +63,17 @@ public class MenuitemServiceImpl implements MenuitemService {
         menuitem.setMilk(milk);
         menuitem.setTemperature(menuitemDto.getTemperature());
         menuitem.setSugar(menuitemDto.getSugar());
-        menuitemRepo.save(menuitem);
 
+        logger.info("Saving menuitem");
+        menuitemRepo.save(menuitem);
+        logger.info("Saved Menuitem");
         return menuitem;
     }
 
 //    Update
     @Override
     public Menuitem updateMenuitem(Long id, Map<String, Object> menuitemDto) throws EntityNotFoundException {
-
+        logger.info("Update menuitem");
         Menuitem menuitem = menuitemRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Menuitem not found."));
 
@@ -92,26 +93,17 @@ public class MenuitemServiceImpl implements MenuitemService {
                     menuitem.setImageUrl((String) value);
                     break;
                 case "price":
-                    System.out.println(value instanceof String);
                     Double updatePrice = Double.parseDouble(value.toString());
-
-
                     menuitem.setPrice(updatePrice);
 
                     break;
                 case "categoryId":
-//                    System.out.println(value instanceof String);
-//                    System.out.println(value instanceof Integer);
                     Integer catInt = (Integer) value;
                     Long categoryId = catInt.longValue();
                     Category category = categoryService.getCategoryById(categoryId);
                     menuitem.setCategory(category);
                     break;
                 case "milkId":
-//                    System.out.println(value instanceof String);
-//                    System.out.println(value instanceof Integer);
-//                    Long milkId = Long.parseLong((String) value);
-
                     Integer mkInt = (Integer) value;
                     Long milkId = mkInt.longValue();
 
@@ -120,21 +112,21 @@ public class MenuitemServiceImpl implements MenuitemService {
                     menuitem.setMilk(milk);
                     break;
                 case "temperature":
-//                    System.out.println(value instanceof Temperature);
-//                    System.out.println(value instanceof String);
                     Temperature temperature = Temperature.valueOf((String) value);
                     menuitem.setTemperature(temperature);
                     break;
                 case "sugar":
                     Sugar sugar = Sugar.valueOf((String) value);
                     menuitem.setSugar(sugar);
-//                    menuitem.setSugar((Sugar) value);
                     break;
                 default:
                     break;
             }
         }
+
+        logger.info("Saving menuitem");
         menuitemRepo.save(menuitem);
+        logger.info("Saved Menuitem");
         return menuitem;
     }
 
@@ -144,7 +136,7 @@ public class MenuitemServiceImpl implements MenuitemService {
         return menuitemRepo.findAll();
     }
     @Override
-    public Menuitem getMenuitemById(Long id) throws EntityNotFoundException {
+    public Menuitem getMenuitemById(Long id){
         return menuitemRepo.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("Menuitem not found."));
     }
@@ -157,6 +149,7 @@ public class MenuitemServiceImpl implements MenuitemService {
     public List<BestSellerDto> getBestsellers(){
         Pageable pageable = PageRequest.of(0, 3);
         List<Object[]> bestsellers = menuitemRepo.findBestSellers(pageable);
+
         List<BestSellerDto> bestSellerDtos = new ArrayList<>();
         for (Object[] row : bestsellers) {
             BestSellerDto dto = new BestSellerDto();
@@ -176,13 +169,15 @@ public class MenuitemServiceImpl implements MenuitemService {
         if (!menuitemRepo.existsById(id)) {
             throw new EntityNotFoundException("Entity not found with id: " + id);
         }
+        logger.info("Deleting menuitem");
         menuitemRepo.deleteById(id);
+        logger.info("Deleted Menuitem");
 
     }
 
     @Override
     public String saveImage(MultipartFile file) throws IOException {
-        System.out.println("in saveimage service");
+        logger.info("Saving image service");
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         // Create the directory if it doesn't exist
@@ -192,16 +187,17 @@ public class MenuitemServiceImpl implements MenuitemService {
         }
         // Save the file
         Path filePath = path.resolve(fileName);
-        System.out.println("ready to save image: "+filePath);
+        logger.info("ready to save image: "+filePath);
         file.transferTo(filePath.toFile());
 
-        System.out.println("/images/" + fileName);
+       logger.info("Image saved in /images/" + fileName);
 
         // Return the file path or URL
         return "/images/" + fileName;
     }
     @Override
     public void toggleActiveMenuitem(Long id){
+        logger.info("Toggle  menuitem visibility");
         Menuitem menuitem = menuitemRepo.findById(id).orElseThrow(()-> new EntityNotFoundException("Menuitem not found."));
         menuitem.setActive(!menuitem.getActive());
         menuitemRepo.save(menuitem);

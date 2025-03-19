@@ -10,18 +10,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Service
-@RequiredArgsConstructor
+
 public class SizeServiceImpl implements SizeService {
-    @Autowired
     private final SizeRepo sizeRepo;
+
+    @Autowired
+    public SizeServiceImpl(SizeRepo sizeRepo) {
+        this.sizeRepo = sizeRepo;
+    }
 
     @Override
     public Size getSizeById(Long id) {
 
-        return sizeRepo.findById(id).orElseThrow(()->new NoSuchElementException("Size not found."));
+        return sizeRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Size not found."));
     }
     @Override
     public List<Size> getSize() {
@@ -35,7 +38,7 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public Size updateSize(Long id, Map<String, Object> sizeDto){
-        Size size = sizeRepo.findById(id).orElseThrow(()->new NoSuchElementException("Size not found."));
+        Size size = sizeRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Size not found."));
         for (Map.Entry<String, Object> entry : sizeDto.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();

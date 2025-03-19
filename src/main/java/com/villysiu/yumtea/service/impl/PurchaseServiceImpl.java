@@ -15,10 +15,12 @@ import com.villysiu.yumtea.service.CartService;
 import com.villysiu.yumtea.service.PurchaseService;
 
 import com.villysiu.yumtea.service.TaxRateService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -31,6 +33,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseLineitemRepo purchaseLineitemRepo;
     private final TaxRateService taxRateService;
     private final RoleService roleService;
+
     @Autowired
     public PurchaseServiceImpl(CartService cartService, PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo, TaxRateService taxRateService,  RoleService roleService) {
         this.cartService = cartService;
@@ -46,22 +49,31 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public Long createPurchase(PurchaseRequest purchaseRequest, Account account) {
 
+        logger.info("Getting carts by account {}", account.getEmail());
         List<Cart> carts = cartService.getCartsByAccountId(account.getId());
-        if(carts.isEmpty())
-            throw new RuntimeException("User's cart is empty.");
+        if(carts.isEmpty()){
+            logger.info("{} has empty cart", account.getEmail());
+            throw new EntityNotFoundException("User's cart is empty.");
+        }
+        logger.info("Successfully getting carts by account");
 
+        logger.info("creating a new purchase");
         Purchase purchase = new Purchase();
         purchase.setAccount(account);
         purchase.setPurchaseDate(new Date(System.currentTimeMillis()));
 
         double total = 0.0;
-        Double taxRate = taxRateService.getTaxRateByState(purchaseRequest.getState());
+
+        purchase.setTax(purchaseRequest.getTax());
+
         Double tip = purchaseRequest.getTip();
         purchase.setTip(tip == null ? 0 : tip);
 
         purchase.setPurchaseLineitemList(new ArrayList<>());
 
+        logger.info("saving purchase");
         purchaseRepo.save(purchase);
+        logger.info("saved purchase");
 
         for(Cart cartLineitem : carts){
             logger.info("creating new purchaseLineitem for cart {}",cartLineitem.getId());
@@ -76,6 +88,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
             purchaseLineitem.setQuantity(cartLineitem.getQuantity());
             purchaseLineitem.setPrice(cartLineitem.getPrice());
+
             logger.info("saving new purchaseLineitem for cart {}",cartLineitem.getId());
             purchaseLineitemRepo.save(purchaseLineitem);
             logger.info("successfully saved");
@@ -83,11 +96,13 @@ public class PurchaseServiceImpl implements PurchaseService {
             total += cartLineitem.getPrice() * cartLineitem.getQuantity();
         }
 
-        purchase.setTax(total * taxRate / 100 );
+
         purchase.setTotal(total + purchase.getTip() + purchase.getTax());
+
         logger.info("Saving purchase to database.");
         purchaseRepo.save(purchase);
         logger.info("Successfully saved purchase to database.");
+
         cartService.deleteCartsByAccountId(account.getId(), account);
 
         return purchase.getId();
@@ -103,10 +118,15 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public List<PurchaseProjection> getAllPurchases() {
+        return purchaseRepo.findAllProjectedBy();
+    }
+
+    @Override
     public PurchaseProjection getPurchaseById(Long purchaseId, Account account){
 
        return purchaseRepo.findByAccountIdAndPurchaseIdQuery(account.getId(), purchaseId, PurchaseProjection.class)
-               .orElseThrow(()->new NoSuchElementException("Purchase not found"));
+               .orElseThrow(()->new EntityNotFoundException("Purchase not found"));
 
 
     }
@@ -114,11 +134,9 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public void deletePurchaseById(Long purchaseId, Account authenticatedAccount){
         try{
-            Purchase purchase = purchaseRepo.findById(purchaseId)
-                    .orElseThrow(()->new NoSuchElementException("Purchase not found"));
-            if(roleService.isAdmin(authenticatedAccount)  || Objects.equals(authenticatedAccount.getId(), purchase.getAccount().getId())){
+            if(roleService.isAdmin(authenticatedAccount)  || isOwner(purchaseId, authenticatedAccount.getId())){
                 logger.info("Deleting purchase {}", purchaseId);
-                purchaseRepo.delete(purchase);
+                purchaseRepo.deleteById(purchaseId);
                 logger.info("Successfully deleted purchase {}", purchaseId);
             }
             else{
@@ -148,6 +166,10 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new RuntimeException("Error occurred while deleting purchases", e);
         }
 
+    }
+
+    private boolean isOwner(Long purchaseId, Long accountId){
+         return purchaseRepo.existsByIdAndAccountId(purchaseId, accountId);
     }
 
 }

@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class PurchaseRequest {
     private Double tip;
-    private String state;
+    private Double tax;
 }

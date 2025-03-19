@@ -211,7 +211,10 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
 - **DELETE** : `/menuitem/img/{id}`
  - update `menuitem.imageUrl` to null.
  - return http status `404 No Content`
-- 
+
+- **PATCH** : `/menuitem/toggleActive/{id}`
+  - toggle Menuitem visibility
+  - return http status `200 OK`
 **CategoryController**
 - **POST** : `/category`
     - `CategoryDto` DTO is used to map the following Json object.

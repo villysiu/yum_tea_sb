@@ -15,9 +15,10 @@ import java.util.Map;
 
 @RestController
 public class MilkController {
-    @Autowired
+
     private final MilkService milkService;
 
+    @Autowired
     MilkController(MilkService milkService) {
         this.milkService = milkService;
     }

@@ -14,10 +14,10 @@ import java.util.Map;
 
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
-    private final CategoryRepo categoryRepo;
-    public CategoryServiceImpl(CategoryRepo categoryRepo) {
 
+    private final CategoryRepo categoryRepo;
+    @Autowired
+    public CategoryServiceImpl(CategoryRepo categoryRepo) {
         this.categoryRepo = categoryRepo;
     }
 

@@ -5,7 +5,6 @@ import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
-import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
 import com.villysiu.yumtea.service.*;
@@ -19,7 +18,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -47,8 +45,6 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public Long createCart(CartInputDto cartInputDto, Account account) throws RuntimeException {
-        System.out.println(cartInputDto);
-
 
         Optional<Cart> duplicatedCart = cartRepo.findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
                 account.getId(),
@@ -59,54 +55,48 @@ public class CartServiceImpl implements CartService {
                 cartInputDto.getTemperature()
         );
 
-        try {
-            //cart already existed, update quantity
 
-            if (duplicatedCart.isPresent()) {
-                logger.info("Duplicated cart found");
-                Cart dupCart = duplicatedCart.get();
-                logger.info("updating quantity");
-                dupCart.setQuantity(dupCart.getQuantity() + cartInputDto.getQuantity());
-                logger.info("updated quantity successfully");
+        if (duplicatedCart.isPresent()) {
+            logger.info("Duplicated cart found");
+            Cart dupCart = duplicatedCart.get();
 
-                logger.info("saving cart");
-                cartRepo.save(dupCart);
-                logger.info("saved cart successfully");
-                return dupCart.getId();
-            } else {
-                logger.info("Creating a new Cart");
-                Cart newCart = new Cart();
+            dupCart.setQuantity(dupCart.getQuantity() + cartInputDto.getQuantity());
+            logger.info("updated quantity successfully");
 
-                newCart.setAccount(account);
+            logger.info("saving cart");
+            cartRepo.save(dupCart);
+            logger.info("saved cart successfully");
+            return dupCart.getId();
+        } else {
+            logger.info("Creating a new Cart");
+            Cart newCart = new Cart();
 
-                Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
-                newCart.setMenuitem(menuitem);
+            newCart.setAccount(account);
 
-                Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
-                        menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
-                newCart.setMilk(milk);
+            Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
+            newCart.setMenuitem(menuitem);
 
-                Size size = sizeService.getSizeById(cartInputDto.getSizeId());
-                newCart.setSize(size);
+            Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
+                    menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
+            newCart.setMilk(milk);
 
-                newCart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
+            Size size = sizeService.getSizeById(cartInputDto.getSizeId());
+            newCart.setSize(size);
 
-                newCart.setQuantity(cartInputDto.getQuantity());
+            newCart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
 
-                newCart.setTemperature(
-                        menuitem.getTemperature().equals(Temperature.FREE) ? cartInputDto.getTemperature() : menuitem.getTemperature()
-                );
-                newCart.setSugar(
-                        menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
-                );
-                logger.info("saving new Cart");
-                cartRepo.save(newCart);
-                logger.info("saved new Cart successfully");
-                return newCart.getId();
-            }
-        } catch(RuntimeException e) {
-            logger.info("Error saving new Cart");
-            throw new RuntimeException("Error occurred while deleting purchases", e);
+            newCart.setQuantity(cartInputDto.getQuantity());
+
+            newCart.setTemperature(
+                    menuitem.getTemperature().equals(Temperature.FREE) ? cartInputDto.getTemperature() : menuitem.getTemperature()
+            );
+            newCart.setSugar(
+                    menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
+            );
+            logger.info("saving new Cart");
+            cartRepo.save(newCart);
+            logger.info("saved new Cart successfully");
+            return newCart.getId();
         }
     }
 
@@ -115,8 +105,9 @@ public class CartServiceImpl implements CartService {
     public Long updateCart(Long id, CartInputDto cartInputDto, Account account) {
 
         Cart cart = cartRepo.findByIdAndAccountId(id, account.getId(), Cart.class)
-                .orElseThrow(()->new NoSuchElementException("Cart not found"));
+                .orElseThrow(()->new EntityNotFoundException("Cart not found or you dont havet the permission to access the cart"));
 
+        logger.info("Check for duplicated cart");
         Optional<Cart> duplicatedCart = cartRepo.findByAccountIdAndMenuitemIdAndMilkIdAndSizeIdAndSugarAndTemperature(
                 account.getId(),
                 cartInputDto.getMenuitemId(),
@@ -125,51 +116,51 @@ public class CartServiceImpl implements CartService {
                 cartInputDto.getSugar(),
                 cartInputDto.getTemperature()
         );
-        try {
-            if (duplicatedCart.isPresent()) {
-                logger.info("Duplicated cart found");
-                logger.info("updating quantity in current cart");
-                cart.setQuantity(cartInputDto.getQuantity() + duplicatedCart.get().getQuantity());
-                logger.info("updating quantity successfully");
 
-                logger.info("deleting duplicated cart");
-                cartRepo.delete(duplicatedCart.get());
-                logger.info("deleted duplicated cart successfully");
+        if (duplicatedCart.isPresent()) {
+            logger.info("Duplicated cart {} found", duplicatedCart.get().getId());
+            logger.info("updating quantity in current cart {}", id);
+            cart.setQuantity(cartInputDto.getQuantity() + duplicatedCart.get().getQuantity());
+            logger.info("updating quantity successfully");
 
-            }
-            //        during update, only properties are allowed to update, not the menuitem
-            //        Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
-            //        cart.setMenuitem(menuitem);
-            else {
-                Menuitem menuitem = cart.getMenuitem();
+            logger.info("deleting duplicated cart {}", duplicatedCart.get().getId());
+            cartRepo.delete(duplicatedCart.get());
+            logger.info("deleted duplicated cart successfully");
 
-                Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
-                        menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
-                cart.setMilk(milk);
-
-                Size size = sizeService.getSizeById(cartInputDto.getSizeId());
-                cart.setSize(size);
-
-                cart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
-                cart.setQuantity(cartInputDto.getQuantity());
-
-
-                cart.setTemperature(
-                        menuitem.getTemperature().equals(Temperature.FREE) ? cartInputDto.getTemperature() : menuitem.getTemperature()
-                );
-                cart.setSugar(
-                        menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
-                );
-            }
-            logger.info("saving current cart");
-            cartRepo.save(cart);
-            logger.info("saved current cart successfully");
-
-            return cart.getId();
-        }catch(RuntimeException e) {
-            logger.info("Error updating Cart");
-            throw new RuntimeException("Error occurred while updating cart", e);
         }
+        //        during update, only properties are allowed to update, not the menuitem
+        //        Menuitem menuitem = menuitemService.getMenuitemById(cartInputDto.getMenuitemId());
+        //        cart.setMenuitem(menuitem);
+        else {
+            logger.info("No duplicated cart");
+            logger.info("updating current cart {}", id);
+            Menuitem menuitem = cart.getMenuitem();
+
+            Milk milk = (menuitem.getMilk().getTitle().equals("NA")) ?
+                    menuitem.getMilk() : milkService.getMilkById(cartInputDto.getMilkId());
+            cart.setMilk(milk);
+
+            Size size = sizeService.getSizeById(cartInputDto.getSizeId());
+            cart.setSize(size);
+
+            cart.setPrice(menuitem.getPrice() + milk.getPrice() + size.getPrice());
+            cart.setQuantity(cartInputDto.getQuantity());
+
+
+            cart.setTemperature(
+                    menuitem.getTemperature().equals(Temperature.FREE) ? cartInputDto.getTemperature() : menuitem.getTemperature()
+            );
+            cart.setSugar(
+                    menuitem.getSugar().equals(Sugar.NA) ? Sugar.NA : cartInputDto.getSugar()
+            );
+        }
+
+        logger.info("saving current cart");
+        cartRepo.save(cart);
+        logger.info("saved current cart successfully");
+
+        return cart.getId();
+
     }
 
 
@@ -185,11 +176,11 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartProjection getCartProjectionById(Long id) {
-        return cartRepo.findById(id, CartProjection.class).orElseThrow(()-> new NoSuchElementException("Cart not found"));
+        return cartRepo.findById(id, CartProjection.class).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
     }
     @Override
     public Cart getCartById(Long id){
-        return cartRepo.findById(id, Cart.class).orElseThrow(()-> new NoSuchElementException("Cart not found"));
+        return cartRepo.findById(id, Cart.class).orElseThrow(()-> new EntityNotFoundException("Cart not found"));
     }
 
 
@@ -198,13 +189,13 @@ public class CartServiceImpl implements CartService {
     public void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) {
         try{
             if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
-                logger.info("Deleting carts by {} ", accountId);
+                logger.info("Deleting carts of account {} ", accountId);
                 cartRepo.deleteAllByAccountId(accountId);
-                logger.info("Successfully deleted all cart by account {}", accountId);
+                logger.info("Successfully deleted all cart of account {}", accountId);
             }
             else{
-                logger.error("You do not have permission to delete purchases");
-                throw new SecurityException("You do not have permission to delete purchases.");
+                logger.error("You do not have permission to delete carts of account {}", accountId);
+                throw new SecurityException("You do not have permission to delete carts of account .");
             }
         } catch (Exception e){
             logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
@@ -220,14 +211,14 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public void deleteCartById(Long id, Account authenticatedAccount) {
-        Cart cart = cartRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
+//        Cart cart = cartRepo.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
 
         try {
-            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), cart.getAccount().getId())){
-            logger.info("Deleting cart {}", id);
-            cartRepo.deleteById(id);
-            logger.info("Successfully deleted cart {}", id);
+            if(roleService.isAdmin(authenticatedAccount) || isOwner(id, authenticatedAccount.getId())){
+                logger.info("Deleting cart {}", id);
+                cartRepo.deleteById(id);
+                logger.info("Successfully deleted cart {}", id);
             }
             else{
                 logger.error("You do not have permission to delete cart");
@@ -238,11 +229,11 @@ public class CartServiceImpl implements CartService {
             throw new RuntimeException("Error occurred while deleting purchases", e);
         }
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN') or authentication.name==cart.account.email")
-//  An error occurred: Failed to evaluate expression ' authentication.name==cart.account.email'
-    public void deleteCart(Cart cart){
-        logger.info("Deleting cart ");
-        cartRepo.delete(cart);
-        logger.info("Successfully deleted cart");
+
+
+
+    public boolean isOwner(Long cartId, Long accountId){
+
+        return cartRepo.existsByIdAndAccountId(cartId, accountId);
     }
 }

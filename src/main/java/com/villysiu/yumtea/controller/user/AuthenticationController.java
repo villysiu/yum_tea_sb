@@ -4,10 +4,13 @@ import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.service.AuthenticationService;
+import com.villysiu.yumtea.service.impl.AuthenticationServiceImpl;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,23 +33,18 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request){
-        System.out.println("in signup");
         //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
-        try{
-            Long id = authenticationService.signup(request);
+            authenticationService.signup(request);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (EntityExistsException e){
-            return new ResponseEntity<>( e.getMessage(), HttpStatus.CONFLICT);
-        }
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
-        System.out.println("in sign in controller");
         try{
             SigninResponse signinResponse = authenticationService.signin(signinRequest, request );
             return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
@@ -61,10 +59,11 @@ public class AuthenticationController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
-        System.out.println("logging out");
-
+        logger.info("Logging out {}", authentication.getName());
         logoutHandler.logout(request, response, authentication);
 
+        logger.info("Successfully logged out");
+        logger.info("removeing session and clear security context");
         request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
         request.getSession().invalidate();
         SecurityContextHolder.clearContext();
