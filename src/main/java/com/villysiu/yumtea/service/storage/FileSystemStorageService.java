@@ -1,5 +1,7 @@
 package com.villysiu.yumtea.service.storage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +12,7 @@ import java.nio.file.*;
 
 @Service
 public class FileSystemStorageService implements StorageService {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Path rootLocation;
 
     @Autowired
@@ -25,36 +27,44 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void init() {
-        System.out.println("1 init");
+        logger.info("Initializing file system storage.");
         try {
+
             Files.createDirectories(rootLocation);
+            logger.info("Filesystem storage directory created.");
         }
         catch (IOException e) {
+            logger.error(e.getMessage());
             throw new StorageException("Could not initialize storage", e);
         }
     }
+
     @Override
     public void store(MultipartFile file) {
-        System.out.println("3 store file");
+        logger.info("Storing file: {}", file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
+                logger.error("File is empty.");
                 throw new StorageException("Failed to store empty file.");
             }
+
             Path destinationFile = this.rootLocation.resolve(
                             Paths.get(file.getOriginalFilename()))
                     .normalize().toAbsolutePath();
 
-            System.out.println(destinationFile);
+
             if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                logger.error("failed to store file outside of storage directory.");
                 // This is a security check
                 throw new StorageException(
                         "Cannot store file outside current directory.");
             }
-            System.out.println("to save " + file.getOriginalFilename());
+            logger.info("Saving file: {}", file.getOriginalFilename());
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile,
                         StandardCopyOption.REPLACE_EXISTING);
             }
+            logger.info("Successfully stored file: {}", file.getOriginalFilename());
         }
         catch (IOException e) {
             throw new StorageException("Failed to store file.", e);

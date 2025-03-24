@@ -1,17 +1,13 @@
 package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.models.tea.Category;
-import com.villysiu.yumtea.models.tea.Menuitem;
-import com.villysiu.yumtea.repo.tea.CategoryRepo;
-import com.villysiu.yumtea.service.CategoryService;
-import lombok.RequiredArgsConstructor;
+import com.villysiu.yumtea.service.tea.category.CategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

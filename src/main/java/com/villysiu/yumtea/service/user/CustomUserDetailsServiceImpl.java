@@ -1,10 +1,7 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.user;
 
 import com.villysiu.yumtea.models.user.Account;
-import com.villysiu.yumtea.models.user.Role;
-import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.repo.user.AccountRepo;
-import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

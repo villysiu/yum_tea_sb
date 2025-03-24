@@ -1,18 +1,17 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.tea.milk;
 
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
-import com.villysiu.yumtea.service.MilkService;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 
+@Slf4j
 @Service
 public class MilkServiceImpl implements MilkService {
 
@@ -21,6 +20,16 @@ public class MilkServiceImpl implements MilkService {
 
     public MilkServiceImpl(MilkRepo milkRepo) {
         this.milkRepo = milkRepo;
+    }
+
+    @Override
+    public Milk createMilk(Milk milk){
+        System.out.println(milk.getTitle());
+        System.out.println(milk.getPrice());
+        Milk m = milkRepo.save(milk);
+        System.out.println("savrd???");
+        System.out.println(m.getTitle());
+        return m;
     }
 
     @Override
@@ -51,21 +60,17 @@ public class MilkServiceImpl implements MilkService {
         return milkRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Milk not found."));
 
     }
+    @Override
+    public Milk getMilkByTitle(String title){
+        return milkRepo.findMilkByTitle(title).orElseGet(()->milkRepo.save(new Milk(title)));
+    }
 
     @Override
     public List<Milk> getMilks() {
         return milkRepo.findAll();
     }
 
-    @Override
-    public Milk createMilk(Milk milk){
-        System.out.println(milk.getTitle());
-        System.out.println(milk.getPrice());
-        Milk m = milkRepo.save(milk);
-        System.out.println("savrd???");
-        System.out.println(m.getTitle());
-        return m;
-    }
+
 
     @Override
     public void deleteMilk(Long id) {
@@ -74,4 +79,5 @@ public class MilkServiceImpl implements MilkService {
         }
         milkRepo.deleteById(id);
     }
+
 }

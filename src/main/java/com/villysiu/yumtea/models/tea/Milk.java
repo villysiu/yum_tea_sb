@@ -22,4 +22,8 @@ public class Milk {
     public Milk(String title) {
         this.title = title;
     }
+    public Milk(String title, double price) {
+        this.title = title;
+        this.price = price;
+    }
 }

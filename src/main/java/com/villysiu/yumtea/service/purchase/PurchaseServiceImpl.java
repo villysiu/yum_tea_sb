@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.purchase;
 
 import com.villysiu.yumtea.dto.request.PurchaseRequest;
 import com.villysiu.yumtea.models.cart.Cart;
@@ -10,17 +10,14 @@ import com.villysiu.yumtea.dto.response.PurchaseProjection;
 
 import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
-import com.villysiu.yumtea.service.AuthorizationService;
-import com.villysiu.yumtea.service.CartService;
-import com.villysiu.yumtea.service.PurchaseService;
+import com.villysiu.yumtea.service.cart.CartService;
 
-import com.villysiu.yumtea.service.TaxRateService;
+import com.villysiu.yumtea.service.user.RoleService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -65,9 +62,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         double total = 0.0;
 
         purchase.setTax(purchaseRequest.getTax());
-
-        Double tip = purchaseRequest.getTip();
-        purchase.setTip(tip == null ? 0 : tip);
+        purchase.setTip(purchaseRequest.getTip());
 
         purchase.setPurchaseLineitemList(new ArrayList<>());
 
@@ -154,7 +149,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public void deletePurchasesByAccountId(Long accountId, Account authenticatedAccount) throws SecurityException{
         try{
-            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
+            if(roleService.isAdmin(authenticatedAccount) || isOwnerOfAccount(accountId, authenticatedAccount.getId())){
                 logger.info("Deleting purchases by {} ", accountId);
                 purchaseRepo.deleteAllByAccountId(accountId);
                 logger.info("Successfully deleted all purchases by account {}", accountId);
@@ -168,8 +163,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     }
 
-    private boolean isOwner(Long purchaseId, Long accountId){
-         return purchaseRepo.existsByIdAndAccountId(purchaseId, accountId);
+
+    private boolean isOwner(Long purchaseId, Long authenticatedId){
+         return purchaseRepo.existsByIdAndAccountId(purchaseId, authenticatedId);
+    }
+    private boolean isOwnerOfAccount(Long acountId, Long authenticatedId){
+        return authenticatedId.equals(acountId);
     }
 
 }

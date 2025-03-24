@@ -1,10 +1,9 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.user;
 
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Service;
 
 
 public interface AuthenticationService {

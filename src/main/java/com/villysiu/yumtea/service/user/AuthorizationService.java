@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.user;
 
 import com.villysiu.yumtea.dto.request.PasswordRequestDto;
 import com.villysiu.yumtea.dto.response.SigninResponse;

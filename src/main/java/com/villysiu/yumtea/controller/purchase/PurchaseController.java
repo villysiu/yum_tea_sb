@@ -4,17 +4,14 @@ import com.villysiu.yumtea.dto.request.PurchaseRequest;
 import com.villysiu.yumtea.models.user.Account;
 
 import com.villysiu.yumtea.dto.response.PurchaseProjection;
-import com.villysiu.yumtea.service.AuthorizationService;
-import com.villysiu.yumtea.service.PurchaseService;
-import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
+import com.villysiu.yumtea.service.user.AuthorizationService;
+import com.villysiu.yumtea.service.purchase.PurchaseService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,6 +48,7 @@ public class PurchaseController {
 
         return purchaseService.getPurchaseById(id, account);
     }
+
 
     @PostMapping("/purchase")
     public ResponseEntity<PurchaseProjection> createPurchase(@RequestBody PurchaseRequest purchaseRequest, @AuthenticationPrincipal UserDetails userDetails) {

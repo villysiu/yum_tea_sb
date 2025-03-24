@@ -1,8 +1,7 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.tea.category;
 
 import com.villysiu.yumtea.models.tea.Category;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
-import com.villysiu.yumtea.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,12 @@ public class CategoryServiceImpl implements CategoryService {
     public Category getCategoryById(Long id){
         return categoryRepo.findById(id).orElseThrow(()->new EntityNotFoundException("Category not found."));
     }
+
+    @Override
+    public Category getCategoryByTitle(String title) {
+        return categoryRepo.findByTitle(title).orElseGet(() -> categoryRepo.save(new Category(title)));
+    }
+
 
     @Override
     public Category updateCategory(Long id, Map<String, Object> categoryDto){
@@ -73,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.deleteById(id);
         return "Category deleted";
     }
+
 
 }
 

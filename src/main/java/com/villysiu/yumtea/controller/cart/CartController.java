@@ -1,17 +1,11 @@
 package com.villysiu.yumtea.controller.cart;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
-import com.villysiu.yumtea.exception.EntityNotBelongToUserException;
-import com.villysiu.yumtea.models.cart.Cart;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
-import com.villysiu.yumtea.service.AuthorizationService;
-import com.villysiu.yumtea.service.CartService;
+import com.villysiu.yumtea.service.user.AuthorizationService;
+import com.villysiu.yumtea.service.cart.CartService;
 
-import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
-
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

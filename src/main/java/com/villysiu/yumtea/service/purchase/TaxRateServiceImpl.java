@@ -1,9 +1,7 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.purchase;
 
 import com.villysiu.yumtea.models.purchase.TaxRate;
 import com.villysiu.yumtea.repo.purchase.TaxRepo;
-import com.villysiu.yumtea.service.TaxRateService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

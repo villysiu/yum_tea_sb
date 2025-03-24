@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.purchase;
 
 
 import com.villysiu.yumtea.dto.request.PurchaseRequest;

@@ -2,6 +2,7 @@ package com.villysiu.yumtea.models.cart;
 
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.Account;
+import com.villysiu.yumtea.repo.tea.MilkRepo;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class Cart {
     @ManyToOne(optional = false)
     private Menuitem menuitem;
 
-    @JoinColumn(name = "milk_id", columnDefinition = "BIGINT DEFAULT 12", nullable=false)
+    @JoinColumn(name = "milk_id", nullable=false)
     @ManyToOne(optional = false)
     private Milk milk;
 
@@ -38,11 +39,11 @@ public class Cart {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Temperature temperature;
+    private Temperature temperature = Temperature.HOT;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Sugar sugar;
+    private Sugar sugar = Sugar.ZERO;
 
     @Column(columnDefinition = "int default 1", nullable = false)
     private Integer quantity = 1;
@@ -50,24 +51,6 @@ public class Cart {
     @Column(columnDefinition = "double default 0.0", nullable = false)
     private Double price = 0.0;
 
-    @PrePersist
-    private void setDefaultValue() {
-        if (this.sugar == null) {
-            this.sugar = Sugar.ZERO;  // Set the default value
-        }
-        if(this.temperature == null) {
-            this.temperature = Temperature.HOT;
-        }
-
-        if(this.milk == null) {
-            this.milk = new Milk();
-            this.milk.setId(12L);
-        }
-        if(this.size == null) {
-            this.size = new Size();
-            this.size.setId(1L);
-        }
-    }
 
     public Cart(Account account, Menuitem menuitem, Milk milk, Size size) {
         this.account = account;

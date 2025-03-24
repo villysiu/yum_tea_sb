@@ -1,6 +1,6 @@
 package com.villysiu.yumtea.controller.purchase;
 
-import com.villysiu.yumtea.service.TaxRateService;
+import com.villysiu.yumtea.service.purchase.TaxRateService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;

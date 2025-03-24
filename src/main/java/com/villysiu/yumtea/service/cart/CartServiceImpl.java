@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.cart;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
 import com.villysiu.yumtea.models.cart.Cart;
@@ -7,14 +7,16 @@ import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.repo.cart.CartRepo;
 
-import com.villysiu.yumtea.service.*;
+import com.villysiu.yumtea.service.tea.menuitem.MenuitemService;
+import com.villysiu.yumtea.service.tea.menuitem.SizeService;
+import com.villysiu.yumtea.service.tea.milk.MilkService;
+import com.villysiu.yumtea.service.user.RoleService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -188,7 +190,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) {
         try{
-            if(roleService.isAdmin(authenticatedAccount) || Objects.equals(authenticatedAccount.getId(), accountId)){
+            if(roleService.isAdmin(authenticatedAccount) || isOwnerOfAccount( accountId, authenticatedAccount.getId())){
                 logger.info("Deleting carts of account {} ", accountId);
                 cartRepo.deleteAllByAccountId(accountId);
                 logger.info("Successfully deleted all cart of account {}", accountId);
@@ -204,16 +206,9 @@ public class CartServiceImpl implements CartService {
 
     }
 
-
-
-
-
     @Transactional
     @Override
     public void deleteCartById(Long id, Account authenticatedAccount) {
-//        Cart cart = cartRepo.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Cart not found"));
-
         try {
             if(roleService.isAdmin(authenticatedAccount) || isOwner(id, authenticatedAccount.getId())){
                 logger.info("Deleting cart {}", id);
@@ -232,8 +227,12 @@ public class CartServiceImpl implements CartService {
 
 
 
-    public boolean isOwner(Long cartId, Long accountId){
+    public boolean isOwner(Long cartId, Long authenticatedId){
 
-        return cartRepo.existsByIdAndAccountId(cartId, accountId);
+        return cartRepo.existsByIdAndAccountId(cartId, authenticatedId);
+    }
+
+    private boolean isOwnerOfAccount(Long acountId, Long authenticatedId){
+        return authenticatedId.equals(acountId);
     }
 }

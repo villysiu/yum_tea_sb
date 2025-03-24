@@ -21,7 +21,7 @@ public class Purchase {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(columnDefinition = "DATE DEFAULT CURRENT_DATE")  //ensures database has a current date
+    @Column
     @JsonFormat(pattern = "yyyy-MM-dd")  //ensure date is return in restAPI as "yyyy-MM-dd"
     private Date purchaseDate = new Date(); //ensures JAVA object has a date when initialized
 

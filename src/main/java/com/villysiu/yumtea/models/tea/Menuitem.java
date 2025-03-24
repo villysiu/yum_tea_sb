@@ -36,37 +36,43 @@ public class Menuitem {
     private Category category;
 
     @ManyToOne()
-    @JoinColumn(name="milk_id", columnDefinition = "BIGINT DEFAULT 12" )
-    private Milk milk;
+    @JoinColumn(name="milk_id")
+    private Milk milk ;
 
 //    @Column(length = 4, columnDefinition = "varchar(4) default 'FREE'")
     @Enumerated(EnumType.STRING)
-    private Temperature temperature;
+    private Temperature temperature = Temperature.FREE;
 
 //    @Column(length = 12, columnDefinition = "varchar(12) default 'ZERO'")
     @Enumerated(EnumType.STRING)
-    private Sugar sugar;
-
-    @PrePersist
-    private void setDefaultValue() {
-        if (this.sugar == null) {
-            this.sugar = Sugar.ZERO;  // Set the default value
-        }
-        if(this.temperature == null) {
-            this.temperature = Temperature.FREE;
-        }
-        if(this.milk == null) {
-            this.milk = new Milk();
-            this.milk.setId(12L);
-        }
+    private Sugar sugar = Sugar.ZERO;
 
 
-    }
-
-    public Menuitem(String title, Category category, Milk milk) {
+//    public Menuitem(String title, Category category, Milk milk) {
+//        this.title = title;
+//        this.category = category;
+//        this.milk = milk;
+//    }
+//    public Menuitem(String title, Category category, Milk milk, Sugar sugar) {
+//        this.title = title;
+//        this.category = category;
+//        this.milk = milk;
+//        this.sugar = sugar;
+//    }
+//    public Menuitem(String title, Category category, Milk milk, Temperature temperature) {
+//        this.title = title;
+//        this.category = category;
+//        this.milk = milk;
+//        this.temperature = temperature;
+//    }
+    public Menuitem(String title, String imageUrl, Category category, Milk milk, Sugar sugar, Temperature temperature, double price) {
         this.title = title;
+        this.imageUrl = imageUrl;
         this.category = category;
         this.milk = milk;
+        this.sugar = sugar;
+        this.temperature = temperature;
+        this.price = price;
     }
 }
 

@@ -2,13 +2,11 @@ package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
+import com.villysiu.yumtea.service.tea.milk.MilkServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 

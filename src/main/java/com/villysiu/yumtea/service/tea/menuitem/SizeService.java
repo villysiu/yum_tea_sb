@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.tea.menuitem;
 
 import com.villysiu.yumtea.models.tea.Size;
 

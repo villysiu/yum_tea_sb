@@ -27,7 +27,12 @@ public class Category {
     @Column
     private String imageUrl;
 
+    public Category(String title, String imageUrl) {
+        this.title = title;
+        this.imageUrl = imageUrl;
+    }
     public Category(String title) {
         this.title = title;
+
     }
 }

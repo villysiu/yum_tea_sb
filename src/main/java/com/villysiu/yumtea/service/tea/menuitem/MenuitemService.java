@@ -1,7 +1,6 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.tea.menuitem;
 
 import com.villysiu.yumtea.dto.request.MenuitemDto;
-import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.tea.Menuitem;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +11,7 @@ import java.util.Map;
 public interface MenuitemService {
     List<Menuitem> getMenuitems();
     List<Menuitem> getMenuitemsByCategoryId(Long categoryId);
-    List<BestSellerDto> getBestsellers();
+//    List<BestSellerDto> getBestsellers();
 
     Menuitem getMenuitemById(Long id);
 

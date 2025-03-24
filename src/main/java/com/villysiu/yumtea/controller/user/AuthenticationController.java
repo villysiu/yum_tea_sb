@@ -3,9 +3,7 @@ package com.villysiu.yumtea.controller.user;
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
-import com.villysiu.yumtea.service.AuthenticationService;
-import com.villysiu.yumtea.service.impl.AuthenticationServiceImpl;
-import jakarta.persistence.EntityExistsException;
+import com.villysiu.yumtea.service.user.AuthenticationService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,9 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")

@@ -1,12 +1,10 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.user;
 
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.RoleRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 @Service
 public class RoleService {
 
@@ -17,12 +15,13 @@ public class RoleService {
     }
 
     public Role getRoleByName(String roleName){
-        return roleRepo.findByName(roleName).orElse(null);
+        return roleRepo.findByName(roleName).orElseGet(
+                ()->roleRepo.save(new Role(roleName))
+        );
     }
 
     public boolean isAdmin(Account account) {
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
-//        Role adminRole = roleRepo.findByName("ROLE_ADMIN").orElse(new Role("ROLE_ADMIN"));
+        Role adminRole = getRoleByName("ROLE_ADMIN");
         return account.getRoles().contains(adminRole);
     }
 

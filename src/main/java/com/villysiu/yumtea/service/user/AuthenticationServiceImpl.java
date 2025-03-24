@@ -1,22 +1,18 @@
-package com.villysiu.yumtea.service.impl;
+package com.villysiu.yumtea.service.user;
 
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
-import com.villysiu.yumtea.repo.user.RoleRepo;
 import com.villysiu.yumtea.repo.user.AccountRepo;
-import com.villysiu.yumtea.service.AuthenticationService;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -35,13 +31,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     private final AccountRepo accountRepo;
-    private final RoleRepo roleRepo;
+    private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleRepo roleRepo, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public AuthenticationServiceImpl(AccountRepo accountRepo,  RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.accountRepo = accountRepo;
-        this.roleRepo = roleRepo;
+        this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
     }
@@ -62,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setNickname(signupRequest.getNickname());
         account.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         logger.info("Assign Role_USER");
-        Role role = roleRepo.findByName("ROLE_USER").orElseThrow(()->new EntityNotFoundException("Role not found"));
+        Role role = roleService.getRoleByName("ROLE_USER");
 
         account.setRoles(Collections.singleton(role));
         logger.info("Saving new account");
@@ -115,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
 
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+        Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
         signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
         logger.info("Return authenticated account in SigninResponse DTO");
         return signinResponse;

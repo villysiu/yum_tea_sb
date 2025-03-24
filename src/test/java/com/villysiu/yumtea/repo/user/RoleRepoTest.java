@@ -20,7 +20,7 @@ class RoleRepoTest {
         role.setName("ROLE_USER");
         roleRepo.save(role);
 
-        Role fetchedRole = roleRepo.findByName("ROLE_USER").orElse(null);;
+        Role fetchedRole = roleRepo.findByName("ROLE_USER").orElse(null);
         assertNotNull(fetchedRole);
         assertEquals("ROLE_USER", fetchedRole.getName());
     }

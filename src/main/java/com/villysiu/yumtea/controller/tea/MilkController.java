@@ -1,9 +1,7 @@
 package com.villysiu.yumtea.controller.tea;
 
 import com.villysiu.yumtea.models.tea.Milk;
-import com.villysiu.yumtea.repo.tea.MilkRepo;
-import com.villysiu.yumtea.service.MilkService;
-import lombok.RequiredArgsConstructor;
+import com.villysiu.yumtea.service.tea.milk.MilkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

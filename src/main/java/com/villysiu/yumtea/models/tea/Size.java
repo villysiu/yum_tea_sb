@@ -23,4 +23,8 @@ public class Size {
     public Size(String title) {
         this.title = title;
     }
+    public Size(String title, Double price) {
+        this.title = title;
+        this.price = price;
+    }
 }

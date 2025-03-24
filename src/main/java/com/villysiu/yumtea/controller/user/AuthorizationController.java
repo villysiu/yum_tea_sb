@@ -6,11 +6,10 @@ import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.RoleRepo;
-import com.villysiu.yumtea.service.AuthorizationService;
-import com.villysiu.yumtea.service.impl.CustomUserDetailsServiceImpl;
+import com.villysiu.yumtea.service.user.AuthorizationService;
+import com.villysiu.yumtea.service.user.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,12 +24,14 @@ public class AuthorizationController {
 
     private final AuthorizationService authorizationService;
     private final RoleRepo roleRepo;
+    private final RoleService roleService;
 //    private final RoleRepo roleRepo;
 
-    public AuthorizationController(AuthorizationService authorizationService, RoleRepo roleRepo) {
+    public AuthorizationController(AuthorizationService authorizationService, RoleRepo roleRepo, RoleService roleService) {
 
         this.authorizationService = authorizationService;
         this.roleRepo = roleRepo;
+        this.roleService = roleService;
     }
 
 
@@ -43,7 +44,7 @@ public class AuthorizationController {
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
 
-        Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+        Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
 
         signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
         return ResponseEntity.ok(signinResponse);

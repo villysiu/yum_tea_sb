@@ -1,4 +1,4 @@
-package com.villysiu.yumtea.service;
+package com.villysiu.yumtea.service.cart;
 
 import com.villysiu.yumtea.dto.request.CartInputDto;
 

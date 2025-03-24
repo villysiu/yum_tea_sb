@@ -8,8 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -47,12 +45,16 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/cart","/auth/**", "/categories", "/category/*/menuitems","/milks", "/menuitems", "/sizes", "/sugars", "/temperatures", "/taxes/**", "/bestsellers", "/images/**").permitAll()
+                .requestMatchers("/cart","/auth/**", "/categories", "/category/*/menuitems","/milks", "/sizes", "/sugars",
+                                "/menuitems","/images/**","/temperatures", "/taxes/**",
+
+                        "/data/salesByMenuitem/3"
+//                        , "/data/milk"
+                ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
                                 "/menuitem", "/menuitem/**", "/menuitem/img/**",
                                 "/resource/accounts", "/resource/accounts/**",
-                                "/purchases/all"
-//
+                                "/purchases/all" , "/data/salesByMenuitem/0", "/data/milk"
                 ).hasAuthority("ROLE_ADMIN")
 
                 .anyRequest().authenticated()
