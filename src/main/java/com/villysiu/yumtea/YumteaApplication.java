@@ -1,5 +1,6 @@
 package com.villysiu.yumtea;
 
+import com.villysiu.yumtea.service.dataSeed.SeedProperties;
 import com.villysiu.yumtea.service.dataSeed.SeedService;
 import com.villysiu.yumtea.service.storage.StorageProperties;
 import com.villysiu.yumtea.service.storage.StorageService;
@@ -11,7 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@EnableConfigurationProperties({StorageProperties.class})
+@EnableConfigurationProperties({StorageProperties.class, SeedProperties.class})
 
 public class YumteaApplication {
 
@@ -30,7 +31,7 @@ public class YumteaApplication {
         };
     }
     @Bean
-  CommandLineRunner initSeed(SeedService seedService) {
+    CommandLineRunner initSeed(SeedService seedService) {
         System.out.println("I am preparing the database?");
         return args -> {
             seedService.init();

@@ -47,8 +47,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Long signup(SignupRequest signupRequest) {
         logger.info("Signing up a new account with {}",signupRequest.getEmail());
-        Optional<Account> dup = accountRepo.findByEmail(signupRequest.getEmail());
-        if(dup.isPresent()){
+
+        if(accountRepo.existsByEmail(signupRequest.getEmail())){
             logger.error("Email already in use");
             throw new EntityExistsException("Email already exists");
         }
