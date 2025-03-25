@@ -229,9 +229,9 @@ public class SeedServiceImpl implements SeedService{
             };
             for(Object [] milk : milks){
                 logger.info("Creating {}", milk[0]);
-                Size newMilk = new Size((String) milk[0],(Double)milk[1]);
+                Milk newMilk = new Milk((String) milk[0],(Double)milk[1]);
                 logger.info("Saving  {}", milk[0]);
-                sizeRepo.save(newMilk);
+                milkRepo.save(newMilk);
                 logger.info("Saved {}", milk[0]);
             }
 //            List<String> milkNames = Arrays.asList("NA", "No Milk", "Whole Milk", "Nonfat Milk", "Almond Milk", "Oat Milk", "Coconut Milk");

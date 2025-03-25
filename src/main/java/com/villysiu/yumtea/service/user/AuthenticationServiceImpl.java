@@ -10,6 +10,7 @@ import com.villysiu.yumtea.repo.user.AccountRepo;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,21 +30,21 @@ import java.util.Optional;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     private final AccountRepo accountRepo;
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthenticationServiceImpl(AccountRepo accountRepo,  RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    private final JwtService jwtService;
+    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.accountRepo = accountRepo;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     @Override
     public Long signup(SignupRequest signupRequest) {
@@ -71,7 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public SigninResponse signin(SigninRequest signinRequest, HttpServletRequest request) {
+    public SigninResponse signin(SigninRequest signinRequest, HttpServletResponse response) throws AuthenticationException {
         logger.info("Signing in {}", signinRequest.getEmail());
 
         Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
@@ -96,10 +98,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         logger.info("Saving authenticated account to springsecurity");
          SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
 
-        logger.info("Saving authenticated account to httpsession");
-        HttpSession session = request.getSession();
-        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+        logger.info("generate JWT token and Saving into cookie");
 
+        jwtService.generateToken(signinRequest.getEmail(), response);
 
         UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
         String email = userDetails.getUsername();
@@ -117,6 +118,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return signinResponse;
 
 
+    }
+    public void logoutUser(HttpServletResponse response){
+        jwtService.removeTokenFromCookie(response);
     }
 
 

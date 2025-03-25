@@ -39,9 +39,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest, HttpServletRequest request) {
+    public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest, HttpServletResponse response) {
         try{
-            SigninResponse signinResponse = authenticationService.signin(signinRequest, request );
+            SigninResponse signinResponse = authenticationService.signin(signinRequest, response );
             return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
 
         } catch (AuthenticationException e){
@@ -56,12 +56,12 @@ public class AuthenticationController {
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
         logger.info("Logging out {}", authentication.getName());
         logoutHandler.logout(request, response, authentication);
-
+        authenticationService.logoutUser(response);
         logger.info("Successfully logged out");
-        logger.info("removeing session and clear security context");
-        request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
-        request.getSession().invalidate();
-        SecurityContextHolder.clearContext();
+//        logger.info("removeing session and clear security context");
+//        request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
+//        request.getSession().invalidate();
+//        SecurityContextHolder.clearContext();
         return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
 
     }

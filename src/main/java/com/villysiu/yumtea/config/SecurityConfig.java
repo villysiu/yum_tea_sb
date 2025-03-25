@@ -2,6 +2,7 @@ package com.villysiu.yumtea.config;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -29,9 +31,11 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-//    private final CorsConfigurationSource corsConfiguration = new CorsConfiguration();
-
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
 
     @Bean
@@ -40,6 +44,8 @@ public class SecurityConfig {
 
         http
             .csrf(AbstractHttpConfigurer::disable)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
             .exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(new RestAuthenticationEntryPoint())
             )
@@ -49,7 +55,7 @@ public class SecurityConfig {
                                 "/menuitems","/images/**","/temperatures", "/taxes/**",
 
                         "/data/salesByMenuitem/3"
-//                        , "/data/milk"
+//
                 ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
                                 "/menuitem", "/menuitem/**", "/menuitem/img/**",
@@ -58,19 +64,12 @@ public class SecurityConfig {
                 ).hasAuthority("ROLE_ADMIN")
 
                 .anyRequest().authenticated()
-            );
-
-        http
-            .sessionManagement((session) -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-//                            .maximumSessions(1)
-//                    https://docs.spring.io/spring-security/reference/servlet/authentication/session-management.html#_detecting_timeouts
-//                            .invalidSessionUrl("/invalidSession")
+            )
+            .sessionManagement(manager -> manager
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
-            );
-//        http
-//                .oauth2Login(Customizer.withDefaults());
+
 
         return http.build();
     }

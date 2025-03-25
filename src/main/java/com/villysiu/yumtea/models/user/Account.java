@@ -2,6 +2,7 @@ package com.villysiu.yumtea.models.user;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.*;
@@ -24,8 +25,10 @@ public class Account {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(targetEntity = Role.class)
-    private Set<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER )
+    @JoinTable
+    private Set<Role> roles = new HashSet<>();
+
 
     public Account(String email, String nickname, String password) {
         this.email = email;
