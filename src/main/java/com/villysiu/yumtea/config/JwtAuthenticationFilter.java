@@ -2,6 +2,7 @@ package com.villysiu.yumtea.config;
 
 import com.villysiu.yumtea.service.user.CustomUserDetailsServiceImpl;
 import com.villysiu.yumtea.service.user.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,11 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authToken);
             SecurityContextHolder.setContext(context);
-
+        }catch (ExpiredJwtException e) {
+            // Handle the expired token exception
+            SecurityContextHolder.clearContext(); // This effectively logs the user out
+            jwtService.removeTokenFromCookie(response);
+            logger.error("Invalid JWT token: {}", e.getMessage());
 
         } catch (Exception e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
+            jwtService.removeTokenFromCookie(response);
+            logger.error("Invalid JWT token 2: {}", e.getMessage());
+
         }
+
         filterChain.doFilter(request, response);
     }
 }

@@ -17,7 +17,9 @@ import java.util.Optional;
 public interface PurchaseRepo extends JpaRepository<Purchase, Long> {
 
     <T> List<T> findByAccountId(Long accountId, Class<T> type);
-    List<PurchaseProjection> findAllProjectedBy();
+
+    @Query("SELECT p FROM Purchase p ORDER BY p.purchaseDate ASC")
+    List<PurchaseProjection> findAllProjections();
 
 
 
@@ -29,5 +31,5 @@ public interface PurchaseRepo extends JpaRepository<Purchase, Long> {
     Boolean existsByIdAndAccountId( Long id, Long accountId);
 
     void deleteByAccountId(Long accountId);
-void deleteAllByAccountId(Long accountId);
+    void deleteAllByAccountId(Long accountId);
 }

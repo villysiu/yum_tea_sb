@@ -99,74 +99,7 @@ public class SeedServiceImpl implements SeedService{
         logger.info("database inserted successfully");
     }
 
-    private void createPurchases() {
-        logger.info("Creating Purchase if less than 30");
 
-        for(int j=(int)purchaseRepo.count()+1; j<=30; j++) {
-            logger.info("Creating Purchase {} of 5", j);
-            double total = 0.0;
-
-            Purchase purchase = new Purchase(accountRepo.findByEmail(userList.get(getRandomInt(0, 3))).orElse(null));
-
-            purchase.setPurchaseDate(getRandomDate());
-
-            purchase.setPurchaseLineitemList(new ArrayList<>());
-
-            logger.info("saving purchase");
-            purchaseRepo.save(purchase);
-            logger.info("saved purchase for {} on {}", purchase.getAccount().getEmail(), purchase.getPurchaseDate());
-
-            Sugar[] sugars = Sugar.values();
-            Temperature[] temperatures = Temperature.values();
-            Integer randomPurchaseLineitemCount = getRandomInt(1, 4);
-
-            for (int i = 0; i < randomPurchaseLineitemCount; i++) {
-                logger.info("Creating PurchaseLineitem {} of {}", i + 1, randomPurchaseLineitemCount);
-                PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
-                Double price = 0.0;
-                purchaseLineitem.setPurchase(purchase);
-
-                Menuitem menuitem = menuitemRepo.findById(getRandomLong(menuitemRepo.count())).get();
-                purchaseLineitem.setMenuitem(menuitem);
-                price += menuitem.getPrice();
-
-                Milk milk = milkRepo.findById(getRandomLong(milkRepo.count())).get();
-                purchaseLineitem.setMilk(milk);
-                price += milk.getPrice();
-
-                Size size = sizeRepo.findById(getRandomLong(sizeRepo.count())).get();
-                purchaseLineitem.setSize(size);
-                price += size.getPrice();
-
-                purchaseLineitem.setSugar(sugars[getRandomInt(0, sugars.length)]);
-
-                purchaseLineitem.setTemperature(temperatures[getRandomInt(0, temperatures.length)]);
-
-                purchaseLineitem.setQuantity(getRandomInt(1, 6));
-
-                purchaseLineitem.setPrice(price);
-
-                logger.info("saving new purchaseLineitem:");
-                logger.info("menuitem: {}, milk: {}, size: {}, sugar: {}, temp: {}, price: {}, quantity: {}",
-                        purchaseLineitem.getMenuitem().getTitle(), purchaseLineitem.getMilk().getTitle(),
-                        purchaseLineitem.getSize().getTitle(), purchaseLineitem.getSugar(),
-                        purchaseLineitem.getTemperature(), purchaseLineitem.getPrice(), purchaseLineitem.getQuantity());
-                purchaseLineitemRepo.save(purchaseLineitem);
-                logger.info("successfully saved purchaseLineitem");
-                purchase.getPurchaseLineitemList().add(purchaseLineitem);
-                total += price * purchaseLineitem.getQuantity();
-
-            }
-            purchase.setTax(total * 0.1);
-            purchase.setTip(total * 0.15);
-            purchase.setTotal(total + purchase.getTax() + purchase.getTip());
-
-            logger.info("saving purchase");
-            purchaseRepo.save(purchase);
-            logger.info("saved purchase");
-
-        }
-    }
 
     private void createSuperAdmin(){
         String superAdminEmail = "springadmin@gg.com";
@@ -295,6 +228,75 @@ public class SeedServiceImpl implements SeedService{
 
         }
         logger.info("Menuitem existed or created");
+    }
+
+    private void createPurchases() {
+        logger.info("Creating Purchase if less than 30");
+
+        for(int j=(int)purchaseRepo.count()+1; j<=30; j++) {
+            logger.info("Creating Purchase {} of 5", j);
+            double total = 0.0;
+
+            Purchase purchase = new Purchase(accountRepo.findByEmail(userList.get(getRandomInt(0, 3))).orElse(null));
+
+            purchase.setPurchaseDate(getRandomDate());
+
+            purchase.setPurchaseLineitemList(new ArrayList<>());
+
+            logger.info("saving purchase");
+            purchaseRepo.save(purchase);
+            logger.info("saved purchase for {} on {}", purchase.getAccount().getEmail(), purchase.getPurchaseDate());
+
+            Sugar[] sugars = Sugar.values();
+            Temperature[] temperatures = Temperature.values();
+            Integer randomPurchaseLineitemCount = getRandomInt(1, 4);
+
+            for (int i = 0; i < randomPurchaseLineitemCount; i++) {
+                logger.info("Creating PurchaseLineitem {} of {}", i + 1, randomPurchaseLineitemCount);
+                PurchaseLineitem purchaseLineitem = new PurchaseLineitem();
+                Double price = 0.0;
+                purchaseLineitem.setPurchase(purchase);
+
+                Menuitem menuitem = menuitemRepo.findById(getRandomLong(menuitemRepo.count())).get();
+                purchaseLineitem.setMenuitem(menuitem);
+                price += menuitem.getPrice();
+
+                Milk milk = milkRepo.findById(getRandomLong(milkRepo.count())).get();
+                purchaseLineitem.setMilk(milk);
+                price += milk.getPrice();
+
+                Size size = sizeRepo.findById(getRandomLong(sizeRepo.count())).get();
+                purchaseLineitem.setSize(size);
+                price += size.getPrice();
+
+                purchaseLineitem.setSugar(sugars[getRandomInt(1, sugars.length)]);
+
+                purchaseLineitem.setTemperature(temperatures[getRandomInt(1, temperatures.length)]);
+
+                purchaseLineitem.setQuantity(getRandomInt(1, 6));
+
+                purchaseLineitem.setPrice(price);
+
+                logger.info("saving new purchaseLineitem:");
+                logger.info("menuitem: {}, milk: {}, size: {}, sugar: {}, temp: {}, price: {}, quantity: {}",
+                        purchaseLineitem.getMenuitem().getTitle(), purchaseLineitem.getMilk().getTitle(),
+                        purchaseLineitem.getSize().getTitle(), purchaseLineitem.getSugar(),
+                        purchaseLineitem.getTemperature(), purchaseLineitem.getPrice(), purchaseLineitem.getQuantity());
+                purchaseLineitemRepo.save(purchaseLineitem);
+                logger.info("successfully saved purchaseLineitem");
+                purchase.getPurchaseLineitemList().add(purchaseLineitem);
+                total += price * purchaseLineitem.getQuantity();
+
+            }
+            purchase.setTax(total * 0.1);
+            purchase.setTip(total * 0.15);
+            purchase.setTotal(total + purchase.getTax() + purchase.getTip());
+
+            logger.info("saving purchase");
+            purchaseRepo.save(purchase);
+            logger.info("saved purchase");
+
+        }
     }
     private Long getRandomLong(Long max) {
         return ThreadLocalRandom.current().nextLong(1, max+1);

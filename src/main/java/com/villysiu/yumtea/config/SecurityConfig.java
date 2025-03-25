@@ -52,15 +52,13 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 .requestMatchers("/cart","/auth/**", "/categories", "/category/*/menuitems","/milks", "/sizes", "/sugars",
-                                "/menuitems","/images/**","/temperatures", "/taxes/**",
-
-                        "/data/salesByMenuitem/3"
+                                "/menuitems","/images/**","/temperatures", "/taxes/**", "/query/bestSellers"
 //
                 ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
                                 "/menuitem", "/menuitem/**", "/menuitem/img/**",
                                 "/resource/accounts", "/resource/accounts/**",
-                                "/purchases/all" , "/data/salesByMenuitem/0", "/data/milk"
+                                "/purchases/all" , "/query/allSales", "/query/milk"
                 ).hasAuthority("ROLE_ADMIN")
 
                 .anyRequest().authenticated()

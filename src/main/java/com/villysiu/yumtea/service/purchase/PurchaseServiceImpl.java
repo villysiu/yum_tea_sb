@@ -114,7 +114,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<PurchaseProjection> getAllPurchases() {
-        return purchaseRepo.findAllProjectedBy();
+        return purchaseRepo.findAllProjections();
     }
 
     @Override

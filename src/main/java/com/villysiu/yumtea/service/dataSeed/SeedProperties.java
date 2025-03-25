@@ -37,7 +37,7 @@ public class SeedProperties {
             {"Mint", "Mint-Tea.jpg", "Caffeine Free", "No Milk", Sugar.ZERO, Temperature.FREE, 5.00},
             {"Peppermint", "peppermint-tea.jpg", "Caffeine Free", "No Milk", Sugar.ZERO, Temperature.FREE, 5.00},
             {"Frozen Lemonade", "lemonade.webp", "Caffeine Free", "NA",  Sugar.NA, Temperature.ICED, 5.00},
-            {"Hot Chocolate", "hot-chocolate.jpg", "Caffeine Free", "Whole Milk", Sugar.NA, Temperature.HOT, 5.00},
+            {"Hot Chocolate", "hot-chocolate.jpg", "Caffeine Free", "NA", Sugar.NA, Temperature.HOT, 5.00},
 
             {"Oolong", "oolong.webp", "Oolong Tea", "No Milk", Sugar.ZERO, Temperature.FREE, 5.00},
             {"Iron Goddess of Mercy", "Iron-Goddess.webp", "Oolong Tea", "No Milk", Sugar.ZERO, Temperature.FREE, 5.00},
