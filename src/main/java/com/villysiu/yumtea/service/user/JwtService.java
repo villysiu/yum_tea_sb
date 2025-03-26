@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
+import javax.sql.DataSource;
 import java.util.Date;
 
 @Service
 public class JwtService {
+    private final DataSource dataSource;
     @Value("${jwt.token.secret}")
     private String secret;
 
@@ -29,6 +31,10 @@ public class JwtService {
     private Claims claims;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    public JwtService(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
 
     public void generateToken(String email, HttpServletResponse response){
@@ -50,7 +56,7 @@ public class JwtService {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
+        cookie.setMaxAge(24 * 60 * 60); // expire in 24 hour
         response.addCookie(cookie);
 
 
@@ -59,16 +65,19 @@ public class JwtService {
 
     public String getJwtFromCookie(HttpServletRequest request){
         Cookie cookie = WebUtils.getCookie(request, "JWT");
-        if(cookie != null){
-            return cookie.getValue();
+
+        if(cookie == null || cookie.getValue().isEmpty()){
+            throw new JwtException("JWT token is empty");
         }
-        return null;
+
+        return cookie.getValue();
 
     }
     public void validateToken(String token) throws JwtException {
 
-        try {
+//        try {
             logger.info("Validating JWT token");
+
             claims = Jwts.parser()
                     .verifyWith(getSignInKey())
                     .build()
@@ -77,11 +86,10 @@ public class JwtService {
 //            return claims;
             logger.info("JWT token validated");
 
-        } catch(JwtException e){
-// catch null, wrong token, expired token
-            logger.error("JWT token failed", e);
-            throw new JwtException(e.getMessage());
-        }
+//        } catch(JwtException e){
+//// catch null, wrong token, expired token
+//            throw new JwtException(e.getMessage());
+//        }
 
     }
     public void removeTokenFromCookie(HttpServletResponse response){

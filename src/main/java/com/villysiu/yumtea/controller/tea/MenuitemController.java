@@ -58,7 +58,7 @@ public class MenuitemController {
         return new ResponseEntity<>("Menuitem deleted", HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/menuitem/img/{id}")
+    @PostMapping("/menuitem/{id}/img")
     public ResponseEntity<?> updateMenuitemImage(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
 
             storageService.store(file);

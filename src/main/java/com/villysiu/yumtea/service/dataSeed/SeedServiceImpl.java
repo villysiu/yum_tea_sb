@@ -167,16 +167,6 @@ public class SeedServiceImpl implements SeedService{
                 milkRepo.save(newMilk);
                 logger.info("Saved {}", milk[0]);
             }
-//            List<String> milkNames = Arrays.asList("NA", "No Milk", "Whole Milk", "Nonfat Milk", "Almond Milk", "Oat Milk", "Coconut Milk");
-//            List<Double> milkPrices = Arrays.asList(0.0, 0.0, 0.0, 0.0, 1.5, 1.5, 1.5);
-//            for(int i=0; i<milkNames.size(); i++){
-//                logger.info("Creating {}", milkNames.get(i));
-//                Milk milk = new Milk(milkNames.get(i), milkPrices.get(i));
-//                logger.info("Saving {}", milkNames.get(i));
-//                milkRepo.save(milk);
-//                logger.info("Saved {}", milkNames.get(i));
-//            }
-
 
         }
         logger.info("Milks existed or created");

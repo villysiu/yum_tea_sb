@@ -4,6 +4,7 @@ import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.response.SigninResponse;
 import com.villysiu.yumtea.service.user.AuthenticationService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,8 +34,12 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignupRequest request){
         //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
+        try {
             authenticationService.signup(request);
             return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (EntityExistsException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
 
     }
 

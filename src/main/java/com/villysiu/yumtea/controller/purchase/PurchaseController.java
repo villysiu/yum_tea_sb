@@ -49,7 +49,6 @@ public class PurchaseController {
         return purchaseService.getPurchaseById(id, account);
     }
 
-
     @PostMapping("/purchase")
     public ResponseEntity<PurchaseProjection> createPurchase(@RequestBody PurchaseRequest purchaseRequest, @AuthenticationPrincipal UserDetails userDetails) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());

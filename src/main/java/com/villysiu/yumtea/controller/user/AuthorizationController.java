@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,18 +37,23 @@ public class AuthorizationController {
 
 
     @GetMapping("/user")
-    public ResponseEntity<SigninResponse> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        Account account = authorizationService.findByEmail(userDetails.getUsername());
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            System.out.println(userDetails.getUsername());
+            Account account = authorizationService.findByEmail(userDetails.getUsername());
 
-        SigninResponse signinResponse = new SigninResponse();
-        signinResponse.setId(account.getId());
-        signinResponse.setEmail(account.getEmail());
-        signinResponse.setNickname(account.getNickname());
+            SigninResponse signinResponse = new SigninResponse();
+            signinResponse.setId(account.getId());
+            signinResponse.setEmail(account.getEmail());
+            signinResponse.setNickname(account.getNickname());
 
-        Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
+            Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
 
-        signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
-        return ResponseEntity.ok(signinResponse);
+            signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
+            return ResponseEntity.ok(signinResponse);
+        } catch (UsernameNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PatchMapping("/user")

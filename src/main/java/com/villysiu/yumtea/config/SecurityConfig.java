@@ -44,24 +44,25 @@ public class SecurityConfig {
 
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-            .exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-            )
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/cart","/auth/**", "/categories", "/category/*/menuitems","/milks", "/sizes", "/sugars",
+                .requestMatchers("/auth/**", "/categories", "/category/*/menuitems","/milks", "/sizes", "/sugars",
                                 "/menuitems","/images/**","/temperatures", "/taxes/**", "/query/bestSellers"
 //
                 ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
-                                "/menuitem", "/menuitem/**", "/menuitem/img/**",
+                                "/menuitem", "/menuitem/**", "/menuitem/**/img",
                                 "/resource/accounts", "/resource/accounts/**",
                                 "/purchases/all" , "/query/allSales", "/query/milk"
                 ).hasAuthority("ROLE_ADMIN")
 
                 .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+            .exceptionHandling(exceptionHandling -> exceptionHandling
+                    .authenticationEntryPoint(new RestAuthenticationEntryPoint())
             )
             .sessionManagement(manager -> manager
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
