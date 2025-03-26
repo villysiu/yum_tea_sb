@@ -1,8 +1,7 @@
 # YumTea #
-This is the backend API for a tea e-commerce website.
-It is a Springboot application with Maven developed in Intellij IDEA.
+This is the backend API for a tea e-commerce application built with Springboot, secured by Spring Security and JWT.
 
-The Frontend is created in **React.js** and can be found here: 
+The Frontend is developed in **React.js** and can be found here: 
 https://github.com/villysiu/yumtea_sb_frontend
 
 Youtube: Coming soon
@@ -13,28 +12,68 @@ Youtube: Coming soon
 
 ### Dependencies used in the project includes: 
 - Spring BootDevTools
-- Spring Web
-- Spring Security 6
-- JDBC API
-- Spring Data JPA
+- **Spring Web** for creating RESTful APIs
+- **Spring Security 6** for handling authentication and authorization
+- **Json Web Token** for JWT authentication
+- **JDBC API** for connecting to MySQL through a JDBC driver
+- **Spring Data JPA** for interacting with MySQL
 - MySQL
 - Lombak (Optional)
 - junit (Optional)
 - jakarta.validation (Optional)
 - slf4j (Optional)
 
-## Database Diagram
-![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/yumtea_sb@localhost.png?raw=true)
+## Before you start ##
+-  Check if MySQL is installed, 
+-  Mac -> terminal or  windows -> command prompt
+```
+  mysql -V
+```
+  - For installation instruction, please visit [MySQL website](https://dev.mysql.com/doc/mysql-getting-started/en/).
+- I also  highly recommend using **MySQLWorkbench** to view the database. It can be downloaded [here](https://dev.mysql.com/downloads/workbench/).
+- Start up MySQL at `localhost:3306`
+- create a new schema,`yumtea_sb2`. (The name of the database can be found in `resources/application.properties`)
 
-## Running the project ##
+![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/MySQLWorkbench.png?raw=true)
+## Running the project for the first time ##
 - Clone the Git repository https://github.com/villysiu/yum_tea_sb.git
 - Open Intellij, 
   - File -> New -> Project from Version Control
   - Paste the cloned git link into the `URL` box
   - Click `Clone`
-- Choose the Spring Boot Application file `/src/main/java/com.villysiu.yumtea/YumteaApplication/`
-- Click on the triangle next to `public static void main(String[] args)` 
-- The server should start.
+
+- Choose the Spring Boot Application file `/src/main/java/com.villysiu.yumtea/YumteaApplication/`. Click on the triangle next to `public static void main(String[] args)`
+- The server will start at `http://localhost:8080`.
+
+## Database Diagram
+![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/yumtea_sb@localhost.png?raw=true)
+
+- If this is the first time you start up the application, 
+  - the following data will be automatically inserted into the database. 
+    - a super admin `Account` with `ROLE_ADMIN` authority
+      - email: **springadmin@gg.com**
+      - password: **password1**
+      - nickname: **superadmin**
+      
+    - 3 user `Accounts` with `ROLE_USER` authority
+      - email: **springuser@gg.com, springuser2@gg.com, springuser3@gg.com**
+      - password: **password1**
+      - nickname: **superuser**
+    
+    - `Categories`
+      - **Black Tea**, **Oolong Tea**, **Jasmine Tea**, and **Caffeine Free**
+    - `Milks`
+      - **NA, No Milk, Whole Milk, Nonfat Milk, Almond Milk, Oat Milk, Coconut Milk**
+    - `Sizes`
+      - **8oz, 12oz, 16oz**
+    
+    - `Menuitems`
+      - **ChaiEarl, Grey, English Breakfast, Jasmine, Dragon Pearl, Silver Needle, Genmaicha, 
+  Iced Strawberry Lemonade, Tumeric Ginger, Chamomile, Hibiscus Berry, Min, Peppermint, Frozen Lemonade,
+    Hot Chocolate, Oolong, Iron Goddess of Mercy, High Mountain Tea**
+    - **50** `Purchases` by random user `Accounts`, with various `PurchaseLineitems` with random `Menuitems` and options.
+    
+
 - You are ready to test out the api in any api clients.
 
 
@@ -51,10 +90,12 @@ This controller provides APIs for register, login and logout actions.
         "nickname": "John Doe"
     } 
     ```
-  - check if email already in database
+  - check if **email** already in database
+  - throws `EntityExistsException` if email already in database and returns http status `409 Conflict`
   - create new Account (default with ROLE_USER)
   - save User to database using AccountRepo
   - return http status `201 CREATED`
+  
    
 
 - **POST** : `/auth/login`
@@ -66,47 +107,54 @@ This controller provides APIs for register, login and logout actions.
     }
      ```
   - authenticate with Spring Security
+  - throw `AuthenticationException` if bad credential and returns http status `401 unauthorized`
   - update SecurityContext using Authentication object
-  - persist Authentication object in HttpSession
-  - return a `SigninResponse` DTO with http status 200 OK
+  - generates **JWT token** and stored it in cookie to be sent along in HttpServeletRequest and HttpServeletResponse
+  - return a `SigninResponse` DTO with http status `200 OK`
 
 - **POST** : `/auth/logout`
   
   - logout with Spring Security
-  - invalidate and remove HttpSession
   - clear securityContextHolder
+  - remove **JWT token**
   - return http status `200 OK`
 
 
 ### Authorization Controller
 
-This controller provides APIs for authenticated user to fetch user, update nickname and password.
-- **GET** : `/resource/user`
+This controller provides APIs for **authenticated user** with valid JWT tokens. It throws `401 Unauthorized` if there is no authenticated account. Authenticated account can only access its own account, not others' account.
 
-    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
-    - return a `SigninResponse` DTO with http status `201 CREATED`
+- **GET** : `/resource/user`
+  - fetch the current authenticated user
+  - get authenticated account from `@AuthenticationPrincipal` (provided by Spring Security)
+  - return a `SigninResponse` DTO with http status `200 Ok`
+  
+
 - **PATCH** : `/resource/user`
-    - `Map<String, Object> userRequestDto` is used to map the following Json object.
+  - Updates user nickname
+  - `Map<String, Object> userRequestDto` is used to map the following Json object.
        ``` 
        {
           "nickname": "JohnUser"
        }
        ```
-    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
+    - get authenticated account from `@AuthenticationPrincipal` (provided by Spring Security)
     - update nickname and save to database using `AccountRepo` 
     - return a `SigninResponse` DTO with http status `200 OK`
+    
 - **PATCH** : `/resource/updatePassword`
-    - `PasswordRequestDto passwordRequestDto` is used to map the following Json object.
-       ``` 
-       {
-          "currentPassword": "password1",
-          "newPassword": "password2"
-       }
-       ```
-    - get account from `@AuthenticationPrincipal` (provided by Spring Security)
-    - verify currentPassword matches account password
-    - update password and save to database using `AccountRepo`
-    - return http status `200 OK`
+  - Updates user nickname
+  - `PasswordRequestDto passwordRequestDto` is used to map the following Json object.
+     ``` 
+     {
+        "currentPassword": "password1",
+        "newPassword": "password2"
+     }
+     ```
+  - get account from `@AuthenticationPrincipal` (provided by Spring Security)
+  - verify currentPassword matches account password
+  - update password and save to database using `AccountRepo`
+  - return http status `200 OK`
 
 ### Public resources
 The public resources is open to all, no account needed.
@@ -163,13 +211,15 @@ The public resources is open to all, no account needed.
   - return `taxRate` with http status `200 OK`
 
 
-### Private resources for USER_ADMIN
-Thees private resources are **ONLY** available to `Account` with `Role` **USER_ADMIN** authority.
+### Private resources for ROLE_ADMIN
+Thees private resources are **ONLY** available to `Account` with `Role` **ROLE_ADMIN** authority. Throws `Unauthorized 401` if not **ROLE_ADMIN**.
 
 **MenuitemController**
 - **POST** : `/menuitem`
-    - `MenuitemDto` DTO is used to map the following Json object.
+  - create new `Menuitem`
+  - input `MenuitemDto` and save to database using `createMenuitem` in MenuitemService
       ``` 
+    MenuitemDto
       {
           "title": "Chai",
           "imageUrl": "",
@@ -181,172 +231,182 @@ Thees private resources are **ONLY** available to `Account` with `Role` **USER_A
           "price": 5
       }
       ```
-    - create new `Menuitem` 
-    - save `Menuitem` to database using `MenuitemRepo`
-    - return Menuiem http status `201 CREATED`
-- **PATCH** : `/menuitem/{id}`
-    - `Map<String, Object> menuitemDto` DTO is used to map the following Json object.
-      ``` 
-      {
-        "title": "Chai2",
-        "sugar": "FIFTY"
-      }
-      ```
-    - fetch `Menuitem` by `id` from database using `MenuitemRepo`
-    - update `Menuitem` fields
-    - save `Menuitem` to database using `MenuitemRepo`
-    - return `Menuitem` http status `200 OK`
-- **DELETE** : `/menuitem/{id}`
+      - return Menuiem http status `201 CREATED`
+    
 
-  - verify `Menuitem` existed in database using `MenuitemRepo`
-  - delete `Menuitem` to database using `MenuitemRepo`
+- **PATCH** : `/menuitem/{id}`
+  - update fields of `Menuitem` by `id`
+     ``` 
+     Map<String, Object> menuitemDto
+     {
+       "title": "Chai2",
+       "sugar": "FIFTY"
+     }
+     ```
+ - return `Menuitem` http status `200 OK`
+ - throw `EntityNotFoundException` if `Menuitem` with `id` not existed
+
+
+- **DELETE** : `/menuitem/{id}`
+  - throw `EntityNotFoundException` if `Menuitem` with `id` not existed
+  - delete `Menuitem` by `id`
   - return http status `404 No Content`
 
 
-- **POST** : `/menuitem/img/{id}`
+- **POST** : `/menuitem/{id}/img`
   - stores `file` in Multipart object in designated folder `src/main/resources/static/images`
   - update `Menuitem` with `image` file. 
   - return `Menuitem` http status `200 OK`
+  - throw `EntityNotFoundException` if `Menuitem` with `id` not existed
 
-- **DELETE** : `/menuitem/img/{id}`
- - update `menuitem.imageUrl` to null.
- - return http status `404 No Content`
 
-- **PATCH** : `/menuitem/toggleActive/{id}`
+- **DELETE** : `/menuitem/{id}/img`
+  - update `menuitem.imageUrl` to null.
+  - return http status `404 No Content`
+  - throw `EntityNotFoundException` if `Menuitem` with `id` not existed
+
+
+- **PATCH** : `/menuitem/{id}/toggleActive`
   - toggle Menuitem visibility
   - return http status `200 OK`
+  - throw `EntityNotFoundException` if `Menuitem` with `id` not existed
+  
 **CategoryController**
 - **POST** : `/category`
-    - `CategoryDto` DTO is used to map the following Json object.
-      ``` 
-      {
-        "title": "Black Tea",
-        "description": "Black Tea",
-        "imageUrl": "blacktea.jpg"
-      }
-      ```
-    - create new `Category`
-    - save `Category` to database using `CategoryRepo`
-    - return `Category` http status `201 CREATED`
+  - create new `Category`
+    ```
+    {
+      "title": "Black Tea",
+      "description": "Black Tea",
+      "imageUrl": "blacktea.jpg"
+    }
+    ```
+  - return `Category` http status `201 CREATED`
+  - throw `EntityNotFoundException` if `Category` with `id` not existed
+
+
 - **PATCH** : `/category/{id}`
-    - `Map<String, Object> categoryDto` DTO is used to map the following Json object.
+  - update `Category` fields
       ``` 
       {
         "description": "Black tea is one of the bestseller"
       }
       ```
-    - fetch `Category` by `id` from database using `MenuitemRepo`
-    - update `Category` fields
-    - save `Category` to database using `MenuitemRepo`
-    - return `Category` http status `200 OK`
+  - return `Category` http status `200 OK`
+  - throw `EntityNotFoundException` if `Category` with `id` not existed
+
+
 - **DELETE** : `/category/{id}`
+  - delete `Category` from database
+  - return http status `404 No Content`
+  - throw `EntityNotFoundException` if `Category` with `id` not existed
 
-    - verify `Category` existed in database using `CategoryRepo`
-    - delete `Category` from database using `CategoryRepo`
-    - return http status `404 No Content`
+- **MilkController**
+  - **POST** : `/milk`
+  - **PATCH** : `/milk/{id}`
+  - **DELETE** : `/milk/{id}`
 
-**MilkController**
-- **POST** : `/milk`
-- **PATCH** : `/milk/{id}`
-- **DELETE** : `/milk/{id}`
+- **SizeController**
+  - **POST** : `/size`
+  - **PATCH** : `/size/{id}`
+  - **DELETE** : `/size/{id}`
+  
+- **GET**: `/purchases/all`
+  - get all purchases with details by all users
 
-**SizeController**
-- **POST** : `/size`
-- **PATCH** : `/size/{id}`
-- **DELETE** : `/size/{id}`
+- **GET**: `/accounts`
+  - get all user accounts
 
-**SugarController**
-- **POST** : `/sugar`
-- **PATCH** : `/sugar/{id}`
-- **DELETE** : `/sugar/{id}`
+- **PATCH**: `/accounts/{id}`
+  - toggle `Account` with `id` between `ROLE_ADMIN` and `ROLE_USER`
+  - throw `EntityNotFoundException` if `Account` with `id` does not exist
+
+- **DELETE**: `/accounts/{id}`
+  - delete `Account` with `id`
+  - throw `EntityNotFoundException` if `Account` with `id` does not exist
+
 
 ### Private Resources accessed **only** by authenticated account. 
-- **Only** authenticated `Account` with `ROLE_USER` can  access his own `Cart` and `Purchase` objects.
+- **Only** authenticated `Account` with `ROLE_USER` can access his own `Cart` and `Purchase` objects.
 
 **CartController**
 - **GET** : `/carts`
     - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
-    - get all `Cart` owned by `Account` from database using `Cartepo` 
+    - get all `Cart` owned by `Account` from database using `CartRepo` 
     - return `Cart` list  with http status `200 OK`
 
 - **POST** : `/cart`
-    - `CartInputDto` DTO is used to map the following Json object.
-      ``` 
-      {
-         "menuitemId": 2,
-         "milkId": 9,
-         "sizeId": 2,
-         "quantity": 1,
-         "sugar": "TWENTY_FIVE",
-         "temperature": "HOT"
-      }
-      ```
-    - create new `Cart`
-    - save `Cart` to database using `CartRepo`
-    - return `Cart` http status `201 CREATED`
+  - create new `Cart`
+  - `CartInputDto` DTO is used to map the following Json object.
+    ``` 
+    {
+       "menuitemId": 2,
+       "milkId": 9,
+       "sizeId": 2,
+       "quantity": 1,
+       "sugar": "TWENTY_FIVE",
+       "temperature": "HOT"
+    }
+    ```
+  - save `Cart` to database using `CartRepo`
+  - return `Cart` http status `201 CREATED`
   
 - **PUT** : `/cart/{id}`
-    - `CartInputDto` DTO is used to map the following Json object.
-      ``` 
-      {
-         "milkId": 3,
-         "sizeId": 2,
-         "quantity": 2,
-         "sugar": "SEVENTY_FIVE",
-         "temperature": "HOT"
-      }
-      ```
-    - fetch `Cart` by `id` from database using `CartRepo`
-    - update `Cart` fields
-    - save `Cart` to database using `CartRepo`
-    - return `Cart` http status `200 OK`
+  - update `Cart` by `id` 
+  - `CartInputDto` DTO is used to map the following Json object.
+    ``` 
+    {
+       "milkId": 3,
+       "sizeId": 2,
+       "quantity": 2,
+       "sugar": "SEVENTY_FIVE",
+       "temperature": "HOT"
+    }
+    ```
+  - return `Cart` http status `200 OK`
+  - throw `EntityNotFoundException` if `Cart` with `id` not existed
   
 
 - **DELETE** : `/cart/{id}`
-
-    - verify `Cart` existed in database using `CartRepo`
     - delete `Cart` from database using `CartRepo`
     - return http status `404 No Content`
+    - throw `EntityNotFoundException` if `Cart` with `id` not existed
 
 
 **PurchaseController**
 - **GET** : `/purchases`
-    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
-    - get all `Purchase` owned by `Account` from database using `PurchaseRepo`
+    - get all `Purchase` owned by authenticated `Account` from database using `PurchaseRepo`
     - return `Purchase` list  with http status `200 OK`
+
+
 - **GET** : `/purchases/{id}`
-    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
-    - get `Purchase` by `id` and `Account` from database using `PurchaseRepo`
+    - get `Purchase` by `id` and by authenticated `Account` from database using `PurchaseRepo`
     - return `Purchase`  with http status `200 OK`
+    - throw `EntityNotFoundException` if `Purchase` with `id` not existed
 
 - **POST** : `/purchase`
-    - `PurchaseRequest` DTO is used to map the following Json object.
-      ``` 
-      {
-         "tip": 5.5,
-         "state": "WA"
-      }
-      ```
-    - get `Account` from `@AuthenticationPrincipal` (provided by Spring Security)
-    - create new `Purchase`
-    - save `Purchase` to database using `PurchaseRepo`
-    - fetch all `Cart` belonged to `Account` from database using `CartRepo`
-    - save each `Cart` to `PurchaseLineitem`
-    - calculate `tax` by `state` and `total` 
-    - save `Purchase` to database using `PurchaseRepo` again
-    - remove all `Cart` belonged to `Account` from database usign `CartRepo`
-    - return `Purchase` with http status `201 CREATED`
+  - create new `Purchase`
+  - `PurchaseRequest` DTO is used to map the following Json object.
+    ``` 
+    {
+       "tip": 5.5,
+       "state": "WA"
+    }
+    ```
+  - fetch all `Cart` belonged to authenticated `Account` from database using `CartRepo`
+  - save each `Cart` to `PurchaseLineitem`
+  - calculate `tax` by `state` and `total` 
+  - save `Purchase` to database using `PurchaseRepo` again
+  - remove all `Cart` belonged to `Account` from database 
+  - return `Purchase` with http status `201 CREATED`
 
 
 - **DELETE** : `/purchase/{id}`
-
-    - verify `Purchase` existed in database using `PurchaseRepo`
-    - delete `Purchase` from database using `PurchaseRepo`
+    - delete `Purchase` from database 
     - return http status `404 No Content`
+    - throw `EntityNotFoundException` if `Purchase` with `id` not existed
 
-
-
-
+  
 **Thank you for reading this far. 
 I hope you found this API helpful in creating ecommerce in Springboot.
 Happy Coding!**
