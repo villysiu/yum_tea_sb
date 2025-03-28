@@ -189,7 +189,7 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public void deleteCartsByAccountId(Long accountId, Account authenticatedAccount) {
-        try{
+//        try{
             if(roleService.isAdmin(authenticatedAccount) || isOwnerOfAccount( accountId, authenticatedAccount.getId())){
                 logger.info("Deleting carts of account {} ", accountId);
                 cartRepo.deleteAllByAccountId(accountId);
@@ -199,17 +199,17 @@ public class CartServiceImpl implements CartService {
                 logger.error("You do not have permission to delete carts of account {}", accountId);
                 throw new SecurityException("You do not have permission to delete carts of account .");
             }
-        } catch (Exception e){
-            logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
-            throw new RuntimeException("Error occurred while deleting purchases", e);
-        }
+//        } catch (Exception e){
+//            logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
+//            throw new RuntimeException("Error occurred while deleting purchases", e);
+//        }
 
     }
 
     @Transactional
     @Override
     public void deleteCartById(Long id, Account authenticatedAccount) {
-        try {
+//        try {
             if(roleService.isAdmin(authenticatedAccount) || isOwner(id, authenticatedAccount.getId())){
                 logger.info("Deleting cart {}", id);
                 cartRepo.deleteById(id);
@@ -219,10 +219,10 @@ public class CartServiceImpl implements CartService {
                 logger.error("You do not have permission to delete cart");
                 throw new SecurityException("You do not have permission to delete cart.");
         }
-        } catch (Exception e){
-            logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
-            throw new RuntimeException("Error occurred while deleting purchases", e);
-        }
+//        } catch (Exception e){
+//            logger.error("Error occurred while deleting carts: " + e.getMessage(), e);
+//            throw new RuntimeException("Error occurred while deleting purchases", e);
+//        }
     }
 
 

@@ -52,7 +52,7 @@ public class SecurityConfig {
 //
                 ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
-                                "/menuitem", "/menuitem/**", "/menuitem/**/img",
+                                "/menuitem", "/menuitem/**",
                                 "/resource/accounts", "/resource/accounts/**",
                                 "/purchases/all" , "/query/allSales", "/query/milk"
                 ).hasAuthority("ROLE_ADMIN")
@@ -93,7 +93,7 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:8001"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

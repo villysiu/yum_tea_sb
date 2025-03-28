@@ -6,6 +6,7 @@ import com.villysiu.yumtea.dto.response.CartProjection;
 import com.villysiu.yumtea.service.user.AuthorizationService;
 import com.villysiu.yumtea.service.cart.CartService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +50,14 @@ public class CartController {
     //  authenticated user use this to  update his own single cart
     // no admin
     @PutMapping("/cart/{id}")
-    public ResponseEntity<CartProjection> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> updateCart(@PathVariable Long id, @RequestBody CartInputDto cartInputDto, @AuthenticationPrincipal UserDetails userDetails) {
         Account account = authorizationService.findByEmail(userDetails.getUsername());
-
-        Long cartId = cartService.updateCart(id, cartInputDto, account);
-        return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
+        try {
+            Long cartId = cartService.updateCart(id, cartInputDto, account);
+            return new ResponseEntity<>(cartService.getCartProjectionById(cartId), HttpStatus.CREATED);
+        } catch(EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
 
     }
 
@@ -70,6 +74,8 @@ public class CartController {
         } catch(SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You do not have permission to delete this cart.");
         }
+
+
     }
 
     @ExceptionHandler(Exception.class)

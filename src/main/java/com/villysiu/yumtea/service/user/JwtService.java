@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
-import javax.sql.DataSource;
+
 import java.util.Date;
 
 @Service
 public class JwtService {
-    private final DataSource dataSource;
+
     @Value("${jwt.token.secret}")
     private String secret;
 
@@ -32,9 +32,6 @@ public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    public JwtService(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
 
     public void generateToken(String email, HttpServletResponse response){
