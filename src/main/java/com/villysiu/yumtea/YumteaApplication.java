@@ -26,7 +26,6 @@ public class YumteaApplication {
     CommandLineRunner init(StorageService storageService) {
         System.out.println("I am preparing the photo storage?");
         return (args) -> {
-//            storageService.deleteAll();
             storageService.init();
         };
     }
@@ -35,11 +34,6 @@ public class YumteaApplication {
         System.out.println("I am preparing the database?");
         return args -> {
             seedService.init();
-
-
-
-
-
         };
 
     }

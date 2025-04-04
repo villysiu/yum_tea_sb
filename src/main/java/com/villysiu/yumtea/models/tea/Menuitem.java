@@ -48,23 +48,6 @@ public class Menuitem {
     private Sugar sugar = Sugar.ZERO;
 
 
-//    public Menuitem(String title, Category category, Milk milk) {
-//        this.title = title;
-//        this.category = category;
-//        this.milk = milk;
-//    }
-//    public Menuitem(String title, Category category, Milk milk, Sugar sugar) {
-//        this.title = title;
-//        this.category = category;
-//        this.milk = milk;
-//        this.sugar = sugar;
-//    }
-//    public Menuitem(String title, Category category, Milk milk, Temperature temperature) {
-//        this.title = title;
-//        this.category = category;
-//        this.milk = milk;
-//        this.temperature = temperature;
-//    }
     public Menuitem(String title, String imageUrl, Category category, Milk milk, Sugar sugar, Temperature temperature, double price) {
         this.title = title;
         this.imageUrl = imageUrl;

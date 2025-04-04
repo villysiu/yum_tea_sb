@@ -38,14 +38,17 @@ public interface PurchaseProjection {
     interface MenuitemProjection {
         Long getId();
         String getTitle();
+        Double getPrice();
 
     }
     interface MilkProjection {
         Long getId();
         String getTitle();
+        Double getPrice();
     }
     interface SizeProjection {
         Long getId();
         String getTitle();
+        Double getPrice();
     }
 }

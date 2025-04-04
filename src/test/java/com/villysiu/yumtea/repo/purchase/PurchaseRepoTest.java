@@ -3,16 +3,24 @@ package com.villysiu.yumtea.repo.purchase;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.repo.user.AccountRepo;
+import com.villysiu.yumtea.service.dataSeed.SeedService;
+import com.villysiu.yumtea.service.storage.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class PurchaseRepoTest {
+    @MockitoBean
+    private SeedService seedService;
+    @MockitoBean
+    private StorageService storageService;
     @Autowired
     private PurchaseRepo purchaseRepo;
     @Autowired
@@ -24,6 +32,8 @@ class PurchaseRepoTest {
 
     @BeforeEach
     void setUp() {
+        Mockito.doNothing().when(seedService).init();
+        Mockito.doNothing().when(storageService).init();
         testAccount1 = new Account("admin1@test.com", "testAdmin", "password2");
         accountRepo.save(testAccount1);
         testAccount2 = new Account("admin2@test.com", "testAdmin", "password2");

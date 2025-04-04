@@ -4,11 +4,13 @@ import com.villysiu.yumtea.dto.request.SigninRequest;
 import com.villysiu.yumtea.dto.request.SignupRequest;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
+import com.villysiu.yumtea.models.purchase.TaxRate;
 import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
+import com.villysiu.yumtea.repo.purchase.TaxRepo;
 import com.villysiu.yumtea.repo.tea.CategoryRepo;
 import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
@@ -50,7 +52,7 @@ public class SeedServiceImpl implements SeedService{
     private final PurchaseLineitemRepo purchaseLineitemRepo;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepo accountRepo;
-
+    private final TaxRepo taxRepo;
     private final List<String> userList;
     private final Object[][] menuitemList;
 
@@ -60,7 +62,7 @@ public class SeedServiceImpl implements SeedService{
                            CategoryService categoryService, AccountRepo accountRepo, CategoryRepo categoryRepo,
                            MilkRepo milkRepo, MilkService milkService, SizeRepo sizeRepo, MenuitemRepo menuitemRepo,
                            PurchaseRepo purchaseRepo, PurchaseLineitemRepo purchaseLineitemRepo,
-                           PasswordEncoder passwordEncoder, SeedProperties properties) {
+                           PasswordEncoder passwordEncoder, TaxRepo taxRepo, SeedProperties properties) {
         this.authenticationService = authenticationService;
         this.roleService = roleService;
         this.categoryService = categoryService;
@@ -73,6 +75,7 @@ public class SeedServiceImpl implements SeedService{
         this.purchaseRepo = purchaseRepo;
         this.purchaseLineitemRepo = purchaseLineitemRepo;
         this.passwordEncoder = passwordEncoder;
+        this.taxRepo = taxRepo;
         this.userList = properties.getUserList();
         this.menuitemList = properties.getMenuitems();
     }
@@ -90,6 +93,7 @@ public class SeedServiceImpl implements SeedService{
             createCategories();
             createMilks();
             createSizes();
+            createTaxes();
             createMenuitems();
             createPurchases();
         }catch (RuntimeException e) {
@@ -109,16 +113,16 @@ public class SeedServiceImpl implements SeedService{
         if(!accountRepo.existsByEmail(superAdminEmail)){
             logger.info("Creating super admin account");
 
-            Account account = new Account();
-            account.setEmail(superAdminEmail);
-            account.setNickname(superAdminNickname);
-            account.setPassword(passwordEncoder.encode(superAdminPassword));
+            SignupRequest signupRequest = new SignupRequest(superAdminNickname, superAdminEmail, "password1");
+
+            Long adminId = authenticationService.signup(signupRequest);
+            Account account = accountRepo.findById(adminId).get();
             logger.info("Assign Role_ADMIN");
 
             Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
 
             account.setRoles(Collections.singleton(adminRole));
-            logger.info("Creating super admin account");
+            logger.info("Saving super admin account");
             accountRepo.save(account);
             logger.info("saved super admin account");
 
@@ -184,15 +188,6 @@ public class SeedServiceImpl implements SeedService{
                 sizeRepo.save(newSize);
                 logger.info("Saved {}", size[0]);
             }
-//            List<String> sizeNames = Arrays.asList("8oz", "12oz", "16oz");
-//            List<Double> sizePrices = Arrays.asList(0.0, 2.0, 4.0);
-//            for(int i=0; i<sizeNames.size(); i++){
-//                logger.info("Creating {}", sizeNames.get(i));
-//                Size size = new Size(sizeNames.get(i), sizePrices.get(i));
-//                logger.info("Saving  {}", sizeNames.get(i));
-//                sizeRepo.save(size);
-//                logger.info("Saved {}", sizeNames.get(i));
-//            }
         }
         logger.info("Size existed or created");
     }
@@ -218,6 +213,23 @@ public class SeedServiceImpl implements SeedService{
 
         }
         logger.info("Menuitem existed or created");
+    }
+    private void createTaxes(){
+        if(taxRepo.count() == 0){
+
+            Object [][] taxes = {
+                    {"WA", 10.0}, {"OR",0.0}, {"CA", 7.5}
+            };
+            for(Object [] tax : taxes){
+                logger.info("Creating {}", tax[0]);
+                TaxRate newTax = new TaxRate((String) tax[0],(Double)tax[1]);
+                logger.info("Saving  {}", tax[0]);
+                taxRepo.save(newTax);
+                logger.info("Saved {}", tax[0]);
+            }
+
+        }
+        logger.info("Tax existed or created");
     }
 
     private void createPurchases() {

@@ -1,10 +1,49 @@
 # YumTea #
 This is the backend API for a tea e-commerce application built with Springboot, secured by Spring Security and JWT.
 
+This project can be split into 3 sections
+* public
+* private (ROLE_USER)
+* private (ROLE_ADMIN)
+
+### Public
+Visitors can access the welcome homepage, drinks menu, and contact us.
+
+### Private (ROLE_USER)
+Authenticated visitor with ROLE_USER can:
+* add item into shopping cart, update and delete item;
+* view items in shopping cart;
+* place order;
+* view all orders;
+* change user's nickname;
+* change user's password;
+
+### Private (ROLE_ADMIN)
+Authenticated user with ROLE_ADMIN can:
+* perform everything ROLE_USER can do;
+* user
+  * view and delete all users' order;
+  * assign user to admin role;
+  * delete user
+* menuitem
+  * view, add, update menuitem
+  * toggle visibility of menuitem 
+  * add image for menuitem
+* milk,  size, 
+  * view, add, update menuitem
+* view graph of sales
+
+## Frontend
 The Frontend is developed in **React.js** and can be found here: 
 https://github.com/villysiu/yumtea_sb_frontend
 
-Youtube: Coming soon
+## Youtube
+Coming soon
+
+
+
+
+
 ### Technology 
 - Java 17
 - JDK 23
@@ -30,8 +69,8 @@ Youtube: Coming soon
   mysql -V
 ```
   - For installation instruction, please visit [MySQL website](https://dev.mysql.com/doc/mysql-getting-started/en/).
-- I also  highly recommend using **MySQLWorkbench** to view the database. It can be downloaded [here](https://dev.mysql.com/downloads/workbench/).
-- Start up MySQL at `localhost:3306`
+- I highly recommend using **MySQLWorkbench** to view the database. It can be downloaded [here](https://dev.mysql.com/downloads/workbench/).
+- Start up MySQL at default location at `localhost:3306`
 - create a new schema,`yumtea_sb2`. (The name of the database can be found in `resources/application.properties`)
 
 ![](https://github.com/villysiu/yum_tea_sb/blob/main/src/main/resources/static/images/MySQLWorkbench.png?raw=true)
@@ -42,7 +81,7 @@ Youtube: Coming soon
   - Paste the cloned git link into the `URL` box
   - Click `Clone`
 
-- Choose the Spring Boot Application file `/src/main/java/com.villysiu.yumtea/YumteaApplication/`. Click on the triangle next to `public static void main(String[] args)`
+- Choose the Spring Boot Application file `/src/main/java/com.villysiu.yumtea/YumteaApplication/`. Click on the play button next to `public static void main(String[] args)`
 - The server will start at `http://localhost:8080`.
 
 ## Database Diagram

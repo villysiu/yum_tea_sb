@@ -59,7 +59,7 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
             .exceptionHandling(exceptionHandling -> exceptionHandling
                     .authenticationEntryPoint(new RestAuthenticationEntryPoint())

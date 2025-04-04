@@ -3,22 +3,23 @@ package com.villysiu.yumtea.repo.tea;
 import com.villysiu.yumtea.dto.response.BestSellerDto;
 import com.villysiu.yumtea.models.purchase.Purchase;
 import com.villysiu.yumtea.models.purchase.PurchaseLineitem;
-import com.villysiu.yumtea.models.tea.Category;
-import com.villysiu.yumtea.models.tea.Menuitem;
-import com.villysiu.yumtea.models.tea.Milk;
-import com.villysiu.yumtea.models.tea.Size;
+import com.villysiu.yumtea.models.tea.*;
 import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.repo.purchase.PurchaseLineitemRepo;
 import com.villysiu.yumtea.repo.purchase.PurchaseRepo;
 import com.villysiu.yumtea.repo.user.AccountRepo;
+import com.villysiu.yumtea.service.dataSeed.SeedService;
+import com.villysiu.yumtea.service.storage.StorageService;
 import net.bytebuddy.matcher.FilterableList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,6 +29,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class MenuitemRepoTest {
+
+    @MockitoBean
+    private SeedService seedService;
+    @MockitoBean
+    private StorageService storageService;
 
     @Autowired
     private CategoryRepo categoryRepo;
@@ -49,10 +55,15 @@ class MenuitemRepoTest {
 
     private Milk testMilk;
     private Size testSize;
-
+    private Sugar testSugar;
+    private Temperature testTemperature;
 
     @BeforeEach
     void setUp() {
+
+        Mockito.doNothing().when(seedService).init();
+        Mockito.doNothing().when(storageService).init();
+
         testCategory1 = new Category("Beverages1");
         categoryRepo.save(testCategory1);
 
@@ -64,12 +75,16 @@ class MenuitemRepoTest {
         testSize = new Size("testSize");
         sizeRepo.save(testSize);
 
+        testSugar = Sugar.values()[0];
+        testTemperature = Temperature.values()[0];
+
         for (int i = 0; i < 5; i++) {
-            Menuitem menuitem = new Menuitem("Coffee1", testCategory1, testMilk);
+            Menuitem menuitem = new Menuitem("Drink"+i, "IMG_0210.png", testCategory1, testMilk, testSugar, testTemperature, 6.0);
+
             menuitemRepo.save(menuitem);
         }
         for (int i = 0; i < 3; i++) {
-            Menuitem menuitem = new Menuitem("Coffee3", testCategory2, testMilk);
+            Menuitem menuitem = new Menuitem("Drink"+i, "IMG_0210.png", testCategory2, testMilk, testSugar, testTemperature, 6.0);
             menuitemRepo.save(menuitem);
         }
     }

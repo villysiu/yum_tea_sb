@@ -44,4 +44,5 @@ public class SeedProperties {
             {"High Mountain Tea", "High-Mountain.webp", "Oolong Tea", "No Milk", Sugar.ZERO, Temperature.FREE, 5.00},
 
     };
+
 }

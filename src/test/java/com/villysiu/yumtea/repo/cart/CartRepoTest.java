@@ -8,10 +8,14 @@ import com.villysiu.yumtea.repo.tea.MenuitemRepo;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
 import com.villysiu.yumtea.repo.tea.SizeRepo;
 import com.villysiu.yumtea.repo.user.AccountRepo;
+import com.villysiu.yumtea.service.dataSeed.SeedService;
+import com.villysiu.yumtea.service.storage.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
@@ -20,6 +24,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class CartRepoTest {
+    @MockitoBean
+    private SeedService seedService;
+    @MockitoBean
+    private StorageService storageService;
+
     @Autowired
     private CartRepo cartRepo;
     @Autowired
@@ -41,9 +50,14 @@ class CartRepoTest {
     private Cart testCart;
     private Milk testMilk;
     private Size testSize;
+    private Sugar testSugar;
+    private Temperature testTemperature;
 
     @BeforeEach
     void setUp() {
+        Mockito.doNothing().when(seedService).init();
+        Mockito.doNothing().when(storageService).init();
+
         testAccount1 = new Account("admin1@test.com", "testAdmin", "password2");
         accountRepo.save(testAccount1);
 
@@ -59,13 +73,18 @@ class CartRepoTest {
         testSize = new Size("testSize");
         sizeRepo.save(testSize);
 
-        testMenuitem = new Menuitem("Coffee1", testCategory1, testMilk);
+        testSugar = Sugar.values()[0];
+        testTemperature = Temperature.values()[0];
+
+        testMenuitem = new Menuitem("Drink0", "IMG_0210.png", testCategory1, testMilk, testSugar, testTemperature, 6.0);
         menuitemRepo.save(testMenuitem);
         testCart = new Cart(testAccount1, testMenuitem, testMilk, testSize);
         cartRepo.save(testCart);
+//        M String title, String imageUrl, Category category, Milk milk, Sugar sugar, Temperature temperature, double price
 
         for(int i=0; i<5; i++) {
-            Menuitem menuitem = new Menuitem("Coffee1", testCategory1, testMilk);
+
+            Menuitem menuitem = new Menuitem("Drink"+i, "IMG_0210.png", testCategory1, testMilk, testSugar, testTemperature, 6.0);
             menuitemRepo.save(menuitem);
             Cart cart = new Cart(testAccount2, menuitem, testMilk, testSize);
             cartRepo.save(cart);
