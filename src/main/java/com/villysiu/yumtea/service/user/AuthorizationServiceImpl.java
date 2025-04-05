@@ -129,6 +129,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         logger.info("Account saved");
 
         SigninResponse signinResponse = new SigninResponse();
+        signinResponse.setId(id);
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
         signinResponse.setIsAdmin(account.getRoles().contains(adminRole));

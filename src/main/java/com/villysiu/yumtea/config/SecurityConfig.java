@@ -49,7 +49,7 @@ public class SecurityConfig {
 
                 .requestMatchers("/auth/**", "/categories", "/category/*/menuitems","/milks", "/sizes", "/sugars",
                                 "/menuitems","/images/**","/temperatures", "/taxes/**", "/query/bestSellers"
-//
+
                 ).permitAll()
                 .requestMatchers("/category", "/category/**", "/milk", "/milk/**",  "/size","/size/**",
                                 "/menuitem", "/menuitem/**",
@@ -59,16 +59,13 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
-//            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
             .exceptionHandling(exceptionHandling -> exceptionHandling
                     .authenticationEntryPoint(new RestAuthenticationEntryPoint())
             )
             .sessionManagement(manager -> manager
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-
-
 
         return http.build();
     }

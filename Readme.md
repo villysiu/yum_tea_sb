@@ -1,44 +1,20 @@
 # YumTea #
 This is the backend API for a tea e-commerce application built with Springboot, secured by Spring Security and JWT.
 
+
 This project can be split into 3 sections
 * public
 * private (ROLE_USER)
-* private (ROLE_ADMIN)
+* private (ROLE_ADMIN
 
-### Public
-Visitors can access the welcome homepage, drinks menu, and contact us.
-
-### Private (ROLE_USER)
-Authenticated visitor with ROLE_USER can:
-* add item into shopping cart, update and delete item;
-* view items in shopping cart;
-* place order;
-* view all orders;
-* change user's nickname;
-* change user's password;
-
-### Private (ROLE_ADMIN)
-Authenticated user with ROLE_ADMIN can:
-* perform everything ROLE_USER can do;
-* user
-  * view and delete all users' order;
-  * assign user to admin role;
-  * delete user
-* menuitem
-  * view, add, update menuitem
-  * toggle visibility of menuitem 
-  * add image for menuitem
-* milk,  size, 
-  * view, add, update menuitem
-* view graph of sales
+After the user has been successfully authenticated,a JWT token will be generated and the user can access resources based on his role.
 
 ## Frontend
 The Frontend is developed in **React.js** and can be found here: 
 https://github.com/villysiu/yumtea_sb_frontend
 
 ## Youtube
-Coming soon
+[![Ecommerce RestApi by Springboot, Spring Security and JWT](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FptCCWloK40c)](https://youtu.be/ptCCWloK40c)
 
 
 
@@ -56,11 +32,11 @@ Coming soon
 - **Json Web Token** for JWT authentication
 - **JDBC API** for connecting to MySQL through a JDBC driver
 - **Spring Data JPA** for interacting with MySQL
-- MySQL
+- **MySQL** for database
 - Lombak (Optional)
-- junit (Optional)
+- **Junit5** for testing repository and service methods to ensure reliability
 - jakarta.validation (Optional)
-- slf4j (Optional)
+- **slf4j** (Optional) for loggint info and error
 
 ## Before you start ##
 -  Check if MySQL is installed, 
