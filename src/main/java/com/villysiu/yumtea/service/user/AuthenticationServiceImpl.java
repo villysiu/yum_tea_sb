@@ -43,12 +43,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        
     }
 
 
     @Override
     public Long signup(SignupRequest signupRequest) {
         logger.info("Signing up a new account with {}",signupRequest.getEmail());
+
 
         if(accountRepo.existsByEmail(signupRequest.getEmail())){
             logger.error("Email already in use");

@@ -68,7 +68,7 @@ public class MenuitemController {
             return new ResponseEntity<>(menuitem, HttpStatus.OK);
 
     }
-    @DeleteMapping("/menuitem/img/{id}")
+    @DeleteMapping("/menuitem/{id}/img")
     public ResponseEntity<?> deleteMenuitemImage(@PathVariable Long id) {
 //            research hoe to delete backend or data
 //            storageService.store(file);
@@ -80,7 +80,7 @@ public class MenuitemController {
 
     }
 
-    @PatchMapping("/menuitem/toggleActive/{id}")
+    @PatchMapping("/menuitem/{id}/toggleActive")
     public ResponseEntity<?> toggleActiveMenuitem(@PathVariable Long id) {
             menuitemService.toggleActiveMenuitem(id);
             return new ResponseEntity<>(HttpStatus.OK);
