@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication
 @EnableConfigurationProperties({StorageProperties.class, SeedProperties.class})
@@ -23,6 +24,7 @@ public class YumteaApplication {
     private SeedService seedService;
 
     @Bean
+    @Profile("!test")
     CommandLineRunner init(StorageService storageService) {
         System.out.println("I am preparing the photo storage?");
         return (args) -> {
@@ -30,6 +32,7 @@ public class YumteaApplication {
         };
     }
     @Bean
+    @Profile("!test")
     CommandLineRunner initSeed(SeedService seedService) {
         System.out.println("I am preparing the database?");
         return args -> {

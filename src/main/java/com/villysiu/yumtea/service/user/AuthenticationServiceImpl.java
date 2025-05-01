@@ -7,6 +7,7 @@ import com.villysiu.yumtea.models.user.Account;
 import com.villysiu.yumtea.models.user.Role;
 import com.villysiu.yumtea.repo.user.AccountRepo;
 
+import com.villysiu.yumtea.repo.user.RoleRepo;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -32,18 +35,22 @@ import java.util.Optional;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
+
     private final AccountRepo accountRepo;
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    private final RoleRepo roleRepo;
+    @Autowired
+    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService, RoleRepo roleRepo) {
         this.accountRepo = accountRepo;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-        
+
+        this.roleRepo = roleRepo;
     }
 
 
@@ -61,10 +68,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setEmail(signupRequest.getEmail());
         account.setNickname(signupRequest.getNickname());
         account.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        logger.info("Assign Role_USER");
-        Role role = roleService.getRoleByName("ROLE_USER");
 
-        account.setRoles(Collections.singleton(role));
+        logger.info("Assign Role_USER");
+        Role role = new Role();
+        role.setName("ROLE_USER");
+        roleRepo.save(role);
+
+
+        HashSet<Role> roles = new HashSet<>();
+        roles.add(role);
+        account.setRoles(roles);
+
+//        System.out.println("main Account "+ account);
         logger.info("Saving new account");
         accountRepo.save(account);
         logger.info("Saved new account");

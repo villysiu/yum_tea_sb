@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@SpringBootTest
 @DataJpaTest
-//@ContextConfiguration(classes = TestConfig.class) // Use your test-specific config
+@ActiveProfiles("test")
+
 
 class MilkRepoTest {
     @MockitoBean

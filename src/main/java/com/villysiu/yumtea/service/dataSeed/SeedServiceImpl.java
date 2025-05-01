@@ -121,7 +121,10 @@ public class SeedServiceImpl implements SeedService{
 
             Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
 
-            account.setRoles(Collections.singleton(adminRole));
+            HashSet<Role> roles = new HashSet<>();
+            roles.add(adminRole);
+
+            account.setRoles(roles);
             logger.info("Saving super admin account");
             accountRepo.save(account);
             logger.info("saved super admin account");

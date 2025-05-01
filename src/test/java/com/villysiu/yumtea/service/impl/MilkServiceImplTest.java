@@ -2,13 +2,18 @@ package com.villysiu.yumtea.service.impl;
 
 import com.villysiu.yumtea.models.tea.Milk;
 import com.villysiu.yumtea.repo.tea.MilkRepo;
+import com.villysiu.yumtea.service.dataSeed.SeedService;
+import com.villysiu.yumtea.service.storage.StorageService;
 import com.villysiu.yumtea.service.tea.milk.MilkServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,11 +30,17 @@ class MilkServiceImplTest {
     @InjectMocks
     private MilkServiceImpl milkService;
 
-
     private Milk milk;
+
+//    @MockitoBean
+//    private SeedService seedService;
+//
+//    @MockitoBean
+//    private StorageService storageService;
+
     @BeforeEach
     void setUp() {
-//        MockitoAnnotations.openMocks(this);
+
         milk = new Milk();
         milk.setTitle("testMilk");
         milk.setPrice(5.0);

@@ -15,6 +15,7 @@ public class RoleService {
     }
 
     public Role getRoleByName(String roleName){
+        System.out.println("in get role by name: " + roleName);
         return roleRepo.findByName(roleName).orElseGet(
                 ()->roleRepo.save(new Role(roleName))
         );
@@ -24,5 +25,6 @@ public class RoleService {
         Role adminRole = getRoleByName("ROLE_ADMIN");
         return account.getRoles().contains(adminRole);
     }
+
 
 }
