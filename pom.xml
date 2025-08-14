@@ -124,8 +124,10 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.11.0</version> <!-- or 3.13.0 if needed -->
+            <version>3.11.0</version>
             <configuration>
+                <source>${java.version}</source>
+                <target>${java.version}</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.projectlombok</groupId>
@@ -136,10 +138,9 @@
                 <compilerArgs>
                     <arg>-parameters</arg>
                 </compilerArgs>
-                <source>${java.version}</source>
-                <target>${java.version}</target>
             </configuration>
         </plugin>
+
 
         <!--  skip tests permanently -->
         <plugin>
@@ -150,6 +151,7 @@
                 <skipTests>true</skipTests>
             </configuration>
         </plugin>
+
     </plugins>
 </build>
 
