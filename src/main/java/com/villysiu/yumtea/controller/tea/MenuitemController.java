@@ -16,11 +16,11 @@ public class MenuitemController {
 
     private final MenuitemService menuitemService;
 
-
     MenuitemController(MenuitemService menuitemService) {
         this.menuitemService = menuitemService;
     }
-//read
+
+    // read
     @GetMapping("/menuitems")
     public List<Menuitem> getMenuitems() {
         return menuitemService.getMenuitems();
@@ -28,45 +28,46 @@ public class MenuitemController {
     }
 
     @GetMapping("/category/{id}/menuitems")
-    public List<Menuitem> getMenuitemsByCategory(@PathVariable Long id) {
+    public List<Menuitem> getMenuitemsByCategory(@PathVariable("id") Long id) {
         return menuitemService.getMenuitemsByCategoryId(id);
     }
 
     // ADMIN ONLY
-    //Create
+    // Create
     @PostMapping("/menuitem")
     public ResponseEntity<Menuitem> createMenuitem(@RequestBody MenuitemDto menuitemDto) {
         Menuitem menuitem = menuitemService.createMenuitem(menuitemDto);
         return new ResponseEntity<>(menuitem, HttpStatus.CREATED);
     }
-//Update
+
+    // Update
     @PatchMapping("/menuitem/{id}")
-    public ResponseEntity<Menuitem> updateMenuitem(@PathVariable Long id, @RequestBody Map<String, Object> menuitemDto) {
+    public ResponseEntity<Menuitem> updateMenuitem(@PathVariable Long id,
+            @RequestBody Map<String, Object> menuitemDto) {
         Menuitem menuitem = menuitemService.updateMenuitem(id, menuitemDto);
         return new ResponseEntity<>(menuitem, HttpStatus.OK);
     }
-//delete
+
+    // delete
     @DeleteMapping("/menuitem/{id}")
     public ResponseEntity<String> deleteMenuitem(@PathVariable Long id) {
         menuitemService.deleteMenuitem(id);
         return new ResponseEntity<>("Menuitem deleted", HttpStatus.NO_CONTENT);
     }
 
-  
-
     @PatchMapping("/menuitem/{id}/toggleActive")
     public ResponseEntity<?> toggleActiveMenuitem(@PathVariable Long id) {
-            menuitemService.toggleActiveMenuitem(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+        menuitemService.toggleActiveMenuitem(id);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
-
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " +e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
     }
+
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {

@@ -32,18 +32,16 @@ public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-
-
-    public void generateToken(String email, HttpServletResponse response){
+    public void generateToken(String email, HttpServletResponse response) {
         /*
-            generate token with jwts builder
-            subject accepts string
-            issued at and expireAt accept a date time object
-            signWith accepts a secretKey
+         * generate token with jwts builder
+         * subject accepts string
+         * issued at and expireAt accept a date time object
+         * signWith accepts a secretKey
          */
 
         String jwt = Jwts.builder()
-                .subject(email) //username here is indeed the email
+                .subject(email) // username here is indeed the email
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiresMinutes * 60 * 1000))
                 .signWith(getSignInKey())
@@ -56,23 +54,22 @@ public class JwtService {
         cookie.setMaxAge(24 * 60 * 60); // expire in 24 hour
         response.addCookie(cookie);
 
-
-
     }
 
-    public String getJwtFromCookie(HttpServletRequest request){
+    public String getJwtFromCookie(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, "JWT");
 
-        if(cookie == null || cookie.getValue().isEmpty()){
+        if (cookie == null || cookie.getValue().isEmpty()) {
             throw new JwtException("JWT token is empty");
         }
 
         return cookie.getValue();
 
     }
+
     public void validateToken(String token) throws JwtException {
 
-//        try {
+        try {
             logger.info("Validating JWT token");
 
             claims = Jwts.parser()
@@ -80,16 +77,23 @@ public class JwtService {
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-//            return claims;
+            // return claims;
             logger.info("JWT token validated");
 
-//        } catch(JwtException e){
-//// catch null, wrong token, expired token
-//            throw new JwtException(e.getMessage());
-//        }
+        } catch (JwtException e) {
+
+            // This catches any JWT-related issues: expired, malformed, signature invalid,
+            // etc.
+            throw new JwtException("JWT validation failed: " + e.getMessage(), e);
+
+        } catch (Exception e) {
+            // Optional: catch other unexpected exceptions
+            throw new JwtException("Unexpected error during JWT validation", e);
+        }
 
     }
-    public void removeTokenFromCookie(HttpServletResponse response){
+
+    public void removeTokenFromCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie("JWT", null);
         cookie.setPath("/");
 
@@ -97,7 +101,7 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-//        SignatureAlgorithm.HS256, this.secret
+        // SignatureAlgorithm.HS256, this.secret
         byte[] keyBytes = Decoders.BASE64.decode(this.secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
