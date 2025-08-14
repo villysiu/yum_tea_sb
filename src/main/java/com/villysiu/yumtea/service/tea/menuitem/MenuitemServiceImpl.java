@@ -39,8 +39,8 @@ public class MenuitemServiceImpl implements MenuitemService {
 
     private static final Logger logger = LoggerFactory.getLogger(MenuitemServiceImpl.class);
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    // @Value("${file.upload-dir}")
+    // private String uploadDir;
 //    Create
     @Override
     public Menuitem createMenuitem(MenuitemDto menuitemDto) {
@@ -140,25 +140,8 @@ public class MenuitemServiceImpl implements MenuitemService {
     @Override
     public List<Menuitem> getMenuitemsByCategoryId(Long categoryId){
         return menuitemRepo.findByCategoryIdQuery(categoryId);
-//        return menuitemRepo.findByCategoryId(categoryId);
     }
-//    @Override
-//    public List<BestSellerDto> getBestsellers(){
-//        Pageable pageable = PageRequest.of(0, 3);
-//        List<Object[]> bestsellers = menuitemRepo.findBestSellers(pageable);
-//
-//        List<BestSellerDto> bestSellerDtos = new ArrayList<>();
-//        for (Object[] row : bestsellers) {
-//            BestSellerDto dto = new BestSellerDto();
-//            dto.setMenuitemId((Long) row[0]);
-//            dto.setMenuitemTitle((String) row[1]);
-//            dto.setCount((Long) row[2]);
-//            bestSellerDtos.add(dto);
-//
-//        }
-//
-//        return bestSellerDtos;
-//    }
+
 
     //    Delete
     @Override
@@ -172,26 +155,27 @@ public class MenuitemServiceImpl implements MenuitemService {
 
     }
 
-    @Override
-    public String saveImage(MultipartFile file) throws IOException {
-        logger.info("Saving image service");
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+    // @Override
+    // public String saveImage(MultipartFile file) throws IOException {
+    //     logger.info("Saving image service");
+    //     String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
-        // Create the directory if it doesn't exist
-        Path path = Paths.get(uploadDir);
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
-        }
-        // Save the file
-        Path filePath = path.resolve(fileName);
-        logger.info("ready to save image: "+filePath);
-        file.transferTo(filePath.toFile());
+    //     // Create the directory if it doesn't exist
+    //     Path path = Paths.get(uploadDir);
+    //     if (!Files.exists(path)) {
+    //         Files.createDirectories(path);
+    //     }
+    //     // Save the file
+    //     Path filePath = path.resolve(fileName);
+    //     logger.info("ready to save image: "+filePath);
+    //     file.transferTo(filePath.toFile());
 
-       logger.info("Image saved in /images/" + fileName);
+    //    logger.info("Image saved in /images/" + fileName);
 
-        // Return the file path or URL
-        return "/images/" + fileName;
-    }
+    //     // Return the file path or URL
+    //     return "/images/" + fileName;
+    // }
+    
     @Override
     public void toggleActiveMenuitem(Long id){
         logger.info("Toggle  menuitem visibility");

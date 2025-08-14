@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @Entity
 @NoArgsConstructor
-@Table(name="milk")
+@Table(name = "milk")
 public class Milk {
 
     @Id
@@ -17,13 +17,34 @@ public class Milk {
     private String title;
 
     @Column(columnDefinition = "DOUBLE DEFAULT 0.0")
-    private double price=0.0;
+    private double price = 0.0;
 
-    public Milk(String title) {
-        this.title = title;
-    }
     public Milk(String title, double price) {
         this.title = title;
         this.price = price;
     }
+
+    public Milk(String title) {
+        this.title = title;
+    }
+
+    // public void setPrice(double price) {
+    // if (price < 0) {
+    // throw new IllegalArgumentException("Price cannot be negative");
+    // }
+    // this.price = price;
+    // }
+    // public void setTitle(String title) {
+    // if (title == null || title.trim().isEmpty()) {
+    // throw new IllegalArgumentException("Title cannot be null or empty");
+    // }
+    // this.title = title;
+    // }
+    // public String getTitle() {
+    // return title;
+    // }
+    // public double getPrice() {
+    // return price;
+    // }
+
 }

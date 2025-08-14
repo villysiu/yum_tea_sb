@@ -34,3 +34,5 @@ build/
 
 Notes/
 .env
+
+sql_data/

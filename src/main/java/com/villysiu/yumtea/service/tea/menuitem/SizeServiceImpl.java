@@ -3,7 +3,6 @@ package com.villysiu.yumtea.service.tea.menuitem;
 import com.villysiu.yumtea.models.tea.Size;
 import com.villysiu.yumtea.repo.tea.SizeRepo;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Map;
 public class SizeServiceImpl implements SizeService {
     private final SizeRepo sizeRepo;
 
-    @Autowired
     public SizeServiceImpl(SizeRepo sizeRepo) {
         this.sizeRepo = sizeRepo;
     }
@@ -41,6 +39,7 @@ public class SizeServiceImpl implements SizeService {
             String key = entry.getKey();
             Object value = entry.getValue();
             if(key.equals("title")) {
+     
                 size.setTitle((String) value);
             }
             else if(key.equals("price")) {
@@ -49,6 +48,7 @@ public class SizeServiceImpl implements SizeService {
         }
         return sizeRepo.save(size);
     }
+
 
     @Override
     public void deleteSize(Long id) {
