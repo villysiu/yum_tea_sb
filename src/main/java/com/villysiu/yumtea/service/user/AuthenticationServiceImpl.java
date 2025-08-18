@@ -10,9 +10,7 @@ import com.villysiu.yumtea.repo.user.AccountRepo;
 import com.villysiu.yumtea.repo.user.RoleRepo;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +24,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
-
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
-
 
     private final AccountRepo accountRepo;
     private final RoleService roleService;
@@ -42,8 +36,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RoleRepo roleRepo;
+
     @Autowired
-    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleService roleService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService, RoleRepo roleRepo) {
+    public AuthenticationServiceImpl(AccountRepo accountRepo, RoleService roleService,
+            AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtService jwtService,
+            RoleRepo roleRepo) {
         this.accountRepo = accountRepo;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
@@ -53,13 +50,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.roleRepo = roleRepo;
     }
 
-
     @Override
     public Long signup(SignupRequest signupRequest) {
-        logger.info("Signing up a new account with {}",signupRequest.getEmail());
+        logger.info("Signing up a new account with {}", signupRequest.getEmail());
 
-
-        if(accountRepo.existsByEmail(signupRequest.getEmail())){
+        if (accountRepo.existsByEmail(signupRequest.getEmail())) {
             logger.error("Email already in use");
             throw new EntityExistsException("Email already exists");
         }
@@ -74,12 +69,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         role.setName("ROLE_USER");
         roleRepo.save(role);
 
-
         HashSet<Role> roles = new HashSet<>();
         roles.add(role);
         account.setRoles(roles);
 
-//        System.out.println("main Account "+ account);
+        // System.out.println("main Account "+ account);
         logger.info("Saving new account");
         accountRepo.save(account);
         logger.info("Saved new account");
@@ -87,33 +81,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return account.getId();
     }
 
-
-
     @Override
-    public SigninResponse signin(SigninRequest signinRequest, HttpServletResponse response) throws AuthenticationException {
+    public SigninResponse signin(SigninRequest signinRequest, HttpServletResponse response)
+            throws AuthenticationException {
         logger.info("Signing in {}", signinRequest.getEmail());
 
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
+        Authentication authenticationRequest = UsernamePasswordAuthenticationToken
+                .unauthenticated(signinRequest.getEmail(), signinRequest.getPassword());
         Authentication authenticationResponse = this.authenticationManager.authenticate(authenticationRequest);
         logger.info("Email and Password authenticated");
-//        If the credentials are correct, Spring Security creates an Authentication object (e.g., UsernamePasswordAuthenticationToken for form login or JwtAuthenticationToken for JWT-based login) and places it in the SecurityContext.
-//        The authenticated Authentication object contains the user’s details, roles, and other information.
-//            The Authentication contains:
-//
-//            principal: Identifies the user. When authenticating with a username/password this is often an instance of UserDetails.
-//            System.out.println("principal: " + authenticationResponse.getPrincipal());
-//            credentials: Often a password. In many cases, this is cleared after the user is authenticated, to ensure that it is not leaked.
-//            System.out.println("cred: " + authenticationResponse.getCredentials());
-//            authorities: The GrantedAuthority instances are high-level permissions the user is granted. Two examples are roles and scopes.
-//            System.out.println("auth: " + authenticationResponse.getAuthorities());
+        // If the credentials are correct, Spring Security creates an Authentication
+        // object (e.g., UsernamePasswordAuthenticationToken for form login or
+        // JwtAuthenticationToken for JWT-based login) and places it in the
+        // SecurityContext.
+        // The authenticated Authentication object contains the user’s details, roles,
+        // and other information.
+        // The Authentication contains:
+        //
+        // principal: Identifies the user. When authenticating with a username/password
+        // this is often an instance of UserDetails.
+        // System.out.println("principal: " + authenticationResponse.getPrincipal());
+        // credentials: Often a password. In many cases, this is cleared after the user
+        // is authenticated, to ensure that it is not leaked.
+        // System.out.println("cred: " + authenticationResponse.getCredentials());
+        // authorities: The GrantedAuthority instances are high-level permissions the
+        // user is granted. Two examples are roles and scopes.
+        // System.out.println("auth: " + authenticationResponse.getAuthorities());
 
-//            principal: org.springframework.security.core.userdetails.User [Username=springuser@gg.com, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]]
-//            cred: null
-//            auth: [ROLE_USER]
-
+        // principal: org.springframework.security.core.userdetails.User
+        // [Username=springuser@gg.com, Password=[PROTECTED], Enabled=true,
+        // AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true,
+        // Granted Authorities=[ROLE_USER]]
+        // cred: null
+        // auth: [ROLE_USER]
 
         logger.info("Saving authenticated account to springsecurity");
-         SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
+        SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
 
         logger.info("generate JWT token and Saving into cookie");
 
@@ -121,8 +124,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
         String email = userDetails.getUsername();
-        Account account = accountRepo.findByEmail(email).orElseThrow(()->new EntityNotFoundException("email not found"));
-
+        Account account = accountRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("email not found"));
 
         SigninResponse signinResponse = new SigninResponse();
         signinResponse.setId(account.getId());
@@ -134,12 +137,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         logger.info("Return authenticated account in SigninResponse DTO");
         return signinResponse;
 
-
     }
-    public void logoutUser(HttpServletResponse response){
+
+    public void logoutUser(HttpServletResponse response) {
         jwtService.removeTokenFromCookie(response);
     }
-
-
 
 }

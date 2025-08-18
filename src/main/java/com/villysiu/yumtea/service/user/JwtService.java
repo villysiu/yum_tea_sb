@@ -39,21 +39,22 @@ public class JwtService {
          * issued at and expireAt accept a date time object
          * signWith accepts a secretKey
          */
-
         String jwt = Jwts.builder()
-                .subject(email) // username here is indeed the email
+                .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiresMinutes * 60 * 1000))
                 .signWith(getSignInKey())
                 .compact();
 
-        Cookie cookie = new Cookie("JWT", jwt);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60); // expire in 24 hour
-        response.addCookie(cookie);
+        // Build cookie manually with SameSite=None and Secure
+        String cookie = "JWT=" + jwt +
+                "; HttpOnly" +
+                "; Secure" + // ✅ Needed for SameSite=None to work
+                "; SameSite=None" + // ✅ Allows cross-origin
+                "; Path=/" +
+                "; Max-Age=" + (24 * 60 * 60);
 
+        response.addHeader("Set-Cookie", cookie);
     }
 
     public String getJwtFromCookie(HttpServletRequest request) {

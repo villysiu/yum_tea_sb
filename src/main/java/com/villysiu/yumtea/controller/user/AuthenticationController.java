@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +31,9 @@ public class AuthenticationController {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody SignupRequest request){
-        //SignupRequest{userName='spring', email='springuser@gg.com', password='password'}
+    public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
+        // SignupRequest{userName='spring', email='springuser@gg.com',
+        // password='password'}
         try {
             authenticationService.signup(request);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -45,28 +45,27 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> signin(@RequestBody SigninRequest signinRequest, HttpServletResponse response) {
-        try{
-            SigninResponse signinResponse = authenticationService.signin(signinRequest, response );
-            return new ResponseEntity<>(signinResponse ,HttpStatus.OK);
+        try {
+            SigninResponse signinResponse = authenticationService.signin(signinRequest, response);
+            return new ResponseEntity<>(signinResponse, HttpStatus.OK);
 
-        } catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
 
     }
 
-
-
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication){
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) {
         logger.info("Logging out {}", authentication.getName());
         logoutHandler.logout(request, response, authentication);
         authenticationService.logoutUser(response);
         logger.info("Successfully logged out");
-//        logger.info("removeing session and clear security context");
-//        request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
-//        request.getSession().invalidate();
-//        SecurityContextHolder.clearContext();
+        // logger.info("removeing session and clear security context");
+        // request.getSession().removeAttribute("SPRING_SECURITY_CONTEXT");
+        // request.getSession().invalidate();
+        // SecurityContextHolder.clearContext();
         return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
 
     }
