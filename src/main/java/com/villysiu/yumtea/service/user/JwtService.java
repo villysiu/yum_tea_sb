@@ -18,6 +18,7 @@ import org.springframework.web.util.WebUtils;
 import javax.crypto.SecretKey;
 
 import java.util.Date;
+import java.util.Collection;
 
 @Service
 public class JwtService {
@@ -54,7 +55,11 @@ public class JwtService {
                 "; Path=/" +
                 "; Max-Age=" + (24 * 60 * 60);
 
-        response.addHeader("Set-Cookie", cookie);
+        // response.addHeader("Set-Cookie", cookie);
+        response.setHeader("Set-Cookie", cookie);
+
+        Collection<String> setCookieHeaders = response.getHeaders("Set-Cookie");
+        setCookieHeaders.forEach(header -> System.out.println("Set-Cookie: " + header));
     }
 
     public String getJwtFromCookie(HttpServletRequest request) {
@@ -95,10 +100,10 @@ public class JwtService {
     }
 
     public void removeTokenFromCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie("JWT", null);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
+        Cookie clearCookie = new Cookie("JWT", "");
+        clearCookie.setPath("/");
+        clearCookie.setMaxAge(0);
+        response.addCookie(clearCookie);
     }
 
     private SecretKey getSignInKey() {
