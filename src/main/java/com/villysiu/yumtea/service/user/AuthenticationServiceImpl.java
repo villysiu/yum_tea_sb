@@ -118,9 +118,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         logger.info("Saving authenticated account to springsecurity");
         SecurityContextHolder.getContext().setAuthentication(authenticationResponse);
 
-        logger.info("generate JWT token and Saving into cookie");
+        logger.info("generate JWT token");
 
-        jwtService.generateToken(signinRequest.getEmail(), response);
+        String jwt = jwtService.generateToken(signinRequest.getEmail());
 
         UserDetails userDetails = (UserDetails) authenticationResponse.getPrincipal();
         String email = userDetails.getUsername();
@@ -131,16 +131,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         signinResponse.setId(account.getId());
         signinResponse.setEmail(account.getEmail());
         signinResponse.setNickname(account.getNickname());
+        signinResponse.setToken(jwt);
 
         Role adminRole = roleService.getRoleByName("ROLE_ADMIN");
         signinResponse.setIsAdmin(account.getRoles().contains(adminRole));
         logger.info("Return authenticated account in SigninResponse DTO");
         return signinResponse;
 
-    }
-
-    public void logoutUser(HttpServletResponse response) {
-        jwtService.removeTokenFromCookie(response);
     }
 
 }

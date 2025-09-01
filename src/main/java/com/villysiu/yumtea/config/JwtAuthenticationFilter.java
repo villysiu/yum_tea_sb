@@ -2,6 +2,8 @@ package com.villysiu.yumtea.config;
 
 import com.villysiu.yumtea.service.user.CustomUserDetailsServiceImpl;
 import com.villysiu.yumtea.service.user.JwtService;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -37,16 +39,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7); // Remove "Bearer " prefix
+        }
+
         try {
-            String jwt = jwtService.getJwtFromCookie(request);
             if (jwt != null) {
                 jwtService.validateToken(jwt);
-                String userEmail = jwtService.extractEmail();
+                Claims claims = jwtService.validateToken(jwt);
+                String userEmail = claims.getSubject();
 
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                        null, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -54,21 +63,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.setContext(context);
             }
         } catch (ExpiredJwtException e) {
-            // Handle the expired token exception
             logger.warn("JWT expired: {}", e.getMessage());
-            SecurityContextHolder.clearContext(); // This effectively logs the user out
-            jwtService.removeTokenFromCookie(response);
-
+            SecurityContextHolder.clearContext();
         } catch (JwtException e) {
             logger.warn("Invalid JWT: {}", e.getMessage());
             SecurityContextHolder.clearContext();
-            jwtService.removeTokenFromCookie(response);
-
         } catch (Exception e) {
             logger.error("Unexpected error during authentication: {}", e.getMessage(), e);
             SecurityContextHolder.clearContext();
-            jwtService.removeTokenFromCookie(response);
         }
+
         filterChain.doFilter(request, response);
     }
 

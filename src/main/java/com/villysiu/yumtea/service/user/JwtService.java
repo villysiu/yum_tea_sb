@@ -6,19 +6,14 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 
 import java.util.Date;
-import java.util.Collection;
 
 @Service
 public class JwtService {
@@ -29,17 +24,10 @@ public class JwtService {
     @Value("${jwt.token.expires}")
     private Long jwtExpiresMinutes;
 
-    private Claims claims;
-
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    public void generateToken(String email, HttpServletResponse response) {
-        /*
-         * generate token with jwts builder
-         * subject accepts string
-         * issued at and expireAt accept a date time object
-         * signWith accepts a secretKey
-         */
+    public String generateToken(String email) {
+
         String jwt = Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -47,44 +35,22 @@ public class JwtService {
                 .signWith(getSignInKey())
                 .compact();
 
-        // Build cookie manually with SameSite=None and Secure
-        String cookie = "JWT=" + jwt +
-                "; HttpOnly" +
-                "; Secure" + // ✅ Needed for SameSite=None to work
-                "; SameSite=None" + // ✅ Allows cross-origin
-                "; Path=/" +
-                "; Max-Age=" + (24 * 60 * 60);
-
-        // response.addHeader("Set-Cookie", cookie);
-        response.setHeader("Set-Cookie", cookie);
-
-        Collection<String> setCookieHeaders = response.getHeaders("Set-Cookie");
-        setCookieHeaders.forEach(header -> System.out.println("Set-Cookie: " + header));
+        return jwt;
     }
 
-    public String getJwtFromCookie(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, "JWT");
-
-        if (cookie == null || cookie.getValue().isEmpty()) {
-            throw new JwtException("JWT token is empty");
-        }
-
-        return cookie.getValue();
-
-    }
-
-    public void validateToken(String token) throws JwtException {
+    public Claims validateToken(String token) throws JwtException {
 
         try {
             logger.info("Validating JWT token");
 
-            claims = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(getSignInKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            // return claims;
+
             logger.info("JWT token validated");
+            return claims;
 
         } catch (JwtException e) {
 
@@ -99,20 +65,10 @@ public class JwtService {
 
     }
 
-    public void removeTokenFromCookie(HttpServletResponse response) {
-        Cookie clearCookie = new Cookie("JWT", "");
-        clearCookie.setPath("/");
-        clearCookie.setMaxAge(0);
-        response.addCookie(clearCookie);
-    }
-
     private SecretKey getSignInKey() {
         // SignatureAlgorithm.HS256, this.secret
         byte[] keyBytes = Decoders.BASE64.decode(this.secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractEmail() {
-        return claims.getSubject();
-    }
 }
